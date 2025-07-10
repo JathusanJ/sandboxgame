@@ -85,8 +85,8 @@ public class ChatHudScreen extends Screen {
                         }
                     } else if(this.textInput.content.startsWith("/gamemode")) {
                         String[] arguments = this.textInput.content.split(" ");
-                        if(arguments.length != 2) {
-                            this.gameRenderer.player.sendChatMessage("Expected 1 argument, got " + (arguments.length - 1)  + " arguments instead");
+                        if (arguments.length != 2) {
+                            this.gameRenderer.player.sendChatMessage("Expected 1 argument, got " + (arguments.length - 1) + " arguments instead");
                         } else {
                             try {
                                 Player.Gamemode gamemode = Player.Gamemode.valueOf(arguments[1].toUpperCase());
@@ -94,10 +94,12 @@ public class ChatHudScreen extends Screen {
                                     this.gameRenderer.player.setGamemode(gamemode);
                                     this.gameRenderer.player.sendChatMessage("Changed gamemode to " + this.gameRenderer.player.gamemode.name());
                                 }
-                            } catch(IllegalArgumentException e) {
-                                this.gameRenderer.player.sendChatMessage("Invalid gamemode \"" + arguments[1] +"\"! Expected SURVIVAL or CREATIVE");
+                            } catch (IllegalArgumentException e) {
+                                this.gameRenderer.player.sendChatMessage("Invalid gamemode \"" + arguments[1] + "\"! Expected SURVIVAL or CREATIVE");
                             }
                         }
+                    } else if(this.textInput.content.startsWith("/kill")) {
+                        this.gameRenderer.player.kill();
                     } else {
                         this.gameRenderer.player.sendChatMessage("Unknown command \"" + this.textInput.content + "\"");
                     }

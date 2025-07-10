@@ -1,5 +1,6 @@
 package game.logic.world.creature;
 
+import game.logic.util.PlayerProfile;
 import game.logic.util.json.WrappedJsonObject;
 import game.logic.world.blocks.Blocks;
 import game.logic.world.items.ItemStack;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class Player extends Creature {
+    public PlayerProfile playerProfile;
     public int currentHotbarSlot = 0;
     public ItemStack[] inventory = new ItemStack[4 * 9];
     public Gamemode gamemode = Gamemode.SURVIVAL;
@@ -24,6 +26,43 @@ public class Player extends Creature {
         }
 
         this.size = new Vector3f(0.5F, 1.9F, 0.5F);
+    }
+
+    @Override
+    public void onDeath() {
+        for (int i = 0; i < this.inventory.length; i++) {
+            if(this.inventory[i].getItem() != Items.AIR) {
+                ItemCreature droppedItem = new ItemCreature();
+                droppedItem.representingItemStack = this.inventory[i];
+                droppedItem.velocity = new Vector3f(this.world.random.nextFloat() * 4F - 2F, 2F, this.world.random.nextFloat() * 4F - 2F);
+                this.world.spawnCreature(droppedItem, this.position);
+            }
+        }
+
+        this.clearInventory();
+        this.respawn();
+
+        this.sendChatMessage(this.playerProfile.getUsername() + " died");
+    }
+
+    public void clearInventory() {
+        for (int i = 0; i < this.inventory.length; i++) {
+            this.inventory[i] = new ItemStack(Items.AIR);
+        }
+    }
+
+    public void respawn() {
+        this.setPosition(0F, 100F, 0F);
+        this.health = this.maxHealth;
+        this.flying = false;
+        this.currentHotbarSlot = 0;
+    }
+
+    @Override
+    public void damage(float amount) {
+        if(this.gamemode == Gamemode.SURVIVAL) {
+            super.damage(amount);
+        }
     }
 
     @Override

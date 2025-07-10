@@ -17,7 +17,6 @@ import io.netty.channel.ChannelHandlerContext;
 import org.joml.Vector3f;
 
 public class ServerPlayer extends Player {
-    public PlayerProfile playerProfile;
     public ChannelHandlerContext channelHandler;
     public GameServer server;
 

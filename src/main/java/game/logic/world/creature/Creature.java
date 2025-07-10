@@ -17,6 +17,8 @@ public abstract class Creature {
     public float yaw = 0F;
     public float lastPitch = 0F;
     public float lastYaw = 0F;
+    public float health = 20F;
+    public float maxHealth = 20F;
     public World world;
     public boolean isOnGround = true;
     public boolean markedForRemoval = false;
@@ -24,6 +26,29 @@ public abstract class Creature {
 
     public Vector2i getChunkPosition() {
         return new Vector2i((int) Math.floor(this.position.x / 16D), (int) Math.floor(this.position.z / 16D));
+    }
+
+    public void damage(float amount) {
+        if(amount < 0F) return;
+
+        this.health = this.health - amount;
+        if(this.health <= 0F) {
+            this.kill();
+        }
+    }
+
+    public void heal(float amount) {
+        this.health = Math.clamp(this.health + amount, 0, this.maxHealth);
+    }
+
+    public void kill() {
+        this.health = 0F;
+        this.onDeath();
+        this.remove();
+    }
+
+    public void onDeath() {
+
     }
 
     public abstract void tick();
@@ -101,10 +126,14 @@ public abstract class Creature {
                             this.velocity.x = 0;
                         }
                         if(boundsPoint.y != 0 && yOnly) {
-                            this.velocity.y = 0;
                             if(distance == Math.abs(minkowski.min().y)) {
                                 this.isOnGround = true;
+
+                                // https://www.johannes-strommer.com/formeln/weg-geschwindigkeit-beschleunigung-zeit/
+                                float fallDistance = (float) (Math.pow(this.velocity.y, 2) / (2 * 9.81 * 2));
+                                this.damage((fallDistance - 3) * 0.5F);
                             }
+                            this.velocity.y = 0;
                         }
                         if(boundsPoint.z != 0) {
                             this.velocity.z = 0;
@@ -153,8 +182,17 @@ public abstract class Creature {
     }
 
     public void readSpawnPacket(ByteBuf buffer) {
-        this.position.set(buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
+        this.setPosition(buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
         this.yaw = buffer.readFloat();
+    }
+
+    public void setPosition(float x, float y, float z) {
+        this.position.set(x, y, z);
+        this.lastPosition.set(x, y, z);
+    }
+
+    public boolean isDead() {
+        return this.health <= 0F;
     }
 
     public record Box(Vector3f center, Vector3f size) {

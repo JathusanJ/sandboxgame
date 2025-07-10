@@ -491,6 +491,10 @@ public class GameRenderer {
         if(this.player.inventory[this.player.currentHotbarSlot] != null && this.player.inventory[this.player.currentHotbarSlot].getItem() != Items.AIR) {
             this.uiRenderer.renderTextWithShadow(this.player.inventory[this.player.currentHotbarSlot].getItem().getName(), new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F, 100), 24, true);
         }
+
+        if(this.player.gamemode == Player.Gamemode.SURVIVAL) {
+            this.uiRenderer.renderTextWithShadow("Health: " + this.player.health, new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + 7.5F, 100), 24, false);
+        }
     }
 
     public void renderBlock(Block block, Vector2f position, Vector2f size) {

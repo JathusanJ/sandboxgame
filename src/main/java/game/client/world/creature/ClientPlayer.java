@@ -49,7 +49,15 @@ public class ClientPlayer extends Player {
                 this.blockBreakingProgress.breakingTicks = this.blockBreakingProgress.breakingTicks + 1;
             }
         }
+
+        this.playerProfile = SandboxGame.getInstance().getPlayerProfile();
     }
+
+    @Override
+    public void remove() {
+        // Let's not remove the local player lol
+    }
+
     public void handleMovement(float deltaTime, Vector3f forwards, Vector3f right) {
         this.velocity.x = 0F;
         this.velocity.z = 0F;
