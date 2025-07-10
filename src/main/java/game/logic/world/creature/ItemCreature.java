@@ -109,6 +109,11 @@ public class ItemCreature extends Creature {
     }
 
     @Override
+    public void damage(float amount) {
+        // No damage until I add damage sources
+    }
+
+    @Override
     public void writeSpawnPacket(ByteBuf buffer) {
         super.writeSpawnPacket(buffer);
         ByteBufPacketDecoder.writeString(buffer, this.representingItemStack.getItem().id);
