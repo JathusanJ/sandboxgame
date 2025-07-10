@@ -53,10 +53,10 @@ public abstract class World implements Tickable {
 
                 this.name = json.getString("name");
                 this.seed = json.getInt("seed");
-                this.worldType = WorldType.DEFAULT; // Temporary TODO
+                this.worldType = WorldType.valueOf(json.getString("worldType"));
                 this.worldTime = json.getInt("worldTime");
                 this.commandsEnabled = json.getBoolean("commandsEnabled");
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new RuntimeException("Couldn't read world info of \"" + worldFolderName + "\"", e);
             }
         } else {

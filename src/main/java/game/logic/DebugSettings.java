@@ -1,5 +1,5 @@
 package game.logic;
 
 public class DebugSettings {
-    public static boolean compressChunkData = false;
+    public static boolean compressChunkData = true;
 }
