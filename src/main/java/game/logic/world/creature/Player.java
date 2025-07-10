@@ -36,6 +36,7 @@ public class Player extends Creature {
         super.save(json);
         json.put("currentHotbarSlot", this.currentHotbarSlot);
         json.put("flying", this.flying);
+        json.put("gamemode", this.gamemode);
         ArrayList<HashMap<String, Object>> inventory = new ArrayList<>();
 
         for(int i = 0; i < this.inventory.length; i++) {
@@ -56,6 +57,7 @@ public class Player extends Creature {
         super.load(json);
         this.currentHotbarSlot = json.getInt("currentHotbarSlot");
         this.flying = json.getBoolean("flying");
+        this.gamemode = Gamemode.valueOf(json.getString("gamemode"));
 
         ArrayList<WrappedJsonObject> inventory = (ArrayList<WrappedJsonObject>) json.getList("inventory");
 
