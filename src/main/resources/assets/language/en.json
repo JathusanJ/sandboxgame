@@ -1,0 +1,65 @@
+{
+  "ui.close": "Close",
+
+  "ui.screen.singleplayer": "Singleplayer",
+  "ui.screen.multiplayer": "Multiplayer",
+  "ui.screen.settings": "Settings",
+
+  "ui.screen.title_screen.close_game": "Close Game",
+
+  "ui.screen.settings.render_distance": "Render Distance",
+  "ui.screen.settings.field_of_view": "Field of View",
+  "ui.screen.settings.vsync": "V-Sync",
+
+  "ui.screen.pause.resume": "Resume",
+  "ui.screen.pause.quit": "Quit and save world",
+  "ui.screen.pause.game_paused": "Game paused",
+
+  "ui.screen.world_select": "Select world",
+  "ui.screen.world_select.load_world": "Load selected world",
+
+  "ui.screen.create_world": "Create world",
+  "ui.screen.create_world.world_name": "World name",
+  "ui.screen.create_world.world_seed": "World seed",
+  "ui.screen.create_world.commands_enabled": "Commands enabled",
+
+  "ui.world.loading": "Loading world",
+  "ui.world.saving": "Saving world",
+
+  "ui.screen.barrel": "Barrel",
+  "ui.screen.inventory": "Inventory",
+  "ui.screen.crafting_table": "Crafting Table",
+  "ui.screen.furnace": "Furnace",
+
+  "block.moondust": "Moondust",
+  "block.air": "Air",
+  "block.bedrock": "Bedrock",
+  "block.cobblestone": "Cobblestone",
+  "block.grass": "Grass",
+  "block.dirt": "Dirt",
+
+  "block.stone": "Stone",
+  "block.coal_ore": "Coal Ore",
+
+  "block.oak_planks": "Oak Planks",
+  "block.oak_log": "Oak Log",
+  "block.oak_leaves": "Oak Leaves",
+
+  "block.birch_planks": "Birch Planks",
+  "block.birch_log": "Birch Log",
+
+  "block.acacia_planks": "Acacia Planks",
+  "block.acacia_log": "Acacia Log",
+
+  "block.jungle_planks": "Jungle Planks",
+  "block.jungle_log": "Jungle Log",
+
+  "block.crafting_table": "Crafting Table",
+  "block.sand": "Sand",
+  "block.water": "Water",
+  "block.barrel": "Barrel",
+  "block.furnace": "Furnace",
+
+  "item.coal": "Coal",
+  "item.stick": "Stick"
+}

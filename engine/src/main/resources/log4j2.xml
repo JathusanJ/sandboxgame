@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="CONSOLE">
+            <PatternLayout pattern="[%d{HH:mm:ss}] [%level] [%logger] %msg%n" />
+        </Console>
+        <File name="MAIN" fileName="log.txt">
+            <PatternLayout pattern="[%d{dd.MM.yyyy HH:mm:ss}] [%level] [%logger] %msg%n" />
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="CONSOLE" />
+            <AppenderRef ref="MAIN" />
+        </Root>
+    </Loggers>
+</Configuration>
