@@ -7,6 +7,7 @@ import game.logic.DebugSettings;
 import game.logic.Tickable;
 import game.logic.util.GzipCompressionUtility;
 import game.client.world.ClientChunk;
+import game.logic.util.json.WrappedJsonList;
 import game.logic.util.json.WrappedJsonObject;
 import game.logic.world.World;
 import game.logic.world.blocks.AirBlock;
@@ -14,9 +15,13 @@ import game.logic.world.blocks.Block;
 import game.logic.world.blocks.Blocks;
 import game.logic.world.blocks.block_entity.BlockEntity;
 import game.logic.world.blocks.block_entity.BlockEntityGenerator;
+import game.logic.world.creature.Creature;
+import game.logic.world.creature.Creatures;
+import game.logic.world.creature.Player;
 import org.joml.Vector3i;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -156,10 +161,22 @@ public abstract class Chunk implements Tickable {
             }
         }
 
+        WrappedJsonList creatures = new WrappedJsonList();
+        for(Creature creature : this.getCreaturesInChunk()) {
+            if(creature instanceof Player) {
+                continue;
+            }
+            
+            WrappedJsonObject creatureJson = new WrappedJsonObject();
+            creature.save(creatureJson);
+            creatures.add(creatureJson);
+        }
+
         WrappedJsonObject chunkData = new WrappedJsonObject();
         chunkData.put("blockIdToSaveId", blockToChunkSavedIds);
         chunkData.put("blockData", savedData);
         chunkData.put("blockEntities", blockEntities);
+        chunkData.put("creatures", creatures);
 
         try {
             if(DebugSettings.compressChunkData) {
@@ -231,6 +248,21 @@ public abstract class Chunk implements Tickable {
                 }
             }
         }
+
+        WrappedJsonList creatures = chunkData.getJsonList("creatures");
+        for (int i = 0; i < creatures.size(); i++) {
+            WrappedJsonObject creatureJson = creatures.getObject(i);
+            String id = creatureJson.getString("id");
+
+            try {
+                Creature creature = Creatures.getClassFor(id).getConstructor().newInstance();
+                creature.load(creatureJson);
+                this.world.spawnCreature(creature, creature.position);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to load creature with id " + id, e);
+            }
+        }
+
         this.state = ChunkState.READY;
     }
 
@@ -276,6 +308,33 @@ public abstract class Chunk implements Tickable {
 
     public void tick() {
         this.chunkUnloadingTimer = this.chunkUnloadingTimer - 1;
+    }
+
+    public void unload() {
+        if(this.isUnloaded) return;
+        this.isUnloaded = true;
+        this.save();
+        this.removeCreatures();
+    }
+
+    public ArrayList<Creature> getCreaturesInChunk() {
+        ArrayList<Creature> creatures = new ArrayList<>();
+
+        for (int i = 0; i < this.world.creatures.size(); i++) {
+            Creature creature = this.world.creatures.get(i);
+
+            if(creature.getChunkPosition().x == this.chunkPosition.x && creature.getChunkPosition().y == this.chunkPosition.z) {
+                creatures.add(creature);
+            }
+        }
+
+        return creatures;
+    }
+
+    public void removeCreatures() {
+        for(Creature creature : this.getCreaturesInChunk()) {
+            creature.remove();
+        }
     }
 
     public static class FileContents {

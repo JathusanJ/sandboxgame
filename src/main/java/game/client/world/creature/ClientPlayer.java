@@ -23,6 +23,8 @@ import static org.lwjgl.glfw.GLFW.*;
 public class ClientPlayer extends Player {
     @Override
     public void tick() {
+        super.tick();
+
         if(this.world.getChunkAt(this.getChunkPosition().x, this.getChunkPosition().y) == null) {
             this.position.set(this.lastPosition);
             this.velocity.set(0,0,0);

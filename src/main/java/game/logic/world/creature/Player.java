@@ -67,7 +67,7 @@ public class Player extends Creature {
 
     @Override
     public void tick() {
-
+        super.tick();
     }
 
     @Override

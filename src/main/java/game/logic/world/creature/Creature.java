@@ -12,6 +12,7 @@ import org.joml.Vector3f;
 public abstract class Creature {
     public Vector3f position = new Vector3f();
     public Vector3f lastPosition = new Vector3f();
+    private Vector2i lastChunkPosition;
     public Vector3f size = new Vector3f();
     public Vector3f velocity = new Vector3f();
     public float pitch = 0F;
@@ -60,7 +61,18 @@ public abstract class Creature {
 
     }
 
-    public abstract void tick();
+    public void tick() {
+        if(this.lastChunkPosition == null) {
+            this.lastChunkPosition = this.getChunkPosition();
+        }
+
+        if(!this.lastChunkPosition.equals(this.getChunkPosition())) {
+            this.world.getChunkAt(this.lastChunkPosition.x, this.lastChunkPosition.y).setModified();
+            this.lastChunkPosition = this.getChunkPosition();
+        }
+
+        this.world.getChunkAt(this.getChunkPosition().x, this.getChunkPosition().y).setModified();
+    }
 
     public void remove() {
         this.markedForRemoval = true;
@@ -250,6 +262,8 @@ public abstract class Creature {
 
         json.put("health", this.health);
         json.put("maxHealth", this.health);
+
+        json.put("id", Creatures.getIdFor(this));
     }
 
     public void load(WrappedJsonObject json) {

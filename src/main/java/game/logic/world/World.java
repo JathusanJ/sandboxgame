@@ -235,8 +235,7 @@ public abstract class World implements Tickable {
 
     public void unloadChunk(Chunk chunk) {
         this.loadedChunks.remove(new Vector2i(chunk.chunkPosition.x, chunk.chunkPosition.z));
-        chunk.isUnloaded = true;
-        chunk.save();
+        chunk.unload();
     }
 
     @Override

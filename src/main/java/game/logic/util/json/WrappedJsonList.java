@@ -5,6 +5,10 @@ import java.util.ArrayList;
 public class WrappedJsonList {
     public ArrayList<Object> list = new ArrayList<>();
 
+    public int size() {
+        return this.list.size();
+    }
+
     public boolean add(Object object) {
         if(object instanceof WrappedJsonObject json) {
             return this.list.add(json.children);

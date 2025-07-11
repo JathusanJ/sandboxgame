@@ -28,6 +28,7 @@ public class ServerPlayer extends Player {
     @Override
     public void tick() {
         super.tick();
+
         if(this.blockBreakingProgress != null) {
             if(this.blockBreakingProgress.isDone()) {
                 ItemStack itemStack = this.world.getBlockAt(this.blockBreakingProgress.blockPosition.x,this.blockBreakingProgress.blockPosition.y,this.blockBreakingProgress.blockPosition.z).getAsDroppedItem(blockBreakingProgress.player, blockBreakingProgress.player.inventory[blockBreakingProgress.hotbarSlot]);

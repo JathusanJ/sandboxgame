@@ -20,6 +20,8 @@ public class ItemCreature extends Creature {
 
     @Override
     public void tick() {
+        super.tick();
+
         ticksRemaining = ticksRemaining - 1;
 
         if(ticksRemaining <= 0 || this.representingItemStack.getItem() == Items.AIR || this.representingItemStack.amount == 0) {
