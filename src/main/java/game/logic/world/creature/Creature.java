@@ -240,14 +240,28 @@ public abstract class Creature {
         position.put("x", this.position.x);
         position.put("y", this.position.y);
         position.put("z", this.position.z);
-
         json.put("position", position);
+
+        WrappedJsonObject velocity = new WrappedJsonObject();
+        velocity.put("x", this.velocity.x);
+        velocity.put("y", this.velocity.y);
+        velocity.put("z", this.velocity.z);
+        json.put("velocity", velocity);
+
+        json.put("health", this.health);
+        json.put("maxHealth", this.health);
     }
 
     public void load(WrappedJsonObject json) {
         WrappedJsonObject position = json.getObject("position");
         this.position.set(position.getFloat("x"), position.getFloat("y"), position.getFloat("z"));
         this.lastPosition.set(this.position);
+
+        WrappedJsonObject velocity = json.getObject("velocity");
+        this.velocity.set(velocity.getFloat("x"), velocity.getFloat("y"), velocity.getFloat("z"));
+
+        this.health = json.getFloat("health");
+        this.maxHealth = json.getFloat("maxHealth");
     }
 
     public enum DamageSource {
