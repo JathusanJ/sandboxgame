@@ -1,5 +1,6 @@
 package game.logic.world.creature;
 
+import game.client.ui.text.Language;
 import game.logic.util.json.WrappedJsonObject;
 import game.logic.world.World;
 import game.logic.world.ServerWorld;
@@ -29,11 +30,15 @@ public abstract class Creature {
     }
 
     public void damage(float amount) {
+        this.damage(amount, DamageSource.NONE);
+    }
+
+    public void damage(float amount, DamageSource damageSource) {
         if(amount < 0F) return;
 
         this.health = this.health - amount;
         if(this.health <= 0F) {
-            this.kill();
+            this.kill(damageSource);
         }
     }
 
@@ -42,12 +47,16 @@ public abstract class Creature {
     }
 
     public void kill() {
+        this.kill(DamageSource.NONE);
+    }
+
+    public void kill(DamageSource damageSource) {
         this.health = 0F;
-        this.onDeath();
+        this.onDeath(damageSource);
         this.remove();
     }
 
-    public void onDeath() {
+    public void onDeath(DamageSource damageSource) {
 
     }
 
@@ -131,7 +140,7 @@ public abstract class Creature {
 
                                 // https://www.johannes-strommer.com/formeln/weg-geschwindigkeit-beschleunigung-zeit/
                                 float fallDistance = (float) (Math.pow(this.velocity.y, 2) / (2 * 9.81 * 2));
-                                this.damage((fallDistance - 3) * 0.5F);
+                                this.damage((fallDistance - 3) * 0.5F, DamageSource.FALL_DAMAGE);
                             }
                             this.velocity.y = 0;
                         }
@@ -239,5 +248,25 @@ public abstract class Creature {
         WrappedJsonObject position = json.getObject("position");
         this.position.set(position.getFloat("x"), position.getFloat("y"), position.getFloat("z"));
         this.lastPosition.set(this.position);
+    }
+
+    public enum DamageSource {
+        NONE("none"),
+        FIRE("fire"),
+        FALL_DAMAGE("fall_damage");
+
+        String id;
+
+        DamageSource(String id) {
+            this.id = id;
+        }
+
+        public String getTranslationKey() {
+            return "damage_source." + id;
+        }
+
+        public String getTranslated(String playerName) {
+            return String.format(Language.translate(this.getTranslationKey()), playerName);
+        }
     }
 }

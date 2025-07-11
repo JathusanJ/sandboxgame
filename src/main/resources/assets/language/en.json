@@ -61,5 +61,9 @@
   "block.furnace": "Furnace",
 
   "item.coal": "Coal",
-  "item.stick": "Stick"
+  "item.stick": "Stick",
+
+  "damage_source.none": "%s died",
+  "damage_source.fall_damage": "%s fell to death",
+  "damage_source.fire": "%s burned to death"
 }

@@ -29,7 +29,7 @@ public class Player extends Creature {
     }
 
     @Override
-    public void onDeath() {
+    public void onDeath(DamageSource damageSource) {
         for (int i = 0; i < this.inventory.length; i++) {
             if(this.inventory[i].getItem() != Items.AIR) {
                 ItemCreature droppedItem = new ItemCreature();
@@ -42,7 +42,7 @@ public class Player extends Creature {
         this.clearInventory();
         this.respawn();
 
-        this.sendChatMessage(this.playerProfile.getUsername() + " died");
+        this.sendChatMessage(damageSource.getTranslated(this.playerProfile.getUsername()));
     }
 
     public void clearInventory() {
