@@ -30,28 +30,29 @@ public class Block {
         return 1;
     }
 
+    // TODO: Redo this mess and put it into a single method (I genuinely hate this so much)
     public boolean shouldCreateTopFace(World world, int x, int y, int z, Block neighboringBlock) {
-        return neighboringBlock.isEmpty() || neighboringBlock.isLiquid() || neighboringBlock instanceof LeafBlock;
+        return neighboringBlock.isEmpty() || neighboringBlock.isLiquid() || neighboringBlock instanceof LeafBlock || neighboringBlock instanceof CrossBlock;
     }
 
     public boolean shouldCreateBottomFace(World world, int x, int y, int z, Block neighboringBlock) {
-        return neighboringBlock.isEmpty() || neighboringBlock.isLiquid() || neighboringBlock instanceof LeafBlock;
+        return neighboringBlock.isEmpty() || neighboringBlock.isLiquid() || neighboringBlock instanceof LeafBlock || neighboringBlock instanceof CrossBlock;
     }
 
     public boolean shouldCreateFrontFace(World world, int x, int y, int z, Block neighboringBlock) {
-        return neighboringBlock.isEmpty() || neighboringBlock.isLiquid() || neighboringBlock instanceof LeafBlock;
+        return neighboringBlock.isEmpty() || neighboringBlock.isLiquid() || neighboringBlock instanceof LeafBlock || neighboringBlock instanceof CrossBlock;
     }
 
     public boolean shouldCreateBackFace(World world, int x, int y, int z, Block neighboringBlock) {
-        return neighboringBlock.isEmpty() || neighboringBlock.isLiquid() || neighboringBlock instanceof LeafBlock;
+        return neighboringBlock.isEmpty() || neighboringBlock.isLiquid() || neighboringBlock instanceof LeafBlock || neighboringBlock instanceof CrossBlock;
     }
 
     public boolean shouldCreateRightFace(World world, int x, int y, int z, Block neighboringBlock) {
-        return neighboringBlock.isEmpty() || neighboringBlock.isLiquid() || neighboringBlock instanceof LeafBlock;
+        return neighboringBlock.isEmpty() || neighboringBlock.isLiquid() || neighboringBlock instanceof LeafBlock || neighboringBlock instanceof CrossBlock;
     }
 
     public boolean shouldCreateLeftFace(World world, int x, int y, int z, Block neighboringBlock) {
-        return neighboringBlock.isEmpty() || neighboringBlock.isLiquid() || neighboringBlock instanceof LeafBlock;
+        return neighboringBlock.isEmpty() || neighboringBlock.isLiquid() || neighboringBlock instanceof LeafBlock || neighboringBlock instanceof CrossBlock;
     }
 
     public void buildBlockVertices(ChunkVertexBuilder vertexBuilder, ClientChunk chunk, int x, int y, int z) {

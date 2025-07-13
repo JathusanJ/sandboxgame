@@ -38,6 +38,10 @@ public class Blocks {
 
     public static BarrelBlock BARREL = (BarrelBlock) register(new BarrelBlock(), "barrel");
 
+    public static RedTulipBlock RED_TULIP = (RedTulipBlock) register(new RedTulipBlock(), "red_tulip");
+    public static OrangeTulipBlock ORANGE_TULIP = (OrangeTulipBlock) register(new OrangeTulipBlock(), "orange_tulip");
+    public static YellowTulipBlock YELLOW_TULIP = (YellowTulipBlock) register(new YellowTulipBlock(), "yellow_tulip");
+
     public static Block register(Block block, String id) {
         block.setBlockId(id);
         idToBlock.put(id, block);

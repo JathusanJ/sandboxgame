@@ -60,6 +60,10 @@
   "block.barrel": "Barrel",
   "block.furnace": "Furnace",
 
+  "block.red_tulip": "Red Tulip",
+  "block.orange_tulip": "Orange Tulip",
+  "block.yellow_tulip": "Yellow Tulip",
+
   "item.coal": "Coal",
   "item.stick": "Stick",
 

@@ -13,6 +13,7 @@ import game.logic.world.World;
 import game.logic.world.blocks.AirBlock;
 import game.logic.world.blocks.Block;
 import game.logic.world.blocks.Blocks;
+import game.logic.world.blocks.CrossBlock;
 import game.logic.world.blocks.block_entity.BlockEntity;
 import game.logic.world.blocks.block_entity.BlockEntityGenerator;
 import game.logic.world.creature.Creature;
@@ -289,7 +290,8 @@ public abstract class Chunk implements Tickable {
         for(int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 for (int y = 127; y >= 0; y--) {
-                    if (this.getBlockAtLocalizedPosition(x, y, z).isEmpty()) {
+                    Block block = this.getBlockAtLocalizedPosition(x, y, z);
+                    if(block.isEmpty() || block instanceof CrossBlock) {
                         skylight[ClientChunk.positionToBlockArrayId(x, y, z)] = 16;
                     } else {
                         break;

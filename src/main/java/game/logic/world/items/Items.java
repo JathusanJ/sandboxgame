@@ -42,6 +42,10 @@ public class Items {
 
     public static BlockItem BARREL = registerBlockItem(Blocks.BARREL);
 
+    public static BlockItem RED_TULIP = registerBlockItem(Blocks.RED_TULIP);
+    public static BlockItem ORANGE_TULIP = registerBlockItem(Blocks.ORANGE_TULIP);
+    public static BlockItem YELLOW_TULIP = registerBlockItem(Blocks.YELLOW_TULIP);
+
     public static Item COAL = register(new Item(), "coal");
     public static Item STICK = register(new Item(), "stick");
     public static Item WOODEN_PICKAXE = register(new PickaxeItem(PickaxeItem.PickaxeTier.WOODEN), "wooden_pickaxe");
@@ -86,6 +90,10 @@ public class Items {
                 OAK_LEAVES,
 
                 BARREL,
+
+                RED_TULIP,
+                ORANGE_TULIP,
+                YELLOW_TULIP,
 
                 COAL,
                 STICK,
