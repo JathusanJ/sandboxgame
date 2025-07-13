@@ -62,7 +62,7 @@ public class DefaultWorldGenerator extends WorldGenerator {
         this.forestNoise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
         this.forestNoise.SetFractalType(FastNoiseLite.FractalType.FBm);
         this.forestNoise.SetFractalOctaves(4);
-        this.forestNoise.SetFrequency(0.003F);
+        this.forestNoise.SetFrequency(0.01F);
     }
 
     @Override
@@ -174,7 +174,7 @@ public class DefaultWorldGenerator extends WorldGenerator {
         Random treeRandom = new Random(treeSeed);
 
         int rarity = 500;
-        if(this.forestNoise.GetNoise(chunkX, chunkZ) > 0.75F) {
+        if(this.forestNoise.GetNoise(chunkX, chunkZ) > 0.3F) {
             rarity = 50;
         }
 
