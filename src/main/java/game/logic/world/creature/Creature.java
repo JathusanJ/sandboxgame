@@ -261,7 +261,7 @@ public abstract class Creature {
         json.put("velocity", velocity);
 
         json.put("health", this.health);
-        json.put("maxHealth", this.health);
+        json.put("maxHealth", this.maxHealth);
 
         json.put("id", Creatures.getIdFor(this));
     }
