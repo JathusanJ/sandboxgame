@@ -74,6 +74,9 @@ public class GameRenderer {
     public Texture crosshairTexture;
     public Texture hotbarUnselectedTexture;
     public Texture hotbarSelectedTexture;
+    public Texture heartFullTexture;
+    public Texture heartHalfTexture;
+    public Texture heartEmptyTexture;
 
     public HashMap<Block, Texture> blockToItemIcon = new HashMap<>();
 
@@ -160,6 +163,9 @@ public class GameRenderer {
         this.crosshairTexture = new Texture("textures/ui/crosshair.png");
         this.hotbarUnselectedTexture = new Texture("textures/ui/hotbar_unselected.png");
         this.hotbarSelectedTexture = new Texture("textures/ui/hotbar_selected.png");
+        this.heartFullTexture = new Texture("textures/ui/heart_full.png");
+        this.heartHalfTexture = new Texture("textures/ui/heart_half.png");
+        this.heartEmptyTexture = new Texture("textures/ui/heart_empty.png");
 
         this.tickManager.tickables.add(SandboxGame.getInstance());
         this.tickManager.start();
@@ -425,48 +431,46 @@ public class GameRenderer {
 
         if(this.world != null && !(this.currentScreen instanceof WorldSavingScreen)) {
             this.renderHUD(deltaTime);
-        }
 
-        if(this.showDebugInfo) {
-            this.uiRenderer.renderTextWithShadow("Sandbox Game " + SandboxGame.getInstance().getVersion().versionName() + " - " + SandboxGame.getInstance().getWindow().getFps() + " FPS", new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24), 24);
-            if(this.world != null && this.player != null) {
-                this.uiRenderer.renderTextWithShadow(this.world.loadedChunks.size() + " chunks loaded", new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 2), 24);
-                this.uiRenderer.renderTextWithShadow(this.chunkRenderer.chunksRendered + " chunks rendering (" + this.chunkRenderer.verticesRendered + " vertices, "+ (this.chunkRenderer.verticesRendered / 4) +" faces)", new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 3), 24);
-                this.uiRenderer.renderTextWithShadow("position x: " + Math.floor(this.player.position.x * 100) / 100 + " y: " + Math.floor(this.player.position.y * 100) / 100 + " (camera: " + Math.floor(this.camera.position.y * 100) / 100 + ") z: " + Math.floor(this.player.position.z * 100) / 100, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 4), 24);
-                this.uiRenderer.renderTextWithShadow("chunk position x: " + Math.floor(this.camera.position.x / 16D) + " z: " + Math.floor(this.camera.position.z / 16D), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 5), 24);
+            if(this.showDebugInfo) {
+                this.uiRenderer.renderTextWithShadow("Sandbox Game " + SandboxGame.getInstance().getVersion().versionName() + " - " + SandboxGame.getInstance().getWindow().getFps() + " FPS", new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24), 24);
+                if(this.world != null && this.player != null) {
+                    this.uiRenderer.renderTextWithShadow(this.world.loadedChunks.size() + " chunks loaded", new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 2), 24);
+                    this.uiRenderer.renderTextWithShadow(this.chunkRenderer.chunksRendered + " chunks rendering (" + this.chunkRenderer.verticesRendered + " vertices, "+ (this.chunkRenderer.verticesRendered / 4) +" faces)", new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 3), 24);
+                    this.uiRenderer.renderTextWithShadow("position x: " + Math.floor(this.player.position.x * 100) / 100 + " y: " + Math.floor(this.player.position.y * 100) / 100 + " (camera: " + Math.floor(this.camera.position.y * 100) / 100 + ") z: " + Math.floor(this.player.position.z * 100) / 100, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 4), 24);
+                    this.uiRenderer.renderTextWithShadow("chunk position x: " + Math.floor(this.camera.position.x / 16D) + " z: " + Math.floor(this.camera.position.z / 16D), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 5), 24);
 
-                this.uiRenderer.renderTextWithShadow("seed: " + this.world.seed, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 7), 24);
-                this.uiRenderer.renderTextWithShadow("world time: " + this.world.worldTime, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 8), 24);
-                this.uiRenderer.renderTextWithShadow("day time: " + this.world.getDayTime(), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 9), 24);
+                    this.uiRenderer.renderTextWithShadow("seed: " + this.world.seed, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 7), 24);
+                    this.uiRenderer.renderTextWithShadow("world time: " + this.world.worldTime, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 8), 24);
+                    this.uiRenderer.renderTextWithShadow("day time: " + this.world.getDayTime(), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 9), 24);
 
-                Vector3i playerBlockPosition = new Vector3i((int) Math.floor(this.player.position.x), (int) Math.floor(this.player.position.y), (int) Math.floor(this.player.position.z));
+                    Vector3i playerBlockPosition = new Vector3i((int) Math.floor(this.player.position.x), (int) Math.floor(this.player.position.y), (int) Math.floor(this.player.position.z));
 
-                float skylight = this.world.getSkylightAt(playerBlockPosition.x, playerBlockPosition.y, playerBlockPosition.z) / 16F;
-                float light = this.world.getLightAt(playerBlockPosition.x, playerBlockPosition.y, playerBlockPosition.z) / 16F;
+                    float skylight = this.world.getSkylightAt(playerBlockPosition.x, playerBlockPosition.y, playerBlockPosition.z) / 16F;
+                    float light = this.world.getLightAt(playerBlockPosition.x, playerBlockPosition.y, playerBlockPosition.z) / 16F;
 
-                this.uiRenderer.renderTextWithShadow("skylight: " + skylight + " light: " + light, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 11), 24);
-                //this.uiRenderer.renderTextWithShadow("> with modification:" + values[1], new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 12), 24);
+                    this.uiRenderer.renderTextWithShadow("skylight: " + skylight + " light: " + light, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 11), 24);
+                    //this.uiRenderer.renderTextWithShadow("> with modification:" + values[1], new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 12), 24);
 
-                if(this.player.blockBreakingProgress != null) {
-                    this.uiRenderer.renderTextWithShadow("Block breaking progress: " + this.player.blockBreakingProgress.breakingTicks, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 14), 24);
+                    if(this.player.blockBreakingProgress != null) {
+                        this.uiRenderer.renderTextWithShadow("Block breaking progress: " + this.player.blockBreakingProgress.breakingTicks, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 14), 24);
+                    }
+
+                    if(this.world.worldGenerator instanceof DefaultWorldGenerator defaultWorldGenerator) {
+                        List<Float> debugValues = defaultWorldGenerator.getDebugValues((int) Math.floor(this.player.position.x), (int) Math.floor(this.player.position.z));
+                        this.uiRenderer.renderTextWithShadow("islandNoise: " + debugValues.get(0), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 16), 24);
+                        this.uiRenderer.renderTextWithShadow("hillMountainNoise: " + debugValues.get(1), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 17), 24);
+                        this.uiRenderer.renderTextWithShadow("islandMultiplier: " + debugValues.get(2), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 18), 24);
+                        this.uiRenderer.renderTextWithShadow("hillMountainMultiplier: " + debugValues.get(3), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 19), 24);
+                        this.uiRenderer.renderTextWithShadow("final height: " + debugValues.get(4), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 20), 24);
+                    }
+
+                    this.uiRenderer.renderTextWithShadowRightSided("Java " + Runtime.version().feature() + " (" + Runtime.version().toString() + ")", new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth(), SandboxGame.getInstance().getWindow().getWindowHeight() - 24), 24);
+                    this.uiRenderer.renderTextWithShadowRightSided("Memory: " + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024F * 1024F)) + " Mb / " + (Runtime.getRuntime().totalMemory() / (1024F * 1024F)) + " Mb", new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth(), SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 2), 24);
+
+                    this.uiRenderer.renderTextWithShadowRightSided("Window size: " + SandboxGame.getInstance().getWindow().getWindowWidth() + "x" + SandboxGame.getInstance().getWindow().getWindowHeight(), new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth(), SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 4), 24);
                 }
-
-                if(this.world.worldGenerator instanceof DefaultWorldGenerator defaultWorldGenerator) {
-                    List<Float> debugValues = defaultWorldGenerator.getDebugValues((int) Math.floor(this.player.position.x), (int) Math.floor(this.player.position.z));
-                    this.uiRenderer.renderTextWithShadow("islandNoise: " + debugValues.get(0), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 16), 24);
-                    this.uiRenderer.renderTextWithShadow("hillMountainNoise: " + debugValues.get(1), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 17), 24);
-                    this.uiRenderer.renderTextWithShadow("islandMultiplier: " + debugValues.get(2), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 18), 24);
-                    this.uiRenderer.renderTextWithShadow("hillMountainMultiplier: " + debugValues.get(3), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 19), 24);
-                    this.uiRenderer.renderTextWithShadow("final height: " + debugValues.get(4), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 20), 24);
-                }
-
-                this.uiRenderer.renderTextWithShadowRightSided("Java " + Runtime.version().feature() + " (" + Runtime.version().toString() + ")", new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth(), SandboxGame.getInstance().getWindow().getWindowHeight() - 24), 24);
-                this.uiRenderer.renderTextWithShadowRightSided("Memory: " + Math.round((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024F * 1024F)) + " Mb / " + (Runtime.getRuntime().totalMemory() / (1024F * 1024F)) + " Mb", new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth(), SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 2), 24);
-
-                this.uiRenderer.renderTextWithShadowRightSided("Window size: " + SandboxGame.getInstance().getWindow().getWindowWidth() + "x" + SandboxGame.getInstance().getWindow().getWindowHeight(), new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth(), SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 4), 24);
             }
-        } else {
-            this.uiRenderer.renderTextWithShadow("Sandbox Game " + SandboxGame.getInstance().getVersion().versionName(), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24), 24);
         }
     }
 
@@ -493,7 +497,28 @@ public class GameRenderer {
         }
 
         if(this.player.gamemode == Player.Gamemode.SURVIVAL) {
-            this.uiRenderer.renderTextWithShadow("Health: " + this.player.health, new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + 7.5F, 100), 24, false);
+            for (int i = 0; i < 10 ; i++) {
+                double fullHearts = Math.floor(this.player.health) / 2;
+                boolean full = i < fullHearts;
+                boolean half = i * 2 < Math.ceil(this.player.health) ;
+
+                Texture textureToUse;
+
+                if(full) {
+                    textureToUse = this.heartFullTexture;
+                } else if(half) {
+                    textureToUse = this.heartHalfTexture;
+                } else {
+                    textureToUse = this.heartEmptyTexture;
+                }
+
+                float offset = 0;
+                if(fullHearts <= 2) {
+                    offset = (float) Math.sin(SandboxGame.getInstance().getWindow().getTimeSinceWindowInitialization() * (3 - fullHearts) * 5F - i * 1.5F) * 4;
+                }
+
+                this.uiRenderer.renderTexture(textureToUse, new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + i * 32, 80 + offset), new Vector2f(32,32));
+            }
         }
     }
 

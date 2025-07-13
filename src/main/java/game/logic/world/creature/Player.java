@@ -61,7 +61,7 @@ public class Player extends Creature {
     @Override
     public void damage(float amount, DamageSource damageSource) {
         if(this.gamemode == Gamemode.SURVIVAL) {
-            super.damage(amount);
+            super.damage(amount, damageSource);
         }
     }
 
