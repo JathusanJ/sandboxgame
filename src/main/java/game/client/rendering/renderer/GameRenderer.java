@@ -478,7 +478,7 @@ public class GameRenderer {
             this.uiRenderer.renderTexture(i == this.player.currentHotbarSlot ? this.hotbarSelectedTexture : this.hotbarUnselectedTexture, new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + i * 75, 0), new Vector2f(75, 75));
             if(this.player.inventory[i] != null && this.player.inventory[i].getItem() != Items.AIR) {
                 if(this.player.inventory[i].getItem() instanceof BlockItem blockItem) {
-                    this.renderBlock(blockItem.getBlock(), new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + i * 75 + 7.5F, 7.5F), new Vector2f(60, 60));
+                    this.uiRenderer.renderTexture(this.getBlockItemTexture(blockItem.getBlock()), new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + i * 75 + 7.5F, 7.5F), new Vector2f(60, 60));
                 } else {
                     this.uiRenderer.renderTexture(ItemTextures.getTexture(this.player.inventory[i].getItem().id), new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + i * 75 + 7.5F, 7.5F), new Vector2f(60, 60));
                 }
@@ -497,12 +497,15 @@ public class GameRenderer {
         }
     }
 
-    public void renderBlock(Block block, Vector2f position, Vector2f size) {
-        if(this.blockToItemIcon.containsKey(block)) {
-            this.uiRenderer.renderTexture(this.blockToItemIcon.get(block), position, size);
-            return;
+    public Texture getBlockItemTexture(Block block) {
+        if(!this.blockToItemIcon.containsKey(block)) {
+            this.renderBlock(block);
         }
 
+        return this.blockToItemIcon.get(block);
+    }
+
+    public void renderBlock(Block block) {
         int fbo = glGenFramebuffers();
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
@@ -608,11 +611,7 @@ public class GameRenderer {
 
         glViewport(0, 0, SandboxGame.getInstance().getWindow().getWindowWidth(), SandboxGame.getInstance().getWindow().getWindowHeight());
 
-        Texture renderedTexture = new Texture(texture);
-
-        this.uiRenderer.renderTexture(renderedTexture, position, size.mul(1));
-
-        this.blockToItemIcon.put(block, renderedTexture);
+        this.blockToItemIcon.put(block, new Texture(texture));
     }
 
     public void setScreen(Screen screen) {

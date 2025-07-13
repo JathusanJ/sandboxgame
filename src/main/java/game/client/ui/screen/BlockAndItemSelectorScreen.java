@@ -53,7 +53,7 @@ public class BlockAndItemSelectorScreen extends Screen {
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
         if(!this.holdingSlot.isEmpty()) {
             if(this.holdingSlot.getItem() instanceof BlockItem blockItem) {
-                this.gameRenderer.renderBlock(blockItem.getBlock(), new Vector2f(mouseX, mouseY), new Vector2f(40, 40));
+                this.gameRenderer.uiRenderer.renderTexture(this.gameRenderer.getBlockItemTexture(blockItem.getBlock()), new Vector2f(mouseX, mouseY), new Vector2f(40, 40));
             } else {
                 this.gameRenderer.uiRenderer.renderTexture(ItemTextures.getTexture(this.holdingSlot.getItem().id), new Vector2f(mouseX, mouseY), new Vector2f(40, 40));
             }
