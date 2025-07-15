@@ -72,6 +72,9 @@ public class DefaultWorldGenerator extends WorldGenerator {
         this.terrainShape(blocks, chunkX, chunkZ);
         this.addGrassAndDirt(blocks, chunkX, chunkZ);
         this.addUndergroundDirt(blocks, chunkX, chunkZ);
+        this.addTulips(blocks, chunkX, chunkZ, Blocks.RED_TULIP, 2000, 3, 10, 10);
+        this.addTulips(blocks, chunkX, chunkZ, Blocks.ORANGE_TULIP, 2000, 3, 10, 10);
+        this.addTulips(blocks, chunkX, chunkZ, Blocks.YELLOW_TULIP, 2000, 3, 10, 10);
         this.addTrees(blocks, chunkX, chunkZ);
         this.addOre(blocks, chunkX, chunkZ, Blocks.COAL_ORE, 50, 5, 10, 0, 100);
 
@@ -254,6 +257,28 @@ public class DefaultWorldGenerator extends WorldGenerator {
 
         }
 
+    }
+
+    public void addTulips(HashMap<Vector3i, Block> blocks, int chunkX, int chunkZ, Block tulip, int rarity, int minAmount, int maxAmount, int maxSize) {
+        Random tulipRandom = new Random(tulip.getBlockId().hashCode() + (((long) chunkX) << 32) + ((long) chunkZ << 8) * 2);
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                if(tulipRandom.nextInt() % rarity == 0) {
+                    int amount = (int) (minAmount + Math.floor(tulipRandom.nextFloat() * (maxAmount - minAmount)));
+
+                    for (int i = 0; i < amount; i++) {
+                        int positionX = (int) (x + Math.floor((tulipRandom.nextFloat() * 2 - 1) * maxSize));
+                        int positionZ = (int) (z + Math.floor((tulipRandom.nextFloat() * 2 - 1) * maxSize));
+
+                        for (int y = 127; y > 40; y--) {
+                            if(blocks.get(new Vector3i(positionX, y, positionZ)) == Blocks.GRASS) {
+                                blocks.put(new Vector3i(positionX,y + 1,positionZ), tulip);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public List<Float> getDebugValues(int x, int z) {
