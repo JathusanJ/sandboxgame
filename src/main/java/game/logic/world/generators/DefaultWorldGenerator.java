@@ -4,6 +4,7 @@ import game.logic.util.FastNoiseLite;
 import game.logic.util.Spline;
 import game.logic.world.blocks.Block;
 import game.logic.world.blocks.Blocks;
+import game.logic.world.chunk.ChunkProxy;
 import org.joml.Vector2f;
 import org.joml.Vector3i;
 
@@ -66,47 +67,46 @@ public class DefaultWorldGenerator extends WorldGenerator {
     }
 
     @Override
-    public HashMap<Vector3i, Block> generate(int chunkX, int chunkZ) {
-        HashMap<Vector3i, Block> blocks = new HashMap<>();
-
-        this.terrainShape(blocks, chunkX, chunkZ);
-        this.addGrassAndDirt(blocks, chunkX, chunkZ);
-        this.addUndergroundDirt(blocks, chunkX, chunkZ);
-        this.addTulips(blocks, chunkX, chunkZ, Blocks.RED_TULIP, 2000, 3, 10, 10);
-        this.addTulips(blocks, chunkX, chunkZ, Blocks.ORANGE_TULIP, 2000, 3, 10, 10);
-        this.addTulips(blocks, chunkX, chunkZ, Blocks.YELLOW_TULIP, 2000, 3, 10, 10);
-        this.addTrees(blocks, chunkX, chunkZ);
-        this.addOre(blocks, chunkX, chunkZ, Blocks.COAL_ORE, 50, 5, 10, 0, 100);
-
-        return blocks;
+    public void generate(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
+        this.terrainShape(chunkProxy, chunkX, chunkZ);
+        this.addGrassAndDirt(chunkProxy, chunkX, chunkZ);
+        this.addUndergroundDirt(chunkProxy, chunkX, chunkZ);
     }
 
-    public void addUndergroundDirt(HashMap<Vector3i, Block> blocks, int chunkX, int chunkZ) {
+    @Override
+    public void generateFeatures(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
+        this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.RED_TULIP, 2000, 3, 10, 10);
+        this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.ORANGE_TULIP, 2000, 3, 10, 10);
+        this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.YELLOW_TULIP, 2000, 3, 10, 10);
+        this.addTrees(chunkProxy, chunkX, chunkZ);
+        this.addOre(chunkProxy, chunkX, chunkZ, Blocks.COAL_ORE, 50, 5, 10, 0, 100);
+    }
+
+    public void addUndergroundDirt(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 int worldX = chunkX * 16 + x;
                 int worldZ = chunkZ * 16 + z;
                 for (int y = 0; y < 128; y++) {
                     float undergroundDirtValue = this.undergroundDirtNoise.GetNoise(worldX, y, worldZ);
-                    Vector3i position = new Vector3i(x, y, z);
-                    if(blocks.get(position) == Blocks.STONE && undergroundDirtValue >= 0.9F) {
-                        blocks.put(new Vector3i(x, y, z), Blocks.DIRT);
+                    if(chunkProxy.getRelative(x,y,z) == Blocks.STONE && undergroundDirtValue >= 0.9F) {
+                        chunkProxy.setRelative(x,y,z, Blocks.DIRT);
                     }
                 }
             }
         }
     }
 
-    public void terrainShape(HashMap<Vector3i, Block> blocks, int chunkX, int chunkZ) {
+    public void terrainShape(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 int worldX = chunkX * 16 + x;
                 int worldZ = chunkZ * 16 + z;
 
                 for (int y = 1; y < Math.abs(Math.round(this.bedrockNoise.GetNoise(worldX,worldZ) * 3)); y++) {
-                    blocks.put(new Vector3i(x,y,z), Blocks.BEDROCK);
+                    chunkProxy.setRelative(x,y,z, Blocks.BEDROCK);
                 }
-                blocks.put(new Vector3i(x,0,z), Blocks.BEDROCK);
+                chunkProxy.setRelative(x,0,z, Blocks.BEDROCK);
 
                 float islandNoise = this.islandNoise.GetNoise(worldX,worldZ) * -20;
                 float hillMountainNoise = this.hillMountainSpline.calculateLinear((this.hillMountainNoise.GetNoise(worldX, worldZ) + 1) / 2);
@@ -116,63 +116,60 @@ public class DefaultWorldGenerator extends WorldGenerator {
                 float height = (float) Math.ceil(islandNoise * (1 + (hillMountainNoise * islandMultiplier)) + 62);
 
                 for(int y = 0; y <= height; y++) {
-                    if(!blocks.containsKey(new Vector3i(x,y,z))) {
+                    if(!chunkProxy.hasBlockAtRelative(x,y,z)) {
                         if(y < 10 || this.density.GetNoise(worldX,y,worldZ) < (1F - y * 0.0125)) {
-                            blocks.put(new Vector3i(x, y, z), Blocks.STONE);
+                            chunkProxy.setRelative(x, y, z, Blocks.STONE);
                         }
                     }
                 }
 
                 for(int y = 60; y > 30; y--) {
-                    if(!blocks.containsKey(new Vector3i(x,y,z))) {
-                        blocks.put(new Vector3i(x, y, z), Blocks.WATER);
+                    if(!chunkProxy.hasBlockAtRelative(x,y,z)) {
+                        chunkProxy.setRelative(x,y,z, Blocks.WATER);
                     }
                 }
             }
         }
     }
 
-    public void addGrassAndDirt(HashMap<Vector3i, Block> blocks, int chunkX, int chunkZ) {
+    public void addGrassAndDirt(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                int worldX = chunkX * 16 + x;
-                int worldZ = chunkZ * 16 + z;
 
                 for (int y = 127; y > 0; y--) {
-                    Vector3i position = new Vector3i(x,y,z);
-                    Block blockAtPosition = blocks.get(position);
-                    Block blockAbove = blocks.get(new Vector3i(x,y + 1,z));
-                    Block block2Above = blocks.get(new Vector3i(x,y + 2,z));
-                    Block block3Above = blocks.get(new Vector3i(x,y + 3,z));
-                    Block block4Above = blocks.get(new Vector3i(x,y + 4,z));
+                    Block blockAtPosition = chunkProxy.getRelative(x,y,z);
+                    Block blockAbove = chunkProxy.getRelative(x,y + 1,z);
+                    Block block2Above = chunkProxy.getRelative(x, y + 2, z);
+                    Block block3Above = chunkProxy.getRelative(x, y + 3, z);
+                    Block block4Above = chunkProxy.getRelative(x,y + 4,z);
 
                     if(block4Above == Blocks.GRASS) {
                         continue;
                     } else if(block3Above == Blocks.GRASS) {
-                        blocks.put(position, Blocks.DIRT);
+                        chunkProxy.setRelative(x,y,z, Blocks.DIRT);
                     } else if(block2Above == Blocks.GRASS) {
-                        blocks.put(position, Blocks.DIRT);
+                        chunkProxy.setRelative(x,y,z, Blocks.DIRT);
                     } else if(blockAbove == Blocks.GRASS) {
-                        blocks.put(position, Blocks.DIRT);
+                        chunkProxy.setRelative(x,y,z, Blocks.DIRT);
                     } else if(blockAbove == null && y >= 62 && blockAtPosition == Blocks.STONE) {
-                        blocks.put(position, Blocks.GRASS);
+                        chunkProxy.setRelative(x,y,z, Blocks.GRASS);
                     }
 
                     if(block3Above == Blocks.SAND) {
                         continue;
                     } else if(block2Above == Blocks.SAND) {
-                        blocks.put(position, Blocks.SAND);
+                        chunkProxy.setRelative(x,y,z, Blocks.SAND);
                     } else if(blockAbove == Blocks.SAND) {
-                        blocks.put(position, Blocks.SAND);
+                        chunkProxy.setRelative(x,y,z, Blocks.SAND);
                     } else if((blockAbove == Blocks.WATER || blockAbove == null) && y < 62 && blockAtPosition == Blocks.STONE) {
-                        blocks.put(position, Blocks.SAND);
+                        chunkProxy.setRelative(x,y,z, Blocks.SAND);
                     }
                 }
             }
         }
     }
 
-    public void addTrees(HashMap<Vector3i, Block> blocks, int chunkX, int chunkZ) {
+    public void addTrees(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
         long treeSeed = (((long) chunkX) << 32) + ((long) chunkZ << 2);
         Random treeRandom = new Random(treeSeed);
 
@@ -188,33 +185,29 @@ public class DefaultWorldGenerator extends WorldGenerator {
                 }
 
                 for (int y = 127; y > 30; y--) {
-                    int worldX = chunkX * 16 + x;
-                    int worldZ = chunkZ * 16 + z;
-
-                    Vector3i position = new Vector3i(x, y, z);
-                    Block blockAtPosition = blocks.get(position);
+                    Block blockAtPosition = chunkProxy.getRelative(x,y,z);
                     if(blockAtPosition == Blocks.GRASS) {
-                        blocks.putIfAbsent(new Vector3i(x, y + 1, z), Blocks.OAK_LOG);
-                        blocks.putIfAbsent(new Vector3i(x, y + 2, z), Blocks.OAK_LOG);
-                        blocks.putIfAbsent(new Vector3i(x, y + 3, z), Blocks.OAK_LOG);
-                        blocks.putIfAbsent(new Vector3i(x, y + 4, z), Blocks.OAK_LOG);
+                        chunkProxy.setRelativeIfAbsent(x, y + 1, z, Blocks.OAK_LOG);
+                        chunkProxy.setRelativeIfAbsent(x, y + 2, z, Blocks.OAK_LOG);
+                        chunkProxy.setRelativeIfAbsent(x, y + 3, z, Blocks.OAK_LOG);
+                        chunkProxy.setRelativeIfAbsent(x, y + 4, z, Blocks.OAK_LOG);
 
-                        blocks.putIfAbsent(new Vector3i(x, y + 5, z), Blocks.OAK_LEAVES);
-                        blocks.putIfAbsent(new Vector3i(x + 1, y + 5, z), Blocks.OAK_LEAVES);
-                        blocks.putIfAbsent(new Vector3i(x - 1, y + 5, z), Blocks.OAK_LEAVES);
-                        blocks.putIfAbsent(new Vector3i(x, y + 5, z + 1), Blocks.OAK_LEAVES);
-                        blocks.putIfAbsent(new Vector3i(x, y + 5, z - 1), Blocks.OAK_LEAVES);
+                        chunkProxy.setRelativeIfAbsent(x, y + 5, z, Blocks.OAK_LEAVES);
+                        chunkProxy.setRelativeIfAbsent(x + 1, y + 5, z, Blocks.OAK_LEAVES);
+                        chunkProxy.setRelativeIfAbsent(x - 1, y + 5, z, Blocks.OAK_LEAVES);
+                        chunkProxy.setRelativeIfAbsent(x, y + 5, z + 1, Blocks.OAK_LEAVES);
+                        chunkProxy.setRelativeIfAbsent(x, y + 5, z - 1, Blocks.OAK_LEAVES);
 
                         for(int leafX = x - 1; leafX <= x + 1; leafX++) {
                             for(int leafZ = z - 1; leafZ <= z + 1; leafZ++) {
-                                blocks.putIfAbsent(new Vector3i(leafX, y + 4, leafZ), Blocks.OAK_LEAVES);
+                                chunkProxy.setRelativeIfAbsent(leafX, y + 4, leafZ, Blocks.OAK_LEAVES);
                             }
                         }
 
                         for(int leafX = x - 2; leafX <= x + 2; leafX++) {
                             for(int leafZ = z - 2; leafZ <= z + 2; leafZ++) {
-                                blocks.putIfAbsent(new Vector3i(leafX, y + 3, leafZ), Blocks.OAK_LEAVES);
-                                blocks.putIfAbsent(new Vector3i(leafX, y + 2, leafZ), Blocks.OAK_LEAVES);
+                                chunkProxy.setRelativeIfAbsent(leafX, y + 3, leafZ, Blocks.OAK_LEAVES);
+                                chunkProxy.setRelativeIfAbsent(leafX, y + 2, leafZ, Blocks.OAK_LEAVES);
                             }
                         }
 
@@ -226,7 +219,7 @@ public class DefaultWorldGenerator extends WorldGenerator {
         }
     }
 
-    public void addOre(HashMap<Vector3i, Block> blocks, int chunkX, int chunkZ, Block oreBlock, int rarity, int minClusterSize, int maxClusterSize, int minY, int maxY) {
+    public void addOre(ChunkProxy chunkProxy, int chunkX, int chunkZ, Block oreBlock, int rarity, int minClusterSize, int maxClusterSize, int minY, int maxY) {
         long oreSeed = oreBlock.getBlockId().hashCode() + (((long) chunkX) << 32) + ((long) chunkZ << 4);
 
         Random oreRandom = new Random(oreSeed);
@@ -246,10 +239,8 @@ public class DefaultWorldGenerator extends WorldGenerator {
                                 + Math.pow(y1 - y, 2) / stretchY
                                 + Math.pow(z1 - z, 2) / stretchZ);
 
-                        Vector3i position = new Vector3i(x1, y1, z1);
-
-                        if(blocks.get(position) == Blocks.STONE && value < 1F) {
-                            blocks.put(position, oreBlock);
+                        if(chunkProxy.getRelative(x1, y1, z1) == Blocks.STONE && value < 1F) {
+                            chunkProxy.setRelative(x1,y1,z1, oreBlock);
                         }
                     }
                 }
@@ -259,7 +250,7 @@ public class DefaultWorldGenerator extends WorldGenerator {
 
     }
 
-    public void addTulips(HashMap<Vector3i, Block> blocks, int chunkX, int chunkZ, Block tulip, int rarity, int minAmount, int maxAmount, int maxSize) {
+    public void addTulips(ChunkProxy chunkProxy, int chunkX, int chunkZ, Block tulip, int rarity, int minAmount, int maxAmount, int maxSize) {
         Random tulipRandom = new Random(tulip.getBlockId().hashCode() + (((long) chunkX) << 32) + ((long) chunkZ << 8) * 2);
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
@@ -271,8 +262,8 @@ public class DefaultWorldGenerator extends WorldGenerator {
                         int positionZ = (int) (z + Math.floor((tulipRandom.nextFloat() * 2 - 1) * maxSize));
 
                         for (int y = 127; y > 40; y--) {
-                            if(blocks.get(new Vector3i(positionX, y, positionZ)) == Blocks.GRASS) {
-                                blocks.put(new Vector3i(positionX,y + 1,positionZ), tulip);
+                            if(chunkProxy.getRelative(positionX, y, positionZ) == Blocks.GRASS) {
+                                chunkProxy.setRelative(positionX,y + 1,positionZ, tulip);
                             }
                         }
                     }

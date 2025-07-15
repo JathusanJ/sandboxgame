@@ -99,7 +99,6 @@ public class ChunkRenderer {
             if(chunk.chunkMesh == null || chunk.chunkMesh.state != ChunkMesh.State.COMPLETED) continue;
 
             if(chunk.chunkMesh.length / 4 > this.currentEboLength) {
-                //System.out.println("Increasing size of elements buffer from " + this.currentEboLength + " to " + chunk.chunkMesh.length / 4);
                 int[] indices = new int[chunk.chunkMesh.length / 4 * 6];
 
                 for(int i = 0; i < chunk.chunkMesh.length / 4; i++) {

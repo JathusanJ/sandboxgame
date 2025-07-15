@@ -63,7 +63,7 @@ public class ChunkMeshGenerationManager {
         ClientChunk currentChunk = this.queue.poll();
         ClientChunk chunkStartedAt = currentChunk;
 
-        while(!currentChunk.areNeighboursLoaded()) {
+        while(!currentChunk.areDirectNeighboursLoaded()) {
             this.queue.add(currentChunk);
             currentChunk = this.queue.poll();
             if(currentChunk == chunkStartedAt) {
