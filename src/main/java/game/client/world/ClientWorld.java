@@ -14,7 +14,7 @@ public class ClientWorld extends World {
 
     public void deleteChunkMeshes() {
         for(Chunk chunk : this.loadedChunks.values()) {
-            if(chunk.state != Chunk.ChunkState.READY) {
+            if(!chunk.isReady()) {
                 continue;
             }
             if(((ClientChunk) chunk).chunkMesh != null) {
@@ -27,7 +27,7 @@ public class ClientWorld extends World {
 
     @Override
     public void unloadChunk(Chunk chunk) {
-        if(((ClientChunk) chunk).chunkMesh != null && chunk.state == Chunk.ChunkState.READY) {
+        if(((ClientChunk) chunk).chunkMesh != null && chunk.isReady()) {
             SandboxGame.getInstance().doOnMainThread(() -> {
                 ((ClientChunk) chunk).chunkMesh.delete();
             });

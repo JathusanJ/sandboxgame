@@ -56,11 +56,9 @@ public class DefaultWorldGenerator extends WorldGenerator {
         this.density.SetFractalOctaves(4);
 
         this.undergroundDirtNoise = new FastNoiseLite(this.seed - 2);
-        this.undergroundDirtNoise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
         this.undergroundDirtNoise.SetFrequency(0.02F);
 
         this.forestNoise = new FastNoiseLite(this.seed + 3);
-        this.forestNoise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2S);
         this.forestNoise.SetFractalType(FastNoiseLite.FractalType.FBm);
         this.forestNoise.SetFractalOctaves(4);
         this.forestNoise.SetFrequency(0.01F);

@@ -79,6 +79,10 @@ public class ChunkRenderer {
         this.chunkMeshGenerationManager.tick();
 
         for(ClientChunk chunk : chunks.stream().sorted().toList()) {
+            if(!chunk.featuresGenerated || !chunk.areNeighboursFullyGenerated()) {
+                continue;
+            }
+
             if(chunk.chunkMesh == null) {
                 chunk.chunkMesh = new ChunkMesh(chunk);
                 this.chunkMeshGenerationManager.queue.add(chunk);
@@ -96,7 +100,9 @@ public class ChunkRenderer {
                 chunk.chunkMesh.upload();
             }
 
-            if(chunk.chunkMesh == null || chunk.chunkMesh.state != ChunkMesh.State.COMPLETED) continue;
+            if(chunk.chunkMesh == null || chunk.chunkMesh.state != ChunkMesh.State.COMPLETED) {
+                continue;
+            }
 
             if(chunk.chunkMesh.length / 4 > this.currentEboLength) {
                 int[] indices = new int[chunk.chunkMesh.length / 4 * 6];

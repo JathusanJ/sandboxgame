@@ -199,7 +199,7 @@ public abstract class World implements Tickable {
 
     public Chunk getChunkAt(int x, int z) {
         Chunk chunk = this.loadedChunks.get(new Vector2i(x, z));
-        if(chunk != null && chunk.state == Chunk.ChunkState.READY) {
+        if(chunk != null && chunk.isReady()) {
             return chunk;
         }
         return null;
@@ -210,20 +210,28 @@ public abstract class World implements Tickable {
     }
 
     public void generateChunksAround(int x, int z) {
-        int radius = this.getRenderDistance() + 1;
-        int loadedRadius = radius + 4;
+        int featureRadius = this.getRenderDistance() + 2;
+        int terrainShapeRadius = featureRadius + 4;
+        int loadedRadius = terrainShapeRadius + 5;
         ArrayList<Vector2i> chunksToUnload = new ArrayList<>(this.loadedChunks.keySet());
 
         for (int chunkX = x - loadedRadius; chunkX <= x + loadedRadius; chunkX++) {
             for (int chunkZ = z - loadedRadius; chunkZ <= z + loadedRadius ; chunkZ++) {
-                if(Math.abs(chunkX - x) <= radius && Math.abs(chunkZ - z) <= radius && this.getChunkAtDespiteState(chunkX, chunkZ) == null) {
-                    Chunk chunk = this.createChunk(new Vector2i(chunkX, chunkZ));
-                    this.loadedChunks.put(new Vector2i(chunkX, chunkZ), chunk);
-                    this.chunkLoaderManager.queue.add(chunk);
+                Chunk chunk = this.getChunkAtDespiteState(chunkX, chunkZ);
+                if(Math.abs(chunkX - x) <= terrainShapeRadius && Math.abs(chunkZ - z) <= terrainShapeRadius) {
+                    if(chunk == null) {
+                        chunk = this.createChunk(new Vector2i(chunkX, chunkZ));
+                        this.loadedChunks.put(new Vector2i(chunkX, chunkZ), chunk);
+                        //chunk.generateChunk();
+                        this.chunkLoaderManager.queue.add(chunk);
+                    } else if(!chunk.featuresGenerated && chunk.areNeighboursLoaded()) {
+                        chunk.generateFeatures();
+                        chunk.setModified();
+                        chunk.calculateSkylight();
+                    }
 
-                } else {
-                    chunksToUnload.remove(new Vector2i(chunkX, chunkZ));
                 }
+                chunksToUnload.remove(new Vector2i(chunkX, chunkZ));
             }
         }
 
@@ -371,6 +379,17 @@ public abstract class World implements Tickable {
     public abstract Chunk createChunk(Vector2i chunkPosition);
 
     public abstract int getRenderDistance();
+
+    public void setBlockAtDirect(int x, int y, int z, Block block) {
+        Chunk chunk = this.getChunkAtBlockPosition(new Vector3i(x,y,z));
+        chunk.setBlockAtLocalizedPositionDirect(x - chunk.chunkPosition.x * 16, y, z - chunk.chunkPosition.z * 16, block);
+        chunk.setModified();
+    }
+
+    public Block getBlockAtDirect(int x, int y, int z) {
+        Chunk chunk = this.getChunkAtBlockPosition(new Vector3i(x,y,z));
+        return chunk.getBlockAtLocalizedPositionDirect(x - chunk.chunkPosition.x * 16, y, z - chunk.chunkPosition.z * 16);
+    }
 
     public record WorldRaycastResult(boolean success, Block block, Vector3i position, Vector3i normal) {}
 

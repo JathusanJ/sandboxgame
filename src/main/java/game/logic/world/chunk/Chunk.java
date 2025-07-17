@@ -65,7 +65,7 @@ public abstract class Chunk implements Tickable {
             this.blocks = new Block[16 * 16 * 128];
             ChunkProxy chunkProxy = new ChunkProxy(this);
             this.world.worldGenerator.generate(chunkProxy, this.chunkPosition.x, this.chunkPosition.z);
-            this.generateFeatures();
+            //this.generateFeatures();
             this.setModified();
             //this.tellNeighboursToGenerateFeatures();
         }
@@ -112,7 +112,7 @@ public abstract class Chunk implements Tickable {
     }
 
     public void save() {
-        if(!this.isModified || this.blocks == null || this.state != ChunkState.READY) return;
+        if(!this.isModified || !this.isReady()) return;
 
         File chunkFile = new File(this.world.chunksFolder, this.chunkPosition.x + "," + this.chunkPosition.z);
         if(!chunkFile.exists()) {
@@ -264,6 +264,8 @@ public abstract class Chunk implements Tickable {
 
         this.featuresGenerated = chunkData.getBoolean("featuresGenerated");
 
+        this.calculateSkylight();
+
         this.state = ChunkState.READY;
     }
 
@@ -327,6 +329,20 @@ public abstract class Chunk implements Tickable {
                 && this.world.getChunkAt(this.chunkPosition.x, this.chunkPosition.z - 1) != null;
     }
 
+    public boolean areNeighboursFullyGenerated() {
+        if(!this.areNeighboursLoaded()) {
+            return false;
+        }
+        return     this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z).featuresGenerated
+                && this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z).featuresGenerated
+                && this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z + 1).featuresGenerated
+                && this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z - 1).featuresGenerated
+                && this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z - 1).featuresGenerated
+                && this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z + 1).featuresGenerated
+                && this.world.getChunkAt(this.chunkPosition.x, this.chunkPosition.z + 1).featuresGenerated
+                && this.world.getChunkAt(this.chunkPosition.x, this.chunkPosition.z - 1).featuresGenerated;
+    }
+
     // I hate this, but I just want it to work
     public void tellNeighboursToGenerateFeatures() {
         if(this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z) != null) {
@@ -356,16 +372,14 @@ public abstract class Chunk implements Tickable {
     }
 
     public void generateFeatures() {
-        /*if(this.featuresGenerated && !this.areNeighboursLoaded()) {
+        if(this.featuresGenerated && !this.areNeighboursLoaded()) {
             return;
-        }*/
+        }
 
         this.featuresGenerated = true;
 
         ChunkProxy chunkProxy = new ChunkProxy(this);
         this.world.worldGenerator.generateFeatures(chunkProxy, this.chunkPosition.x, this.chunkPosition.z);
-
-        //this.tellNeighboursToGenerateFeatures();
     }
 
     public void tick() {
@@ -397,6 +411,10 @@ public abstract class Chunk implements Tickable {
         for(Creature creature : this.getCreaturesInChunk()) {
             creature.remove();
         }
+    }
+
+    public boolean isReady() {
+        return this.blocks != null && this.state == ChunkState.READY;
     }
 
     public enum ChunkState {
