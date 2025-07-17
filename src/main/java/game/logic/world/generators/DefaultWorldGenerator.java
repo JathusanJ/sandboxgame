@@ -76,6 +76,7 @@ public class DefaultWorldGenerator extends WorldGenerator {
         this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.RED_TULIP, 2000, 3, 10, 10);
         this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.ORANGE_TULIP, 2000, 3, 10, 10);
         this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.YELLOW_TULIP, 2000, 3, 10, 10);
+        this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.SHORT_GRASS, 200, 3, 10, 10);
         this.addTrees(chunkProxy, chunkX, chunkZ);
         this.addOre(chunkProxy, chunkX, chunkZ, Blocks.COAL_ORE, 50, 5, 10, 0, 100);
     }
@@ -185,10 +186,10 @@ public class DefaultWorldGenerator extends WorldGenerator {
                 for (int y = 127; y > 30; y--) {
                     Block blockAtPosition = chunkProxy.getRelative(x,y,z);
                     if(blockAtPosition == Blocks.GRASS) {
-                        chunkProxy.setRelativeIfAbsent(x, y + 1, z, Blocks.OAK_LOG);
-                        chunkProxy.setRelativeIfAbsent(x, y + 2, z, Blocks.OAK_LOG);
-                        chunkProxy.setRelativeIfAbsent(x, y + 3, z, Blocks.OAK_LOG);
-                        chunkProxy.setRelativeIfAbsent(x, y + 4, z, Blocks.OAK_LOG);
+                        chunkProxy.setRelative(x, y + 1, z, Blocks.OAK_LOG);
+                        chunkProxy.setRelative(x, y + 2, z, Blocks.OAK_LOG);
+                        chunkProxy.setRelative(x, y + 3, z, Blocks.OAK_LOG);
+                        chunkProxy.setRelative(x, y + 4, z, Blocks.OAK_LOG);
 
                         chunkProxy.setRelativeIfAbsent(x, y + 5, z, Blocks.OAK_LEAVES);
                         chunkProxy.setRelativeIfAbsent(x + 1, y + 5, z, Blocks.OAK_LEAVES);
@@ -209,7 +210,7 @@ public class DefaultWorldGenerator extends WorldGenerator {
                             }
                         }
 
-                    } else if(blockAtPosition != null && blockAtPosition != Blocks.AIR && blockAtPosition != Blocks.OAK_LEAVES) {
+                    } else if(blockAtPosition != null && blockAtPosition != Blocks.AIR && blockAtPosition != Blocks.OAK_LEAVES && blockAtPosition != Blocks.SHORT_GRASS) {
                         break;
                     }
                 }

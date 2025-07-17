@@ -45,6 +45,7 @@ public class Items {
     public static BlockItem RED_TULIP = registerBlockItem(Blocks.RED_TULIP);
     public static BlockItem ORANGE_TULIP = registerBlockItem(Blocks.ORANGE_TULIP);
     public static BlockItem YELLOW_TULIP = registerBlockItem(Blocks.YELLOW_TULIP);
+    public static BlockItem SHORT_GRASS = registerBlockItem(Blocks.SHORT_GRASS);
 
     public static Item COAL = register(new Item(), "coal");
     public static Item STICK = register(new Item(), "stick");
@@ -94,6 +95,7 @@ public class Items {
                 RED_TULIP,
                 ORANGE_TULIP,
                 YELLOW_TULIP,
+                SHORT_GRASS,
 
                 COAL,
                 STICK,

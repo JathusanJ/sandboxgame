@@ -2,6 +2,8 @@ package game.logic.world.blocks;
 
 import game.client.rendering.chunk.ChunkVertexBuilder;
 import game.client.world.ClientChunk;
+import game.logic.world.creature.Player;
+import game.logic.world.items.ItemStack;
 import org.joml.Vector3i;
 
 public class CrossBlock extends Block {
@@ -36,5 +38,10 @@ public class CrossBlock extends Block {
         vertexBuilder.vertex(x  , y, z, 1, 0, ChunkVertexBuilder.Normal.TOP, this, skylight, light);
         vertexBuilder.vertex(x, y + 1, z, 1, 1, ChunkVertexBuilder.Normal.TOP, this, skylight, light);
         vertexBuilder.vertex(x + 1, y + 1, z + 1, 0, 1, ChunkVertexBuilder.Normal.TOP, this, skylight, light);
+    }
+
+    @Override
+    public int getBlockBreakingTicks(Player player, ItemStack heldItemStack) {
+        return 0;
     }
 }

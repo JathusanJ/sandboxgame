@@ -70,6 +70,10 @@ public class BlockBreakingProgressRenderer {
     }
 
     public void render(Player.BlockBreakingProgress blockBreakingProgress) {
+        if(blockBreakingProgress.getTotalBreakingTicks() == 0) {
+            return;
+        }
+        
         glBindVertexArray(this.vaoId);
 
         SandboxGame.getInstance().getGameRenderer().skyRenderer.skyShader.use();
