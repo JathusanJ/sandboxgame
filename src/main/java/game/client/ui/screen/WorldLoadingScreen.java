@@ -38,7 +38,7 @@ public class WorldLoadingScreen extends Screen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        if(this.gameRenderer.world != null && this.gameRenderer.world.ready && this.gameRenderer.world.chunkLoaderManager.queue.isEmpty() && !this.gameRenderer.world.chunkLoaderManager.areTasksRunning()) {
+        if(this.gameRenderer.world != null && this.gameRenderer.world.ready) {
             this.gameRenderer.setScreen(null);
             SandboxGame.getInstance().getWindow().captureCursor();
             return;

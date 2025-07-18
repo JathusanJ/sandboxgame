@@ -1,6 +1,7 @@
 package game.logic.world;
 
 import com.google.gson.stream.JsonReader;
+import game.client.SandboxGame;
 import game.logic.util.json.WrappedJsonObject;
 import game.logic.world.chunk.Chunk;
 import game.logic.Tickable;
@@ -209,9 +210,9 @@ public abstract class World implements Tickable {
     }
 
     public void generateChunksAround(int x, int z) {
-        int featureRadius = this.getRenderDistance() + 2;
-        int terrainShapeRadius = featureRadius + 4;
-        int loadedRadius = terrainShapeRadius + 5;
+        int featureRadius = this.getRenderDistance() + 1;
+        int terrainShapeRadius = featureRadius + 1;
+        int loadedRadius = terrainShapeRadius + 1;
         ArrayList<Vector2i> chunksToUnload = new ArrayList<>(this.loadedChunks.keySet());
 
         for (int chunkX = x - loadedRadius; chunkX <= x + loadedRadius; chunkX++) {
@@ -253,19 +254,27 @@ public abstract class World implements Tickable {
     public void tick() {
         this.chunkLoaderManager.tick();
 
-        if(!this.ready && this.chunkLoaderManager.queue.isEmpty() && !this.chunkLoaderManager.areTasksRunning()) {
-            this.ready = true;
+        if(!this.ready) {
+            this.generateChunksAround(SandboxGame.getInstance().getGameRenderer().player.getChunkPosition().x, SandboxGame.getInstance().getGameRenderer().player.getChunkPosition().y);
+
+            int amountOfReadyChunks = 0;
+
+            for (Chunk chunk : this.loadedChunks.values()) {
+                if(chunk.featuresGenerated) {
+                    amountOfReadyChunks++;
+                }
+            }
+
+            if(amountOfReadyChunks > 64) {
+                this.ready = true;
+            }
         }
 
         if(!this.shouldTick || !this.ready) return;
         this.worldTime++;
 
-
-
-        synchronized (this.loadedChunks) {
-            for (Chunk chunk : this.loadedChunks.values()) {
-                chunk.tick();
-            }
+        for (Chunk chunk : this.loadedChunks.values()) {
+            chunk.tick();
         }
 
         for(int i = 0; i < this.creatures.size(); i++) {
@@ -395,8 +404,6 @@ public abstract class World implements Tickable {
     }
 
     public record WorldRaycastResult(boolean success, Block block, Vector3i position, Vector3i normal) {}
-
-    public record SavedWorldInfo(String name, int seed, WorldType worldType){}
 
     public enum WorldType {
         DEFAULT(DefaultWorldGenerator::new),

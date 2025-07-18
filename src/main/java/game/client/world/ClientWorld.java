@@ -51,6 +51,10 @@ public class ClientWorld extends World {
 
     @Override
     public int getRenderDistance() {
+        if(!this.ready) {
+            return 8;
+        }
+
         return renderDistanceOverride < 0 ? SandboxGame.getInstance().settings.renderDistance : renderDistanceOverride;
     }
 
