@@ -143,9 +143,6 @@ public class GameRenderer {
         } catch (IOException e) {
             throw new IllegalStateException("Critical: couldn't write to player.json", e);
         }
-
-        this.world = null;
-        this.player = null;
     }
 
     public void setup() {

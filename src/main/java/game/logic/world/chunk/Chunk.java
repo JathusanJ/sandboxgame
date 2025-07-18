@@ -36,6 +36,7 @@ public abstract class Chunk implements Tickable {
     public int chunkUnloadingTimer = 0;
     public ChunkState state = ChunkState.UNINITIALIZED;
     public boolean featuresGenerated = false;
+    public boolean enqueuedInChunkLoader = false;
 
     public static Gson gson = new GsonBuilder().create();
 

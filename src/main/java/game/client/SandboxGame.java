@@ -175,8 +175,11 @@ public class SandboxGame extends Game implements Tickable {
 
     @Override
     public void tick() {
-        if(!this.stuffToDoOnTickingThread.isEmpty()) {
-            this.stuffToDoOnTickingThread.poll().run();
+        while(!this.stuffToDoOnTickingThread.isEmpty()) {
+            Runnable runnable = this.stuffToDoOnTickingThread.poll();
+            if(runnable != null) {
+                runnable.run();
+            }
         }
         if(this.gameRenderer.world != null) {
             if(GameClient.isConnectedToServer) {

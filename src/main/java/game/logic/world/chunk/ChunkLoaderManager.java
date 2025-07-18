@@ -5,6 +5,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ChunkLoaderManager {
     public ConcurrentLinkedQueue<Chunk> queue = new ConcurrentLinkedQueue<>();
+    public ConcurrentLinkedQueue<Chunk> features = new ConcurrentLinkedQueue<>();
+    public ConcurrentLinkedQueue<Chunk> unload = new ConcurrentLinkedQueue<>();
 
     public ArrayList<ChunkLoader> chunkLoaders = new ArrayList<>();
 
@@ -18,7 +20,7 @@ public class ChunkLoaderManager {
     }
 
     public void tick() {
-        if(this.queue.isEmpty()) {
+        if(this.queue.isEmpty() && this.features.isEmpty() && this.unload.isEmpty()) {
             return;
         }
 
@@ -39,10 +41,20 @@ public class ChunkLoaderManager {
             return;
         }
 
-        availableLoader.start(this.queue.poll());
+        if(!this.unload.isEmpty() && this.unload.size() > 50) {
+            availableLoader.start(this.unload.poll(), ChunkLoader.TaskType.UNLOAD);
+        } if(!this.features.isEmpty()) {
+            availableLoader.start(this.features.poll(), ChunkLoader.TaskType.FEATURES);
+        } else if(!this.queue.isEmpty()) {
+            availableLoader.start(this.queue.poll(), ChunkLoader.TaskType.LOAD);
+        } else {
+            availableLoader.start(this.unload.poll(), ChunkLoader.TaskType.UNLOAD);
+        }
+
+
         this.loadersUsedThisTick++;
 
-        if(availableLoaders > 0 && !this.queue.isEmpty() && loadersUsedThisTick < this.chunkLoaders.size()) {
+        if(availableLoaders > 0 && !(this.queue.isEmpty() && this.features.isEmpty() && this.unload.isEmpty()) && loadersUsedThisTick < this.chunkLoaders.size()) {
             this.tick();
         }
     }

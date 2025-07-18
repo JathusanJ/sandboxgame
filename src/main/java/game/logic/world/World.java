@@ -1,7 +1,6 @@
 package game.logic.world;
 
 import com.google.gson.stream.JsonReader;
-import game.client.world.ClientChunk;
 import game.logic.util.json.WrappedJsonObject;
 import game.logic.world.chunk.Chunk;
 import game.logic.Tickable;
@@ -222,12 +221,10 @@ public abstract class World implements Tickable {
                     if(chunk == null) {
                         chunk = this.createChunk(new Vector2i(chunkX, chunkZ));
                         this.loadedChunks.put(new Vector2i(chunkX, chunkZ), chunk);
-                        //chunk.generateChunk();
                         this.chunkLoaderManager.queue.add(chunk);
-                    } else if(!chunk.featuresGenerated && chunk.areNeighboursLoaded()) {
-                        chunk.generateFeatures();
-                        chunk.setModified();
-                        chunk.calculateSkylight();
+                    } else if(!chunk.featuresGenerated && chunk.areNeighboursLoaded() && !chunk.enqueuedInChunkLoader) {
+                        chunk.enqueuedInChunkLoader = true;
+                        this.chunkLoaderManager.features.add(chunk);
                     }
 
                 }
@@ -237,7 +234,13 @@ public abstract class World implements Tickable {
 
         for(Vector2i chunkToUnload : chunksToUnload) {
             Chunk chunk = this.loadedChunks.get(chunkToUnload);
-            this.unloadChunk(chunk);
+            chunk.unload();
+            this.loadedChunks.remove(new Vector2i(chunk.chunkPosition.x, chunk.chunkPosition.z));
+            // TODO: Fix the NullException stuff that happens for no apparent reason :(
+            /*if(!chunk.enqueuedInChunkLoader) {
+                chunk.enqueuedInChunkLoader = true;
+                this.chunkLoaderManager.unload.add(chunk);
+            }*/
         }
     }
 
