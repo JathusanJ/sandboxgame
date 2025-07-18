@@ -235,8 +235,7 @@ public abstract class World implements Tickable {
 
         for(Vector2i chunkToUnload : chunksToUnload) {
             Chunk chunk = this.loadedChunks.get(chunkToUnload);
-            chunk.unload();
-            this.loadedChunks.remove(new Vector2i(chunk.chunkPosition.x, chunk.chunkPosition.z));
+            this.unloadChunk(chunk);
             // TODO: Fix the NullException stuff that happens for no apparent reason :(
             /*if(!chunk.enqueuedInChunkLoader) {
                 chunk.enqueuedInChunkLoader = true;
@@ -349,6 +348,44 @@ public abstract class World implements Tickable {
         this.creatures.add(creature);
     }
 
+    public Vector3f getPossibleSpawnLocation() {
+        Vector3f pickedPosition = null;
+
+        for (int i = 0; i < 20; i++) {
+            int x = this.random.nextInt() % 64;
+            int z = this.random.nextInt() % 64;
+
+            boolean found = false;
+
+            for (int y = 127; y >= 0; y--) {
+                Block blockAtPosition = this.getBlockAt(x,y,z);
+                if(blockAtPosition != Blocks.AIR) {
+                    if(blockAtPosition == Blocks.WATER || blockAtPosition == Blocks.LAVA) {
+                        break;
+                    }
+                    pickedPosition = new Vector3f(x + 0.5F, y + 1, z + 0.5F);
+                    found = true;
+                    break;
+                }
+            }
+
+            if(found) {
+                break;
+            }
+        }
+
+        if(pickedPosition == null) {
+            for (int y = 127; y >= 0; y--) {
+                Block blockAtPosition = this.getBlockAt(0,y,0);
+                if(blockAtPosition != Blocks.AIR) {
+                    return new Vector3f(0.5F, y + 1, 0.5F);
+                }
+            }
+        }
+
+        return pickedPosition;
+    }
+
     public Chunk getChunkAtBlockPosition(Vector3i blockPosition) {
         int chunkX = (int) Math.floor(blockPosition.x / 16F);
         int chunkZ = (int) Math.floor(blockPosition.z / 16F);
@@ -401,6 +438,18 @@ public abstract class World implements Tickable {
     public Block getBlockAtDirect(int x, int y, int z) {
         Chunk chunk = this.getChunkAtBlockPosition(new Vector3i(x,y,z));
         return chunk.getBlockAtLocalizedPositionDirect(x - chunk.chunkPosition.x * 16, y, z - chunk.chunkPosition.z * 16);
+    }
+
+    public boolean areSpawnChunksLoaded() {
+        for (int x = -4; x <= 4; x++) {
+            for (int z = -4; z <= 4; z++) {
+                if(this.getChunkAt(x,z) == null) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public record WorldRaycastResult(boolean success, Block block, Vector3i position, Vector3i normal) {}

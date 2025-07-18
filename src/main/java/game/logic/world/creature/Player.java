@@ -52,7 +52,12 @@ public class Player extends Creature {
     }
 
     public void respawn() {
-        this.setPosition(0F, 100F, 0F);
+        if(this.world.areSpawnChunksLoaded()) {
+            Vector3f spawnLocation = this.world.getPossibleSpawnLocation();
+            this.setPosition(spawnLocation.x, spawnLocation.y, spawnLocation.z);
+        } else {
+            // TODO: Load the spawn and then place the player
+        }
         this.health = this.maxHealth;
         this.flying = false;
         this.currentHotbarSlot = 0;

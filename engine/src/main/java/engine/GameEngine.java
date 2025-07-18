@@ -33,7 +33,7 @@ public class GameEngine {
 
             Sounds.unload();
 
-            throw new RuntimeException(e);
+            throw e;
         }
 
         Sounds.unload();
