@@ -60,4 +60,9 @@ public class ShortGrassBlock extends CrossBlock {
         vertexBuilder.vertex(finalX, finalY + 1, finalZ, 1, 1, ChunkVertexBuilder.Normal.TOP, this, skylight, light);
         vertexBuilder.vertex(finalX + 1, finalY + 1, finalZ + 1, 0, 1, ChunkVertexBuilder.Normal.TOP, this, skylight, light);
     }
+
+    @Override
+    public boolean isReplaceable() {
+        return true;
+    }
 }

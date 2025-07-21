@@ -222,6 +222,10 @@ public abstract class World implements Tickable {
         chunk.setBlockDirect(x - chunkPosition.x * 16, y, z - chunkPosition.y * 16, block);
     }
 
+    public void setBlock(Vector3i blockPosition, Block block) {
+        this.setBlock(blockPosition.x, blockPosition.y, blockPosition.z, block);
+    }
+
     public Block getBlock(int x, int y, int z) {
         Vector2i chunkPosition = this.getChunkPositionOfPosition(x, y, z);
 
@@ -232,6 +236,10 @@ public abstract class World implements Tickable {
         }
 
         return chunk.getBlockAtLocalizedPosition(x - chunkPosition.x * 16, y, z - chunkPosition.y * 16);
+    }
+
+    public Block getBlock(Vector3i blockPosition) {
+        return this.getBlock(blockPosition.x, blockPosition.y, blockPosition.z);
     }
 
     public int getSkylight(int x, int y, int z) {

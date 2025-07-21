@@ -152,4 +152,9 @@ public class WaterBlock extends Block {
     public boolean isLiquid() {
         return true;
     }
+
+    @Override
+    public boolean isReplaceable() {
+        return true;
+    }
 }

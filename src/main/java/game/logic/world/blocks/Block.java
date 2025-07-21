@@ -163,4 +163,8 @@ public class Block {
     public boolean isLiquid() {
         return false;
     }
+
+    public boolean isReplaceable() {
+        return false;
+    }
 }
