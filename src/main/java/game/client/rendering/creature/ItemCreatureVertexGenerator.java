@@ -22,8 +22,29 @@ public class ItemCreatureVertexGenerator extends CreatureVertexGenerator<ItemCre
         Vector4f corner3 = new Vector4f(0.25F, yOffset + 0.5F, 0, 0).mul(rotation);
         Vector4f corner4 = new Vector4f(-0.25F, yOffset + 0.5F, 0, 0).mul(rotation);
 
-
         this.insertVertices(vertexBuilder, corner1, corner2, corner3, corner4);
+
+        if(creature.representingItemStack.amount > 2) {
+            yOffset = yOffset + 0.1F;
+            float xOffset = 0.1F;
+            corner1 = new Vector4f(-0.25F + xOffset, yOffset, 0.01F, 0).mul(rotation);
+            corner2 = new Vector4f(0.25F + xOffset, yOffset, 0.01F, 0).mul(rotation);
+            corner3 = new Vector4f(0.25F + xOffset, yOffset + 0.5F, 0.01F, 0).mul(rotation);
+            corner4 = new Vector4f(-0.25F + xOffset, yOffset + 0.5F, 0.01F, 0).mul(rotation);
+
+            this.insertVertices(vertexBuilder, corner1, corner2, corner3, corner4);
+        }
+
+        if(creature.representingItemStack.amount > 3) {
+            yOffset = yOffset + 0.1F;
+            float xOffset = -0.1F;
+            corner1 = new Vector4f(-0.25F + xOffset, yOffset, 0.02F, 0).mul(rotation);
+            corner2 = new Vector4f(0.25F + xOffset, yOffset, 0.02F, 0).mul(rotation);
+            corner3 = new Vector4f(0.25F + xOffset, yOffset + 0.5F, 0.02F, 0).mul(rotation);
+            corner4 = new Vector4f(-0.25F + xOffset, yOffset + 0.5F, 0.02F, 0).mul(rotation);
+
+            this.insertVertices(vertexBuilder, corner1, corner2, corner3, corner4);
+        }
 
         if(creature.representingItemStack.getItem() instanceof BlockItem blockItem && SandboxGame.getInstance().getGameRenderer().blockToItemIcon.containsKey(blockItem.getBlock())) {
             SandboxGame.getInstance().getGameRenderer().blockToItemIcon.get(blockItem.getBlock()).bind();
