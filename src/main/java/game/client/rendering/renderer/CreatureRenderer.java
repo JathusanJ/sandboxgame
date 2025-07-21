@@ -82,6 +82,7 @@ public class CreatureRenderer {
         );
 
         this.shader.uploadMatrix4f("model", model);
+        this.shader.uploadFloat("light", 0.25F + this.gameRenderer.skyRenderer.skyColorSpline.calculateLinear(this.gameRenderer.world.getDayTime()) * 0.75F);
 
         glBindVertexArray(this.vaoId);
         glBindBuffer(GL_ARRAY_BUFFER, this.vboId);

@@ -9,6 +9,7 @@ import game.networking.packets.CreatureMovePacket;
 import io.netty.buffer.ByteBuf;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.joml.Vector3i;
 
 public abstract class Creature {
     public Vector3f position = new Vector3f();
@@ -29,6 +30,10 @@ public abstract class Creature {
 
     public Vector2i getChunkPosition() {
         return new Vector2i((int) Math.floor(this.position.x / 16D), (int) Math.floor(this.position.z / 16D));
+    }
+
+    public Vector3i getBlockPosition() {
+        return new Vector3i((int) Math.floor(this.position.x), (int) Math.floor(this.position.y), (int) Math.floor(this.position.z));
     }
 
     public void damage(float amount) {
