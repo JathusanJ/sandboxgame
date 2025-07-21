@@ -29,7 +29,7 @@ public class ChunkLoaderManager implements Tickable {
         }
 
         for(Chunk chunk : this.chunksToRemove.values()) {
-            this.world.loadedChunks.remove(chunk.chunkPosition);
+            this.world.unloadChunk(chunk);
         }
 
         this.chunksToRemove.clear();

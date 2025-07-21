@@ -5,6 +5,7 @@ import game.logic.util.json.WrappedJsonObject;
 import game.logic.world.World;
 import game.logic.world.ServerWorld;
 import game.logic.world.blocks.Block;
+import game.logic.world.chunk.Chunk;
 import game.networking.packets.CreatureMovePacket;
 import io.netty.buffer.ByteBuf;
 import org.joml.Vector2i;
@@ -77,7 +78,10 @@ public abstract class Creature {
             this.lastChunkPosition = this.getChunkPosition();
         }
 
-        this.world.getChunk(this.getChunkPosition().x, this.getChunkPosition().y).setModified();
+        Chunk newChunk = this.world.getChunk(this.getChunkPosition().x, this.getChunkPosition().y);
+        if(newChunk != null) {
+            newChunk.setModified();
+        }
     }
 
     public void remove() {
