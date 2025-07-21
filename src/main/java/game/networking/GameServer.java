@@ -43,7 +43,6 @@ public class GameServer implements Tickable {
         } else {
             this.world = new ServerWorld("world", 0, World.WorldType.DEFAULT, worldFolder, this);
         }
-        this.world.generateChunksAround(0,0);
         this.tickManager.tickables.add(this);
         this.tickManager.start();
         System.out.println("Started ticking");
@@ -89,7 +88,8 @@ public class GameServer implements Tickable {
         System.out.println("Stopping server");
         this.tickManager.isRunning = false;
         System.out.println("Saving world");
-        this.world.saveWorld();
+        this.world.stop();
+        this.world.save();
         System.out.println("Finished shutdown");
     }
 

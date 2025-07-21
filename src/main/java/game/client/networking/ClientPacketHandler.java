@@ -22,6 +22,7 @@ import org.joml.Vector3f;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ClientPacketHandler extends PacketHandler {
     public void setup() {
@@ -95,7 +96,7 @@ public class ClientPacketHandler extends PacketHandler {
         });
 
         packetHandlers.put(ChunkDataPacket.class, (player, buffer) -> {
-            Chunk chunk = SandboxGame.getInstance().getGameRenderer().world.createChunk(new Vector2i(buffer.readInt(), buffer.readInt()));
+            Chunk chunk = SandboxGame.getInstance().getGameRenderer().world.createChunk(buffer.readInt(), buffer.readInt());
             chunk.blocks = new Block[16 * 16 * 128];
 
             GameClient.chunkDataRequestAttempts = 0;
@@ -118,9 +119,7 @@ public class ClientPacketHandler extends PacketHandler {
 
             chunk.calculateSkylight();
 
-            synchronized (SandboxGame.getInstance().getGameRenderer().world.loadedChunks) {
-                SandboxGame.getInstance().getGameRenderer().world.loadedChunks.put(new Vector2i(chunk.chunkPosition.x, chunk.chunkPosition.z), chunk);
-            }
+            SandboxGame.getInstance().getGameRenderer().world.loadedChunks.put(new Vector2i(chunk.chunkPosition.x, chunk.chunkPosition.y), chunk);
 
             if(GameClient.state == GameClient.ClientState.INITIAL_WORLD_LOAD && GameClient.chunksExpectedToLoad >= SandboxGame.getInstance().getGameRenderer().world.loadedChunks.size()) {
                 GameClient.state = GameClient.ClientState.PLAYING;
@@ -162,7 +161,7 @@ public class ClientPacketHandler extends PacketHandler {
             }
 
             SandboxGame.getInstance().doOnMainThread(() -> {
-                SandboxGame.getInstance().getGameRenderer().world.setBlockAt(x,y,z, block);
+                SandboxGame.getInstance().getGameRenderer().world.setBlock(x,y,z, block);
             });
         });
 
@@ -194,12 +193,12 @@ public class ClientPacketHandler extends PacketHandler {
             }
             creature.networkId = buffer.readInt();
             creature.readSpawnPacket(buffer);
-            SandboxGame.getInstance().getGameRenderer().world.spawnCreature(creature, creature.position);
+            SandboxGame.getInstance().getGameRenderer().world.spawnCreature(creature);
         });
 
         packetHandlers.put(RemoveCreaturePacket.class, (server, buffer) -> {
             int networkId = buffer.readInt();
-            ArrayList<Creature> creatures = SandboxGame.getInstance().getGameRenderer().world.creatures;
+            List<Creature> creatures = SandboxGame.getInstance().getGameRenderer().world.creatures;
             for(int i = 0; i < creatures.size(); i++) {
                 Creature creature = creatures.get(i);
                 if(creature.networkId == networkId) {

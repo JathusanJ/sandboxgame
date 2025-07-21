@@ -19,6 +19,7 @@ import game.logic.world.blocks.block_entity.BlockEntityGenerator;
 import game.logic.world.creature.Creature;
 import game.logic.world.creature.Creatures;
 import game.logic.world.creature.Player;
+import org.joml.Vector2i;
 import org.joml.Vector3i;
 
 import java.io.*;
@@ -29,16 +30,12 @@ public abstract class Chunk implements Tickable {
     public Block[] blocks;
     public Byte[] skylight = new Byte[16 * 16 * 128];
     public Byte[] light = new Byte[16 * 16 * 128];
-    public Vector3i chunkPosition;
+    public Vector2i chunkPosition;
     private boolean isModified = false;
     public boolean isUnloaded = false;
     public World world;
-    public int chunkUnloadingTimer = 0;
     public ChunkState state = ChunkState.UNINITIALIZED;
     public boolean featuresGenerated = false;
-    public boolean enqueuedInChunkLoader = false;
-
-    public static Gson gson = new GsonBuilder().create();
 
     public static int positionToBlockArrayId(int x, int y, int z) {
         return y * 256 + z * 16 + x;
@@ -59,16 +56,14 @@ public abstract class Chunk implements Tickable {
 
         this.state = ChunkState.LOADING;
 
-        File chunkFile = new File(this.world.chunksFolder, this.chunkPosition.x + "," + this.chunkPosition.z);
+        File chunkFile = new File(this.world.chunksFolder, this.chunkPosition.x + "," + this.chunkPosition.y);
         if(chunkFile.exists()) {
             this.load();
         } else {
             this.blocks = new Block[16 * 16 * 128];
             ChunkProxy chunkProxy = new ChunkProxy(this);
-            this.world.worldGenerator.generate(chunkProxy, this.chunkPosition.x, this.chunkPosition.z);
-            //this.generateFeatures();
+            this.world.worldGenerator.generate(chunkProxy, this.chunkPosition.x, this.chunkPosition.y);
             this.setModified();
-            //this.tellNeighboursToGenerateFeatures();
         }
 
         this.state = ChunkState.READY;
@@ -78,7 +73,7 @@ public abstract class Chunk implements Tickable {
         if(x > 15 || x < 0 || y > 127 || y < 0 || z > 15 || z < 0) return;
         this.blocks[Chunk.positionToBlockArrayId(x,y,z)] = block;
         if(block instanceof BlockEntityGenerator<?>) {
-            this.world.createBlockEntityFor(new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.z * 16), block);
+            //this.world.createBlockEntityFor(new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.z * 16), block);
         }
     }
 
@@ -88,7 +83,7 @@ public abstract class Chunk implements Tickable {
         if(existingBlock == block) return false;
 
         if(existingBlock instanceof BlockEntityGenerator<?>) {
-            this.world.removeBlockEntityFor(new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.z * 16));
+            //this.world.removeBlockEntityFor(new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.z * 16));
         }
 
         this.blocks[Chunk.positionToBlockArrayId(x,y,z)] = block;
@@ -98,10 +93,16 @@ public abstract class Chunk implements Tickable {
 
 
         if(block instanceof BlockEntityGenerator<?>) {
-            this.world.createBlockEntityFor(new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.z * 16), block);
+            //this.world.createBlockEntityFor(new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.z * 16), block);
         }
 
         return true;
+    }
+
+    public void setBlockDirect(int x, int y, int z, Block block) {
+        if(x > 15 || x < 0 || y > 127 || y < 0 || z > 15 || z < 0) return;
+        this.blocks[Chunk.positionToBlockArrayId(x,y,z)] = block;
+        this.setModified();
     }
 
     public boolean isModified() {
@@ -113,9 +114,11 @@ public abstract class Chunk implements Tickable {
     }
 
     public void save() {
-        if(!this.isModified || !this.isReady()) return;
+        if(!this.isModified || !this.isReady()) {
+            return;
+        }
 
-        File chunkFile = new File(this.world.chunksFolder, this.chunkPosition.x + "," + this.chunkPosition.z);
+        File chunkFile = new File(this.world.chunksFolder, this.chunkPosition.x + "," + this.chunkPosition.y);
         if(!chunkFile.exists()) {
             try {
                 chunkFile.createNewFile();
@@ -141,12 +144,12 @@ public abstract class Chunk implements Tickable {
                     if(block == null) block = Blocks.AIR;
 
                     if(block instanceof BlockEntityGenerator<?>) {
-                        Vector3i position = new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.z * 16);
+                        Vector3i position = new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.y * 16);
                         WrappedJsonObject json = new WrappedJsonObject();
-                        this.world.getBlockEntity(position).save(json);
+                        //this.world.getBlockEntity(position).save(json);
                         blockEntities.put(String.valueOf(blockArrayId), json);
 
-                        this.world.removeBlockEntityFor(position);
+                        //this.world.removeBlockEntityFor(position);
                     }
 
                     if(blockToChunkSavedIds.containsKey(block.getBlockId())) {
@@ -195,7 +198,7 @@ public abstract class Chunk implements Tickable {
     }
 
     public void load() {
-        File chunkFile = new File(this.world.chunksFolder, this.chunkPosition.x + "," + this.chunkPosition.z);
+        File chunkFile = new File(this.world.chunksFolder, this.chunkPosition.x + "," + this.chunkPosition.y);
         if(!chunkFile.exists()) return;
 
         WrappedJsonObject chunkData;
@@ -237,12 +240,12 @@ public abstract class Chunk implements Tickable {
                         this.blocks[blockArrayId] = block;
 
                         if(block instanceof BlockEntityGenerator<?>) {
-                            Vector3i position = new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.z * 16);
-                            BlockEntity blockEntity = this.world.createBlockEntityFor(position, block);
+                            Vector3i position = new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.y * 16);
+                            /*BlockEntity blockEntity = this.world.createBlockEntityFor(position, block);
                             WrappedJsonObject blockEntityData = chunkData.getObject("blockEntities").getObject(String.valueOf(blockArrayId));
                             if(blockEntity != null && blockEntityData != null) {
                                 blockEntity.load(blockEntityData);
-                            }
+                            }*/
                         }
                     }
                 }
@@ -257,7 +260,7 @@ public abstract class Chunk implements Tickable {
             try {
                 Creature creature = Creatures.getClassFor(id).getConstructor().newInstance();
                 creature.load(creatureJson);
-                this.world.spawnCreature(creature, creature.position);
+                this.world.spawnCreature(creature);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to load creature with id " + id, e);
             }
@@ -271,11 +274,11 @@ public abstract class Chunk implements Tickable {
     }
 
     public boolean isPositionInsideChunk(float x, float y, float z) {
-        return Math.floor(x / 16F) == this.chunkPosition.x && Math.floor(y / 128F) == this.chunkPosition.y && Math.floor(z / 16F) == this.chunkPosition.z;
+        return Math.floor(x / 16F) == this.chunkPosition.x && Math.floor(y / 128F) == this.chunkPosition.y && Math.floor(z / 16F) == this.chunkPosition.y;
     }
 
     public Vector3i toLocalizedBlockPosition(int x, int y, int z) {
-        return new Vector3i((int) (this.chunkPosition.x - Math.floor(x / 16)), y, (int) (this.chunkPosition.z - Math.floor(z / 16)));
+        return new Vector3i((int) (this.chunkPosition.x - Math.floor(x / 16)), y, (int) (this.chunkPosition.y - Math.floor(z / 16)));
     }
 
     public Block getBlockAtLocalizedPosition(int x, int y, int z) {
@@ -313,63 +316,35 @@ public abstract class Chunk implements Tickable {
     }
 
     public boolean areDirectNeighboursLoaded() {
-        return     this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z) != null
-                && this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z) != null
-                && this.world.getChunkAt(this.chunkPosition.x, this.chunkPosition.z + 1) != null
-                && this.world.getChunkAt(this.chunkPosition.x, this.chunkPosition.z - 1) != null;
+        return     this.world.getChunk(this.chunkPosition.x + 1, this.chunkPosition.y) != null
+                && this.world.getChunk(this.chunkPosition.x - 1, this.chunkPosition.y) != null
+                && this.world.getChunk(this.chunkPosition.x, this.chunkPosition.y + 1) != null
+                && this.world.getChunk(this.chunkPosition.x, this.chunkPosition.y - 1) != null;
     }
 
     public boolean areNeighboursLoaded() {
-        return     this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z) != null
-                && this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z) != null
-                && this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z + 1) != null
-                && this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z - 1) != null
-                && this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z - 1) != null
-                && this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z + 1) != null
-                && this.world.getChunkAt(this.chunkPosition.x, this.chunkPosition.z + 1) != null
-                && this.world.getChunkAt(this.chunkPosition.x, this.chunkPosition.z - 1) != null;
+        return     this.world.getChunk(this.chunkPosition.x + 1, this.chunkPosition.y) != null
+                && this.world.getChunk(this.chunkPosition.x - 1, this.chunkPosition.y) != null
+                && this.world.getChunk(this.chunkPosition.x + 1, this.chunkPosition.y + 1) != null
+                && this.world.getChunk(this.chunkPosition.x + 1, this.chunkPosition.y - 1) != null
+                && this.world.getChunk(this.chunkPosition.x - 1, this.chunkPosition.y - 1) != null
+                && this.world.getChunk(this.chunkPosition.x - 1, this.chunkPosition.y + 1) != null
+                && this.world.getChunk(this.chunkPosition.x, this.chunkPosition.y + 1) != null
+                && this.world.getChunk(this.chunkPosition.x, this.chunkPosition.y - 1) != null;
     }
 
     public boolean areNeighboursFullyGenerated() {
         if(!this.areNeighboursLoaded()) {
             return false;
         }
-        return     this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z).featuresGenerated
-                && this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z).featuresGenerated
-                && this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z + 1).featuresGenerated
-                && this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z - 1).featuresGenerated
-                && this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z - 1).featuresGenerated
-                && this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z + 1).featuresGenerated
-                && this.world.getChunkAt(this.chunkPosition.x, this.chunkPosition.z + 1).featuresGenerated
-                && this.world.getChunkAt(this.chunkPosition.x, this.chunkPosition.z - 1).featuresGenerated;
-    }
-
-    // I hate this, but I just want it to work
-    public void tellNeighboursToGenerateFeatures() {
-        if(this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z) != null) {
-            this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z).generateFeatures();
-        }
-        if(this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z) != null) {
-            this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z).generateFeatures();
-        }
-        if(this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z + 1) != null) {
-            this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z + 1).generateFeatures();
-        }
-        if(this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z - 1) != null) {
-            this.world.getChunkAt(this.chunkPosition.x + 1, this.chunkPosition.z - 1).generateFeatures();
-        }
-        if(this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z - 1) != null) {
-            this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z - 1).generateFeatures();
-        }
-        if(this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z + 1) != null) {
-            this.world.getChunkAt(this.chunkPosition.x - 1, this.chunkPosition.z + 1).generateFeatures();
-        }
-        if(this.world.getChunkAt(this.chunkPosition.x, this.chunkPosition.z + 1) != null) {
-            this.world.getChunkAt(this.chunkPosition.x, this.chunkPosition.z + 1).generateFeatures();
-        }
-        if(this.world.getChunkAt(this.chunkPosition.x, this.chunkPosition.z - 1) != null) {
-            this.world.getChunkAt(this.chunkPosition.x, this.chunkPosition.z - 1).generateFeatures();
-        }
+        return     this.world.getChunk(this.chunkPosition.x + 1, this.chunkPosition.y).featuresGenerated
+                && this.world.getChunk(this.chunkPosition.x - 1, this.chunkPosition.y).featuresGenerated
+                && this.world.getChunk(this.chunkPosition.x + 1, this.chunkPosition.y + 1).featuresGenerated
+                && this.world.getChunk(this.chunkPosition.x + 1, this.chunkPosition.y - 1).featuresGenerated
+                && this.world.getChunk(this.chunkPosition.x - 1, this.chunkPosition.y - 1).featuresGenerated
+                && this.world.getChunk(this.chunkPosition.x - 1, this.chunkPosition.y + 1).featuresGenerated
+                && this.world.getChunk(this.chunkPosition.x, this.chunkPosition.y + 1).featuresGenerated
+                && this.world.getChunk(this.chunkPosition.x, this.chunkPosition.y - 1).featuresGenerated;
     }
 
     public void generateFeatures() {
@@ -377,14 +352,13 @@ public abstract class Chunk implements Tickable {
             return;
         }
 
-        this.featuresGenerated = true;
-
         ChunkProxy chunkProxy = new ChunkProxy(this);
-        this.world.worldGenerator.generateFeatures(chunkProxy, this.chunkPosition.x, this.chunkPosition.z);
+        this.world.worldGenerator.generateFeatures(chunkProxy, this.chunkPosition.x, this.chunkPosition.y);
+        this.featuresGenerated = true;
     }
 
     public void tick() {
-        this.chunkUnloadingTimer = this.chunkUnloadingTimer - 1;
+
     }
 
     public void unload() {
@@ -400,7 +374,7 @@ public abstract class Chunk implements Tickable {
         for (int i = 0; i < this.world.creatures.size(); i++) {
             Creature creature = this.world.creatures.get(i);
 
-            if(creature.getChunkPosition().x == this.chunkPosition.x && creature.getChunkPosition().y == this.chunkPosition.z) {
+            if(creature.getChunkPosition().x == this.chunkPosition.x && creature.getChunkPosition().y == this.chunkPosition.y) {
                 creatures.add(creature);
             }
         }

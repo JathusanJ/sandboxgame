@@ -19,6 +19,7 @@ public class LoginResultPacket extends Packet {
     @Override
     public void write(ByteBuf buffer) {
         buffer.writeByte(success);
-        buffer.writeByte(this.server.world.getRenderDistance());
+        //buffer.writeByte(this.server.world.getRenderDistance());
+        buffer.writeByte(8);
     }
 }

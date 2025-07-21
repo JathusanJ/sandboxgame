@@ -25,7 +25,7 @@ public class ClientPlayer extends Player {
     public void tick() {
         super.tick();
 
-        if(this.world.getChunkAt(this.getChunkPosition().x, this.getChunkPosition().y) == null) {
+        if(this.world.getChunk(this.getChunkPosition().x, this.getChunkPosition().y) == null) {
             this.position.set(this.lastPosition);
             this.velocity.set(0,0,0);
         }
@@ -37,14 +37,14 @@ public class ClientPlayer extends Player {
         if(this.blockBreakingProgress != null) {
             if(this.blockBreakingProgress.isDone()) {
                 if(!GameClient.isConnectedToServer) {
-                    ItemStack itemStack = this.world.getBlockAt(this.blockBreakingProgress.blockPosition.x,this.blockBreakingProgress.blockPosition.y,this.blockBreakingProgress.blockPosition.z).getAsDroppedItem(blockBreakingProgress.player, blockBreakingProgress.player.inventory[blockBreakingProgress.hotbarSlot]);
+                    ItemStack itemStack = this.world.getBlock(this.blockBreakingProgress.blockPosition.x,this.blockBreakingProgress.blockPosition.y,this.blockBreakingProgress.blockPosition.z).getAsDroppedItem(blockBreakingProgress.player, blockBreakingProgress.player.inventory[blockBreakingProgress.hotbarSlot]);
                     if(itemStack != null && itemStack.item != Items.AIR) {
                         ItemCreature droppedBlock = new ItemCreature();
                         droppedBlock.representingItemStack = itemStack;
                         droppedBlock.position = new Vector3f(this.blockBreakingProgress.blockPosition.x + 0.5F, this.blockBreakingProgress.blockPosition.y + 0.5F, this.blockBreakingProgress.blockPosition.z + 0.5F);
-                        this.world.creatures.add(droppedBlock);
+                        this.world.spawnCreature(droppedBlock);
                     }
-                    this.world.setBlockAt(this.blockBreakingProgress.blockPosition.x, this.blockBreakingProgress.blockPosition.y, this.blockBreakingProgress.blockPosition.z, Blocks.AIR);
+                    this.world.setBlock(this.blockBreakingProgress.blockPosition.x, this.blockBreakingProgress.blockPosition.y, this.blockBreakingProgress.blockPosition.z, Blocks.AIR);
                     this.blockBreakingProgress = null;
                 }
             } else {

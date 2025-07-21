@@ -15,10 +15,6 @@ public class PauseMenuScreen extends Screen {
         } else {
             SandboxGame.getInstance().doOnTickingThread(() -> {
                 this.gameRenderer.unloadCurrentWorld();
-                SandboxGame.getInstance().doOnMainThread(() -> {
-                    this.gameRenderer.world = null;
-                    this.gameRenderer.player = null;
-                });
             });
         }
         this.gameRenderer.setScreen(new WorldSavingScreen());

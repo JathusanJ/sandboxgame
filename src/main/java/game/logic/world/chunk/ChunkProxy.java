@@ -18,12 +18,13 @@ public class ChunkProxy {
         if(this.isRelativePositionInChunk(x,y,z)) {
             this.chunk.setBlockAtLocalizedPositionDirect(x, y, z, block);
         } else {
-            this.chunk.world.setBlockAtDirect(this.chunk.chunkPosition.x * 16 + x, y, this.chunk.chunkPosition.z * 16 + z, block);
+            this.chunk.world.setBlockNoRemesh(this.chunk.chunkPosition.x * 16 + x, y, this.chunk.chunkPosition.y * 16 + z, block);
         }
     }
 
     public void setRelativeIfAbsent(int x, int y, int z, Block block) {
-        if(this.getRelative(x,y,z) == null) {
+        Block blockAtPosition = this.getRelative(x,y,z);
+        if(blockAtPosition == null || blockAtPosition == Blocks.AIR) {
             this.setRelative(x,y,z, block);
         }
     }
@@ -33,13 +34,7 @@ public class ChunkProxy {
             return this.chunk.getBlockAtLocalizedPositionDirect(x, y, z);
         }
 
-        // TODO: Implement a fix rather than this
-        try {
-            return this.chunk.world.getBlockAtDirect(this.chunk.chunkPosition.x * 16 + x, y, this.chunk.chunkPosition.z * 16 + z);
-        } catch(Exception ignored) {
-
-        }
-        return null;
+        return this.chunk.world.getBlock(x + this.chunk.chunkPosition.x * 16, y, z + this.chunk.chunkPosition.y * 16);
     }
 
     public boolean hasBlockAtRelative(int x, int y, int z) {

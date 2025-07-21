@@ -19,7 +19,7 @@ public class ChunkDataPacket extends Packet {
     @Override
     public void write(ByteBuf buffer) {
         buffer.writeInt(this.chunk.chunkPosition.x);
-        buffer.writeInt(this.chunk.chunkPosition.z);
+        buffer.writeInt(this.chunk.chunkPosition.y);
 
         HashMap<Block, Short> blockToSaveId = new HashMap<>();
         ArrayList<Short> data = new ArrayList<>();

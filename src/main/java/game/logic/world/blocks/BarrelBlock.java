@@ -28,7 +28,7 @@ public class BarrelBlock extends Block implements BlockEntityGenerator<BarrelBlo
 
     @Override
     public boolean onRightClick(ClientWorld world, Vector3i blockPosition) {
-        SandboxGame.getInstance().getGameRenderer().setScreen(new BarrelInventoryScreen((BarrelBlockEntity) world.getBlockEntity(blockPosition)));
+        //SandboxGame.getInstance().getGameRenderer().setScreen(new BarrelInventoryScreen((BarrelBlockEntity) world.getBlockEntity(blockPosition)));
         return false;
     }
 }

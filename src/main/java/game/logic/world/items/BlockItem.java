@@ -21,10 +21,10 @@ public class BlockItem extends Item {
         if(context.blockPosition() == null || context.normal() == null) return;
 
         if(context.world() instanceof ServerWorld world) {
-            world.setBlockAt(context.blockPosition().x + context.normal().x, context.blockPosition().y + context.normal().y, context.blockPosition().z + context.normal().z, this.block);
+            world.setBlock(context.blockPosition().x + context.normal().x, context.blockPosition().y + context.normal().y, context.blockPosition().z + context.normal().z, this.block);
         } else if(context.world() instanceof SingleplayerWorld) {
-            if(context.world().getBlockAt(context.blockPosition().x + context.normal().x, context.blockPosition().y + context.normal().y, context.blockPosition().z + context.normal().z).isEmpty()) {
-                context.world().setBlockAt(context.blockPosition().x + context.normal().x, context.blockPosition().y + context.normal().y, context.blockPosition().z + context.normal().z, this.block);
+            if(context.world().getBlock(context.blockPosition().x + context.normal().x, context.blockPosition().y + context.normal().y, context.blockPosition().z + context.normal().z).isEmpty()) {
+                context.world().setBlock(context.blockPosition().x + context.normal().x, context.blockPosition().y + context.normal().y, context.blockPosition().z + context.normal().z, this.block);
                 context.itemStack().decreaseByUnlessInCreative(1, context.player());
             }
         }

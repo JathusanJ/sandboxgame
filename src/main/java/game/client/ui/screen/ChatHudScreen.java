@@ -5,7 +5,6 @@ import game.client.SandboxGame;
 import game.client.ui.widget.ChatTextInputWidget;
 import game.client.networking.GameClient;
 import game.client.networking.GameClientHandler;
-import game.logic.world.chunk.ChunkLoader;
 import game.logic.world.creature.Player;
 import game.logic.world.items.Item;
 import game.logic.world.items.ItemStack;
@@ -100,16 +99,6 @@ public class ChatHudScreen extends Screen {
                         }
                     } else if(this.textInput.content.startsWith("/kill")) {
                         this.gameRenderer.player.kill();
-                    } else if(this.textInput.content.startsWith("/debug chunkLoaders")) {
-                        this.gameRenderer.player.sendChatMessage("Queue: " + this.gameRenderer.world.chunkLoaderManager.queue.size() + " | Features: " + this.gameRenderer.world.chunkLoaderManager.features.size() + " | Unload: " + this.gameRenderer.world.chunkLoaderManager.unload.size());
-                        for (int i = 0; i < this.gameRenderer.world.chunkLoaderManager.chunkLoaders.size(); i++) {
-                            ChunkLoader loader = this.gameRenderer.world.chunkLoaderManager.chunkLoaders.get(i);
-                            if(loader.busy) {
-                                this.gameRenderer.player.sendChatMessage("Chunk loader " + loader.id + ": BUSY | Type: " + loader.taskType);
-                            } else {
-                                this.gameRenderer.player.sendChatMessage("Chunk loader " + loader.id + ": FREE");
-                            }
-                        }
                     } else {
                         this.gameRenderer.player.sendChatMessage("Unknown command \"" + this.textInput.content + "\"");
                     }

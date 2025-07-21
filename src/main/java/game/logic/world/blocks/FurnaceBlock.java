@@ -16,7 +16,7 @@ public class FurnaceBlock extends Block implements BlockEntityGenerator<FurnaceB
 
     @Override
     public boolean onRightClick(ClientWorld world, Vector3i blockPosition) {
-        SandboxGame.getInstance().getGameRenderer().setScreen(new FurnaceScreen((FurnaceBlockEntity) world.getBlockEntity(blockPosition)));
+        //SandboxGame.getInstance().getGameRenderer().setScreen(new FurnaceScreen((FurnaceBlockEntity) world.getBlockEntity(blockPosition)));
         return false;
     }
 

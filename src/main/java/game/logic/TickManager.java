@@ -26,6 +26,10 @@ public class TickManager {
         this.thread.start();
     }
 
+    public void stop() {
+        this.isRunning = false;
+    }
+
     public void loop() {
         try {
             while (isRunning) {

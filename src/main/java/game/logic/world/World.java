@@ -1,32 +1,28 @@
 package game.logic.world;
 
 import com.google.gson.stream.JsonReader;
-import game.client.SandboxGame;
 import game.logic.util.json.WrappedJsonObject;
+import game.logic.world.blocks.Blocks;
 import game.logic.world.chunk.Chunk;
 import game.logic.Tickable;
 import game.logic.world.blocks.Block;
-import game.logic.world.blocks.Blocks;
 import game.logic.world.blocks.block_entity.BlockEntity;
-import game.logic.world.blocks.block_entity.BlockEntityGenerator;
 import game.logic.world.chunk.ChunkLoaderManager;
 import game.logic.world.creature.Creature;
-import game.logic.world.creature.Player;
 import game.logic.world.generators.*;
-import game.networking.packets.RemoveCreaturePacket;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public abstract class World implements Tickable {
-    public HashMap<Vector2i, Chunk> loadedChunks = new HashMap<>();
+    public Map<Vector2i, Chunk> loadedChunks = new ConcurrentHashMap<>();
+    public List<Creature> creatures = Collections.synchronizedList(new ArrayList<>());
+    public Map<Vector3i, BlockEntity> blockEntities = Collections.synchronizedMap(new HashMap<>());
     public File worldFolder;
     public File chunksFolder;
     public String worldFolderName;
@@ -36,14 +32,14 @@ public abstract class World implements Tickable {
     public WorldType worldType;
     public int worldTime = (int) (6.5 * 60 * 20);
     public boolean shouldTick = true;
-    public ArrayList<Creature> creatures = new ArrayList<>();
-    public Map<Vector3i, BlockEntity> blockEntities = new HashMap<>();
+
     public boolean ready = false;
-    public ChunkLoaderManager chunkLoaderManager = new ChunkLoaderManager();
+    public ChunkLoaderManager chunkLoaderManager = new ChunkLoaderManager(this);
+    public ChunkLoaderManager.Ticket spawnLoadTicket = new ChunkLoaderManager.Ticket(0,0,4);
     public Random random = new Random();
     public boolean commandsEnabled = false;
 
-    public void loadWorldInfo() {
+    public boolean loadWorldInfo() {
         File worldInfoFile = new File(this.worldFolder, "world.json");
         if(worldInfoFile.exists()) {
             try {
@@ -56,12 +52,14 @@ public abstract class World implements Tickable {
                 this.worldType = WorldType.valueOf(json.getString("worldType"));
                 this.worldTime = json.getInt("worldTime");
                 this.commandsEnabled = json.getBoolean("commandsEnabled");
+
+                return true;
             } catch (Exception e) {
-                throw new RuntimeException("Couldn't read world info of \"" + worldFolderName + "\"", e);
+                throw new RuntimeException("Couldn't read world info of " + worldInfoFile.getPath(), e);
             }
-        } else {
-            // TODO add proper measures to deal with worlds without world.json
         }
+
+        return false;
     }
 
     public void writeWorldInfo() {
@@ -92,29 +90,38 @@ public abstract class World implements Tickable {
         }
     }
 
-    public Block getBlockAt(int x, int y, int z) {
-        // This differs from (x / 16) (Integer division) for some reason
-        int chunkX = (int) Math.floor(x / 16F);
-        int chunkZ = (int) Math.floor(z / 16F);
-
-        Chunk chunk = this.getChunkAt(chunkX, chunkZ);
-        if(chunk != null) {
-            return chunk.getBlockAtLocalizedPosition(x - chunkX * 16, y, z - chunkZ * 16);
+    public void save() {
+        for(Chunk chunk : this.loadedChunks.values()) {
+            chunk.save();
         }
 
-        return Blocks.AIR;
+        this.writeWorldInfo();
     }
 
-    public boolean setBlockAt(int x, int y, int z, Block block) {
-        int chunkX = (int) Math.floor(x / 16F);
-        int chunkZ = (int) Math.floor(z / 16F);
+    public void stop() {
+        this.chunkLoaderManager.stop();
+    }
 
-        Chunk chunk = this.getChunkAt(chunkX, chunkZ);
-        if(chunk != null) {
-            return chunk.setBlockAtLocalizedPosition(x - chunkX * 16, y, z - chunkZ * 16, block);
+    @Override
+    public void tick() {
+        if(!this.ready) {
+            return;
         }
 
-        return false;
+        this.worldTime++;
+
+        for (Chunk chunk : this.loadedChunks.values()) {
+            chunk.tick();
+        }
+
+        for (int i = 0; i < this.creatures.size(); i++) {
+            Creature creature = this.creatures.get(i);
+            if(creature.markedForRemoval) {
+                this.creatures.remove(i);
+            } else {
+                this.creatures.get(i).tick();
+            }
+        }
     }
 
     public WorldRaycastResult blockRaycast(Vector3f start, Vector3f direction, float range) {
@@ -129,7 +136,7 @@ public abstract class World implements Tickable {
             // The idea to move and check in x, y, z individually doesn't make it more accurate. TODO: fix this
             // Initial check/z movement check
             Vector3i blockPos = new Vector3i((int) Math.floor(currentRayPosition.x), (int) Math.floor(currentRayPosition.y), (int) Math.floor(currentRayPosition.z));
-            Block block = this.getBlockAt(blockPos.x, blockPos.y, blockPos.z);
+            Block block = this.getBlock(blockPos.x, blockPos.y, blockPos.z);
             boolean isLiquid = ignoreLiquids && block.isLiquid();
             if(!block.isEmpty() && !isLiquid) {
                 Vector3i normal = new Vector3i(
@@ -148,7 +155,7 @@ public abstract class World implements Tickable {
             // x movement
             currentRayPosition.add(direction.x * distanceToTravel, 0, 0);
             blockPos = new Vector3i((int) Math.floor(currentRayPosition.x), (int) Math.floor(currentRayPosition.y), (int) Math.floor(currentRayPosition.z));
-            block = this.getBlockAt(blockPos.x, blockPos.y, blockPos.z);
+            block = this.getBlock(blockPos.x, blockPos.y, blockPos.z);
             isLiquid = ignoreLiquids && block.isLiquid();
             if(!block.isEmpty() && !isLiquid) {
                 Vector3i normal = new Vector3i(
@@ -163,7 +170,7 @@ public abstract class World implements Tickable {
             // y movement
             currentRayPosition.add(0, direction.y * distanceToTravel, 0);
             blockPos = new Vector3i((int) Math.floor(currentRayPosition.x), (int) Math.floor(currentRayPosition.y), (int) Math.floor(currentRayPosition.z));
-            block = this.getBlockAt(blockPos.x, blockPos.y, blockPos.z);
+            block = this.getBlock(blockPos.x, blockPos.y, blockPos.z);
             isLiquid = ignoreLiquids && block.isLiquid();
             if(!block.isEmpty() && !isLiquid) {
                 Vector3i normal = new Vector3i(
@@ -184,272 +191,138 @@ public abstract class World implements Tickable {
         return new WorldRaycastResult(false, null, null, null);
     }
 
-    public void loadWorld() {
+    public Vector2i getChunkPositionOfPosition(int x, int y, int z) {
+        int chunkX = (int) Math.floor(x / 16F);
+        int chunkZ = (int) Math.floor(z / 16F);
 
+        return new Vector2i(chunkX, chunkZ);
     }
 
-    public void saveWorld() {
-        synchronized (this.loadedChunks) {
-            for (Chunk chunk : this.loadedChunks.values()) {
-                chunk.save();
-            }
+    public void setBlock(int x, int y, int z, Block block) {
+        Vector2i chunkPosition = this.getChunkPositionOfPosition(x, y, z);
+
+        Chunk chunk = this.loadedChunks.get(chunkPosition);
+
+        if(chunk == null) {
+            return;
         }
-        this.writeWorldInfo();
+
+        chunk.setBlockAtLocalizedPosition(x - chunkPosition.x * 16, y, z - chunkPosition.y * 16, block);
     }
 
-    public Chunk getChunkAt(int x, int z) {
-        Chunk chunk = this.loadedChunks.get(new Vector2i(x, z));
-        if(chunk != null && chunk.isReady()) {
-            return chunk;
+    public void setBlockNoRemesh(int x, int y, int z, Block block) {
+        Vector2i chunkPosition = this.getChunkPositionOfPosition(x, y, z);
+
+        Chunk chunk = this.loadedChunks.get(chunkPosition);
+
+        if(chunk == null) {
+            return;
         }
-        return null;
+
+        chunk.setBlockDirect(x - chunkPosition.x * 16, y, z - chunkPosition.y * 16, block);
     }
 
-    public Chunk getChunkAtDespiteState(int x, int z) {
-        return this.loadedChunks.get(new Vector2i(x, z));
+    public Block getBlock(int x, int y, int z) {
+        Vector2i chunkPosition = this.getChunkPositionOfPosition(x, y, z);
+
+        Chunk chunk = this.loadedChunks.get(chunkPosition);
+
+        if(chunk == null) {
+            return Blocks.AIR;
+        }
+
+        return chunk.getBlockAtLocalizedPosition(x - chunkPosition.x * 16, y, z - chunkPosition.y * 16);
     }
 
-    public void generateChunksAround(int x, int z) {
-        int featureRadius = this.getRenderDistance() + 1;
-        int terrainShapeRadius = featureRadius + 1;
-        int loadedRadius = terrainShapeRadius + 1;
-        ArrayList<Vector2i> chunksToUnload = new ArrayList<>(this.loadedChunks.keySet());
-
-        for (int chunkX = x - loadedRadius; chunkX <= x + loadedRadius; chunkX++) {
-            for (int chunkZ = z - loadedRadius; chunkZ <= z + loadedRadius ; chunkZ++) {
-                Chunk chunk = this.getChunkAtDespiteState(chunkX, chunkZ);
-                if(Math.abs(chunkX - x) <= terrainShapeRadius && Math.abs(chunkZ - z) <= terrainShapeRadius) {
-                    if(chunk == null) {
-                        chunk = this.createChunk(new Vector2i(chunkX, chunkZ));
-                        this.loadedChunks.put(new Vector2i(chunkX, chunkZ), chunk);
-                        this.chunkLoaderManager.queue.add(chunk);
-                    } else if(!chunk.featuresGenerated && chunk.areNeighboursLoaded() && !chunk.enqueuedInChunkLoader) {
-                        chunk.enqueuedInChunkLoader = true;
-                        this.chunkLoaderManager.features.add(chunk);
-                    }
-
-                }
-                chunksToUnload.remove(new Vector2i(chunkX, chunkZ));
-            }
+    public int getSkylight(int x, int y, int z) {
+        if(y < 0 || y > 127) {
+            return 16;
         }
 
-        for(Vector2i chunkToUnload : chunksToUnload) {
-            Chunk chunk = this.loadedChunks.get(chunkToUnload);
-            this.unloadChunk(chunk);
-            // TODO: Fix the NullException stuff that happens for no apparent reason :(
-            /*if(!chunk.enqueuedInChunkLoader) {
-                chunk.enqueuedInChunkLoader = true;
-                this.chunkLoaderManager.unload.add(chunk);
-            }*/
+        Vector2i chunkPosition = this.getChunkPositionOfPosition(x, y, z);
+
+        Chunk chunk = this.loadedChunks.get(chunkPosition);
+
+        if(chunk == null) {
+            return 16;
         }
+
+        Byte skylight = chunk.skylight[Chunk.positionToBlockArrayId(x - chunkPosition.x * 16, y, z - chunkPosition.y * 16)];
+
+        return skylight == null ? 12 : skylight;
+    }
+
+    public int getLight(int x, int y, int z) {
+        if(y < 0 || y > 127) {
+            return 0;
+        }
+
+        Vector2i chunkPosition = this.getChunkPositionOfPosition(x, y, z);
+
+        Chunk chunk = this.loadedChunks.get(chunkPosition);
+
+        if(chunk == null) {
+            return 0;
+        }
+
+        return 0; //chunk.light[Chunk.positionToBlockArrayId(x - chunkPosition.x * 16, y, z - chunkPosition.y * 16)];
+    }
+
+    public abstract Chunk createChunk(int x, int y);
+
+    public Chunk getChunk(int x, int y) {
+        Chunk chunk = this.loadedChunks.get(new Vector2i(x,y));
+
+        if(chunk == null || !chunk.isReady()) {
+            return null;
+        }
+
+        return chunk;
     }
 
     public void unloadChunk(Chunk chunk) {
-        this.loadedChunks.remove(new Vector2i(chunk.chunkPosition.x, chunk.chunkPosition.z));
         chunk.unload();
+        this.loadedChunks.remove(chunk.chunkPosition);
     }
 
-    @Override
-    public void tick() {
-        this.chunkLoaderManager.tick();
-
-        if(!this.ready) {
-            this.generateChunksAround(SandboxGame.getInstance().getGameRenderer().player.getChunkPosition().x, SandboxGame.getInstance().getGameRenderer().player.getChunkPosition().y);
-
-            int amountOfReadyChunks = 0;
-
-            for (Chunk chunk : this.loadedChunks.values()) {
-                if(chunk.featuresGenerated) {
-                    amountOfReadyChunks++;
-                }
-            }
-
-            if(amountOfReadyChunks > 64) {
-                this.ready = true;
-            }
-        }
-
-        if(!this.shouldTick || !this.ready) return;
-        this.worldTime++;
-
-        for (Chunk chunk : this.loadedChunks.values()) {
-            chunk.tick();
-        }
-
-        for(int i = 0; i < this.creatures.size(); i++) {
-            Creature creature = this.creatures.get(i);
-            if(creature.world != this) creature.world = this;
-            if(creature.markedForRemoval) {
-                this.creatures.remove(i);
-                if(this instanceof ServerWorld serverWorld) {
-                    RemoveCreaturePacket packet = new RemoveCreaturePacket(creature.networkId);
-                    serverWorld.server.sendPacketToAll(packet);
-                }
-                i = i - 1;
-                continue;
-            }
-
-            creature.tick();
-
-            if(creature instanceof Player) {
-                this.generateChunksAround(creature.getChunkPosition().x, creature.getChunkPosition().y);
-            }
-        }
-
-        for(BlockEntity blockEntity : this.blockEntities.values()) {
-            blockEntity.tick();
-        }
+    public void spawnCreature(Creature creature) {
+        this.creatures.add(creature);
+        creature.world = this;
     }
 
-    public int getDayTime() {
+    public float getDayTime() {
         return this.worldTime % (24 * 60 * 20);
     }
 
-    public boolean isDay() {
-        return this.getDayTime() > (6F * 60 * 20) && this.getDayTime() < (19F * 60 * 20);
-    }
-
-    public boolean isNight() {
-        return !this.isDay();
-    }
-
-    public BlockEntity createBlockEntityFor(Vector3i blockPosition, Block block) {
-        if(this.blockEntities.containsKey(blockPosition)) return null;
-
-        if(block instanceof BlockEntityGenerator<?> generator) {
-            BlockEntity blockEntity = generator.createBlockEntity();
-            blockEntity.world = this;
-            blockEntity.position = blockPosition;
-
-            this.blockEntities.put(blockPosition, blockEntity);
-
-            return blockEntity;
-        } else {
-            System.out.println(blockPosition.x + ", " + blockPosition.y + ", " + blockPosition.z + ": Not block entity generator (It is a " + block.getBlockId() + ")");
-            return null;
-        }
-    }
-
-    public void createBlockEntityFor(Vector3i blockPosition) {
-        this.createBlockEntityFor(blockPosition, this.getBlockAt(blockPosition.x, blockPosition.y, blockPosition.z));
-    }
-
-    public void removeBlockEntityFor(Vector3i blockPosition) {
-        this.blockEntities.remove(blockPosition);
-    }
-
-    public BlockEntity getBlockEntity(Vector3i blockPosition) {
-        return this.blockEntities.get(blockPosition);
-    }
-
-    public void spawnCreature(Creature creature, Vector3f position) {
-        creature.position.set(position);
-        creature.lastPosition.set(position);
-        this.creatures.add(creature);
-    }
-
-    public Vector3f getPossibleSpawnLocation() {
-        Vector3f pickedPosition = null;
-
+    public Vector3f findPossibleSpawnLocation() {
         for (int i = 0; i < 20; i++) {
-            int x = this.random.nextInt() % 64;
-            int z = this.random.nextInt() % 64;
+            int spawnRadius = 32;
 
-            boolean found = false;
+            int x = this.random.nextInt() % (spawnRadius * 2) - spawnRadius;
+            int z = this.random.nextInt() % (spawnRadius * 2) - spawnRadius;
 
-            for (int y = 127; y >= 0; y--) {
-                Block blockAtPosition = this.getBlockAt(x,y,z);
-                if(blockAtPosition != Blocks.AIR) {
-                    if(blockAtPosition == Blocks.WATER || blockAtPosition == Blocks.LAVA) {
-                        break;
-                    }
-                    pickedPosition = new Vector3f(x + 0.5F, y + 1, z + 0.5F);
-                    found = true;
+            for (int y = 127; y > 0; y--) {
+                Block blockAtPosition = this.getBlock(x,y,z);
+                if(blockAtPosition == Blocks.WATER) {
                     break;
                 }
-            }
-
-            if(found) {
-                break;
-            }
-        }
-
-        if(pickedPosition == null) {
-            for (int y = 127; y >= 0; y--) {
-                Block blockAtPosition = this.getBlockAt(0,y,0);
-                if(blockAtPosition != Blocks.AIR) {
-                    return new Vector3f(0.5F, y + 1, 0.5F);
+                if(blockAtPosition.hasCollision()) {
+                    return new Vector3f(x + 0.5F, y + 1F, z + 0.5F);
                 }
             }
         }
 
-        return pickedPosition;
-    }
 
-    public Chunk getChunkAtBlockPosition(Vector3i blockPosition) {
-        int chunkX = (int) Math.floor(blockPosition.x / 16F);
-        int chunkZ = (int) Math.floor(blockPosition.z / 16F);
-
-        Vector2i chunkPosition = new Vector2i(chunkX, chunkZ);
-        if(this.loadedChunks.containsKey(chunkPosition)) {
-            return this.loadedChunks.get(chunkPosition);
-        }
-        return null;
-    }
-
-    public float getSkylightAt(int x, int y, int z) {
-        int chunkX = (int) Math.floor(x / 16D);
-        int chunkZ = (int) Math.floor(z / 16D);
-
-        Vector2i chunkPosition = new Vector2i(chunkX, chunkZ);
-        if(this.loadedChunks.containsKey(chunkPosition) && y >= 0 && y <= 127) {
-            Byte skylight = this.loadedChunks.get(chunkPosition).skylight[Chunk.positionToBlockArrayId(x - chunkX * 16, y, z - chunkZ * 16)];
-
-            return skylight == null ? 12 : skylight;
-        }
-
-        return 12;
-    }
-
-    public float getLightAt(int x, int y, int z) {
-        int chunkX = (int) Math.floor(x / 16D);
-        int chunkZ = (int) Math.floor(z / 16D);
-
-        Vector2i chunkPosition = new Vector2i(chunkX, chunkZ);
-        if(this.loadedChunks.containsKey(chunkPosition) && y >= 0 && y <= 127) {
-            Byte light = this.loadedChunks.get(chunkPosition).light[Chunk.positionToBlockArrayId(x - chunkX * 16, y, z - chunkZ * 16)];
-
-            return light == null ? 0 : light;
-        }
-
-        return 0;
-    }
-
-    public abstract Chunk createChunk(Vector2i chunkPosition);
-
-    public abstract int getRenderDistance();
-
-    public void setBlockAtDirect(int x, int y, int z, Block block) {
-        Chunk chunk = this.getChunkAtBlockPosition(new Vector3i(x,y,z));
-        chunk.setBlockAtLocalizedPositionDirect(x - chunk.chunkPosition.x * 16, y, z - chunk.chunkPosition.z * 16, block);
-        chunk.setModified();
-    }
-
-    public Block getBlockAtDirect(int x, int y, int z) {
-        Chunk chunk = this.getChunkAtBlockPosition(new Vector3i(x,y,z));
-        return chunk.getBlockAtLocalizedPositionDirect(x - chunk.chunkPosition.x * 16, y, z - chunk.chunkPosition.z * 16);
-    }
-
-    public boolean areSpawnChunksLoaded() {
-        for (int x = -4; x <= 4; x++) {
-            for (int z = -4; z <= 4; z++) {
-                if(this.getChunkAt(x,z) == null) {
-                    return false;
-                }
+        // If no locations are found then place the player at 0,0 at the first collidable block or water
+        for (int y = 127; y > 0; y--) {
+            Block blockAtPosition = this.getBlock(0,y,0);
+            if(blockAtPosition == Blocks.WATER || blockAtPosition.hasCollision()) {
+                return new Vector3f(0.5F, y + 1F, 0.5F);
             }
         }
 
-        return true;
+        // Or if there's just void
+        return new Vector3f(0F, 100F, 0F);
     }
 
     public record WorldRaycastResult(boolean success, Block block, Vector3i position, Vector3i normal) {}

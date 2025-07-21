@@ -1,5 +1,6 @@
 package game.logic.world.creature;
 
+import game.client.SandboxGame;
 import game.logic.util.PlayerProfile;
 import game.logic.util.json.WrappedJsonObject;
 import game.logic.world.blocks.Blocks;
@@ -35,7 +36,8 @@ public class Player extends Creature {
                 ItemCreature droppedItem = new ItemCreature();
                 droppedItem.representingItemStack = this.inventory[i];
                 droppedItem.velocity = new Vector3f(this.world.random.nextFloat() * 4F - 2F, 2F, this.world.random.nextFloat() * 4F - 2F);
-                this.world.spawnCreature(droppedItem, this.position);
+                droppedItem.setPosition(this.position.x, this.position.y, this.position.z);
+                this.world.spawnCreature(droppedItem);
             }
         }
 
@@ -52,12 +54,8 @@ public class Player extends Creature {
     }
 
     public void respawn() {
-        if(this.world.areSpawnChunksLoaded()) {
-            Vector3f spawnLocation = this.world.getPossibleSpawnLocation();
-            this.setPosition(spawnLocation.x, spawnLocation.y, spawnLocation.z);
-        } else {
-            // TODO: Load the spawn and then place the player
-        }
+        Vector3f spawnLocation = this.world.findPossibleSpawnLocation();
+        this.setPosition(spawnLocation.x, spawnLocation.y, spawnLocation.z);
         this.health = this.maxHealth;
         this.flying = false;
         this.currentHotbarSlot = 0;
@@ -135,11 +133,11 @@ public class Player extends Creature {
         }
 
         public boolean isDone() {
-            return this.player.gamemode == Gamemode.CREATIVE || breakingTicks > this.player.world.getBlockAt(this.blockPosition.x, this.blockPosition.y, this.blockPosition.z).getBlockBreakingTicks(this.player, this.player.inventory[this.player.currentHotbarSlot]);
+            return this.player.gamemode == Gamemode.CREATIVE || breakingTicks > this.player.world.getBlock(this.blockPosition.x, this.blockPosition.y, this.blockPosition.z).getBlockBreakingTicks(this.player, this.player.inventory[this.player.currentHotbarSlot]);
         }
 
         public int getTotalBreakingTicks() {
-            return this.player.world.getBlockAt(this.blockPosition.x, this.blockPosition.y, this.blockPosition.z).getBlockBreakingTicks(this.player, this.player.inventory[this.player.currentHotbarSlot]);
+            return this.player.world.getBlock(this.blockPosition.x, this.blockPosition.y, this.blockPosition.z).getBlockBreakingTicks(this.player, this.player.inventory[this.player.currentHotbarSlot]);
         }
     }
 
@@ -148,10 +146,10 @@ public class Player extends Creature {
     }
 
     public boolean isInLiquid() {
-        if(this.world.getChunkAt(this.getChunkPosition().x, this.getChunkPosition().y) == null) return false;
+        if(this.world.getChunk(this.getChunkPosition().x, this.getChunkPosition().y) == null) return false;
 
-        return this.world.getBlockAt((int) Math.floor(this.position.x), (int) Math.floor(this.position.y), (int) Math.floor(this.position.z)).isLiquid()
-                || this.world.getBlockAt((int) Math.floor(this.position.x), (int) Math.floor(this.position.y) + 1, (int) Math.floor(this.position.z)).isLiquid();
+        return this.world.getBlock((int) Math.floor(this.position.x), (int) Math.floor(this.position.y), (int) Math.floor(this.position.z)).isLiquid()
+                || this.world.getBlock((int) Math.floor(this.position.x), (int) Math.floor(this.position.y) + 1, (int) Math.floor(this.position.z)).isLiquid();
     }
 
     public void putInInventory(ItemStack stack) {
@@ -177,7 +175,8 @@ public class Player extends Creature {
         // And drop as a last measure
         ItemCreature itemCreature = new ItemCreature();
         itemCreature.representingItemStack = stack;
-        this.world.spawnCreature(itemCreature, this.position.add(0, 1.5F, 0F, new Vector3f()));
+        itemCreature.setPosition(this.position.x, this.position.y + 1.5F, this.position.z);
+        this.world.spawnCreature(itemCreature);
     }
 
     public void sendChatMessage(String message) {

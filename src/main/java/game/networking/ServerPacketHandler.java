@@ -23,7 +23,7 @@ public class ServerPacketHandler extends PacketHandler {
             String username = ByteBufPacketDecoder.readString(buffer);
             serverPlayer.playerProfile = new PlayerProfile(username, UUID.randomUUID());
             server.players.add(serverPlayer);
-            server.world.spawnCreature(serverPlayer, serverPlayer.position);
+            server.world.spawnCreature(serverPlayer);
             LoginResultPacket packet = new LoginResultPacket(server);
             serverPlayer.sendPacket(packet);
 
@@ -36,12 +36,6 @@ public class ServerPacketHandler extends PacketHandler {
 
             for(int i = 0; i < serverPlayer.inventory.length; i++) {
                 serverPlayer.sendPacket(new SetInventorySlotContentPacket(serverPlayer, i));
-                /*for(int j = 0; j < server.world.creatures.size(); j++) {
-                    Creature creature = server.world.creatures.get(j);
-                    if(creature != serverPlayer) {
-                        serverPlayer.sendPacket(new SpawnCreaturePacket(creature));
-                    }
-                }*/
             }
 
             server.sendMessageToAll(serverPlayer.playerProfile.getUsername() + " joined the server");
@@ -86,12 +80,12 @@ public class ServerPacketHandler extends PacketHandler {
         packetHandlers.put(RequestChunkPacket.class, (player, buffer) -> {
             int chunkX = buffer.readInt();
             int chunkY = buffer.readInt();
-            Chunk chunk = server.world.getChunkAt(chunkX, chunkY);
+            Chunk chunk = server.world.getChunk(chunkX, chunkY);
             if(chunk == null) {
                 ChunkRequestFailurePacket chunkRequestFailurePacket = new ChunkRequestFailurePacket(ChunkRequestFailurePacket.FailureType.CHUNK_NOT_LOADED_YET, chunkX, chunkY);
                 ((ServerPlayer)player).sendPacket(chunkRequestFailurePacket);
 
-                chunk = server.world.createChunk(new Vector2i(chunkX, chunkY));
+                chunk = server.world.createChunk(chunkX, chunkY);
                 chunk.generateChunk();
                 server.world.loadedChunks.put(new Vector2i(chunkX, chunkY), chunk);
                 return;
@@ -170,7 +164,7 @@ public class ServerPacketHandler extends PacketHandler {
                 itemCreature.representingItemStack.setAmount(amount);
                 player.inventory[slot].decreaseBy(amount);
 
-                player.world.spawnCreature(itemCreature, itemCreature.position);
+                player.world.spawnCreature(itemCreature);
 
                 SetInventorySlotContentPacket packet = new SetInventorySlotContentPacket(player, slot);
                 ((ServerPlayer) player).sendPacket(packet);

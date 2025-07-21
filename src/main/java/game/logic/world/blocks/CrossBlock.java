@@ -14,10 +14,10 @@ public class CrossBlock extends Block {
 
     @Override
     public void buildBlockVertices(ChunkVertexBuilder vertexBuilder, ClientChunk chunk, int x, int y, int z) {
-        Vector3i worldPosition = new Vector3i(chunk.chunkPosition.x * 16 + x, y, chunk.chunkPosition.z * 16 + z);
+        Vector3i worldPosition = new Vector3i(chunk.chunkPosition.x * 16 + x, y, chunk.chunkPosition.y * 16 + z);
 
-        float skylight = chunk.world.getSkylightAt(worldPosition.x, worldPosition.y, worldPosition.z) / 16F;
-        float light = chunk.world.getLightAt(worldPosition.x, worldPosition.y, worldPosition.z) / 16F;
+        float skylight = chunk.world.getSkylight(worldPosition.x, worldPosition.y, worldPosition.z) / 16F;
+        float light = chunk.world.getLight(worldPosition.x, worldPosition.y, worldPosition.z) / 16F;
 
         vertexBuilder.vertex(x, y, z + 1, 0, 0, ChunkVertexBuilder.Normal.TOP, this, skylight, light);
         vertexBuilder.vertex(x + 1, y, z, 1, 0, ChunkVertexBuilder.Normal.TOP, this, skylight, light);

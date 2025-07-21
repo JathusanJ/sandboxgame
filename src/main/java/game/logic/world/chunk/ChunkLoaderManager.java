@@ -1,71 +1,84 @@
 package game.logic.world.chunk;
 
+import game.logic.TickManager;
+import game.logic.Tickable;
+import game.logic.world.World;
+import org.joml.Vector2i;
+
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ChunkLoaderManager {
-    public ConcurrentLinkedQueue<Chunk> queue = new ConcurrentLinkedQueue<>();
-    public ConcurrentLinkedQueue<Chunk> features = new ConcurrentLinkedQueue<>();
-    public ConcurrentLinkedQueue<Chunk> unload = new ConcurrentLinkedQueue<>();
+public class ChunkLoaderManager implements Tickable {
+    public ArrayList<Ticket> tickets = new ArrayList<>();
+    public World world;
+    public TickManager tickManager = new TickManager();
+    public Map<Vector2i, Chunk> chunksToRemove = new HashMap<>();
 
-    public ArrayList<ChunkLoader> chunkLoaders = new ArrayList<>();
-
-    public int loadersUsedThisTick = 0;
-
-    public ChunkLoaderManager() {
-        int amount = 10;
-        for (int i = 0; i < amount; i++) {
-            this.chunkLoaders.add(new ChunkLoader(i));
-        }
+    public ChunkLoaderManager(World world) {
+        this.world = world;
+        tickManager.tickables.add(this);
     }
 
+    @Override
     public void tick() {
-        if(this.queue.isEmpty() && this.features.isEmpty() && this.unload.isEmpty()) {
-            return;
+        this.chunksToRemove.putAll(this.world.loadedChunks);
+
+        for(Ticket ticket : tickets) {
+            ticket.work(this.world, this.chunksToRemove);
         }
 
-        this.loadersUsedThisTick = 0;
+        for(Chunk chunk : this.chunksToRemove.values()) {
+            this.world.loadedChunks.remove(chunk.chunkPosition);
+        }
 
-        ChunkLoader availableLoader = null;
-        int availableLoaders = 0;
-        for(ChunkLoader loader : this.chunkLoaders) {
-            if(!loader.busy) {
-                if(availableLoader == null) {
-                    availableLoader = loader;
-                } else {
-                    availableLoaders++;
+        this.chunksToRemove.clear();
+    }
+
+    public void start() {
+        this.tickManager.start();
+    }
+
+    public void stop() {
+        this.tickManager.stop();
+    }
+
+    public void addTicket(Ticket ticket) {
+        this.tickets.add(ticket);
+    }
+
+    public void removeTicket(Ticket ticket) {
+        this.tickets.remove(ticket);
+    }
+
+    public static class Ticket {
+        public int centerX;
+        public int centerY;
+        public int radius;
+
+        public Ticket(int centerX, int centerY, int radius) {
+            this.centerX = centerX;
+            this.centerY = centerY;
+            this.radius = radius;
+        }
+
+        public void work(World world, Map<Vector2i, Chunk> chunksToRemove) {
+            for(int x = centerX - radius; x <=  centerX + radius; x++) {
+                for(int y = centerY - radius; y <= centerY + radius; y++) {
+                    Chunk chunk = world.loadedChunks.get(new Vector2i(x,y));
+                    if(chunk == null) {
+                        chunk = world.createChunk(x, y);
+                        chunk.generateChunk();
+                        world.loadedChunks.put(new Vector2i(x, y), chunk);
+                    } else {
+                        chunksToRemove.remove(chunk.chunkPosition);
+                        if(!chunk.featuresGenerated && chunk.areNeighboursLoaded()) {
+                            chunk.generateFeatures();
+                            chunk.calculateSkylight();
+                        }
+                    }
                 }
             }
         }
-        if(availableLoader == null) {
-            return;
-        }
-
-        if(!this.unload.isEmpty() && this.unload.size() > 50) {
-            availableLoader.start(this.unload.poll(), ChunkLoader.TaskType.UNLOAD);
-        } if(!this.features.isEmpty()) {
-            availableLoader.start(this.features.poll(), ChunkLoader.TaskType.FEATURES);
-        } else if(!this.queue.isEmpty()) {
-            availableLoader.start(this.queue.poll(), ChunkLoader.TaskType.LOAD);
-        } else {
-            availableLoader.start(this.unload.poll(), ChunkLoader.TaskType.UNLOAD);
-        }
-
-
-        this.loadersUsedThisTick++;
-
-        if(availableLoaders > 0 && !(this.queue.isEmpty() && this.features.isEmpty() && this.unload.isEmpty()) && loadersUsedThisTick < this.chunkLoaders.size()) {
-            this.tick();
-        }
-    }
-
-    public boolean areTasksRunning() {
-        for (ChunkLoader loader : this.chunkLoaders) {
-            if(loader.busy) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

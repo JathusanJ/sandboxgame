@@ -23,7 +23,7 @@ public class UIRenderer {
     private int vaoId;
     private int eboId;
 
-    private Shader texturedQuadShader;
+    public Shader texturedQuadShader;
     private Shader coloredQuadShader;
 
     public Camera2D camera = new Camera2D();

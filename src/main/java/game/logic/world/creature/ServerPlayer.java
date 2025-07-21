@@ -31,13 +31,14 @@ public class ServerPlayer extends Player {
 
         if(this.blockBreakingProgress != null) {
             if(this.blockBreakingProgress.isDone()) {
-                ItemStack itemStack = this.world.getBlockAt(this.blockBreakingProgress.blockPosition.x,this.blockBreakingProgress.blockPosition.y,this.blockBreakingProgress.blockPosition.z).getAsDroppedItem(blockBreakingProgress.player, blockBreakingProgress.player.inventory[blockBreakingProgress.hotbarSlot]);
+                ItemStack itemStack = this.world.getBlock(this.blockBreakingProgress.blockPosition.x,this.blockBreakingProgress.blockPosition.y,this.blockBreakingProgress.blockPosition.z).getAsDroppedItem(blockBreakingProgress.player, blockBreakingProgress.player.inventory[blockBreakingProgress.hotbarSlot]);
                 if(itemStack != null && itemStack.item != Items.AIR) {
                     ItemCreature droppedBlock = new ItemCreature();
                     droppedBlock.representingItemStack = itemStack;
-                    this.world.spawnCreature(droppedBlock, new Vector3f(this.blockBreakingProgress.blockPosition.x + 0.5F, this.blockBreakingProgress.blockPosition.y + 0.5F, this.blockBreakingProgress.blockPosition.z + 0.5F));
+                    droppedBlock.position = new Vector3f(this.blockBreakingProgress.blockPosition.x + 0.5F, this.blockBreakingProgress.blockPosition.y + 0.5F, this.blockBreakingProgress.blockPosition.z + 0.5F);
+                    this.world.spawnCreature(droppedBlock);
                 }
-                this.world.setBlockAt(this.blockBreakingProgress.blockPosition.x, this.blockBreakingProgress.blockPosition.y, this.blockBreakingProgress.blockPosition.z, Blocks.AIR);
+                this.world.setBlock(this.blockBreakingProgress.blockPosition.x, this.blockBreakingProgress.blockPosition.y, this.blockBreakingProgress.blockPosition.z, Blocks.AIR);
                 this.blockBreakingProgress = null;
                 this.sendPacket(new BlockBreakingPacket(BlockBreakingPacket.State.SERVER_STOP));
             } else {

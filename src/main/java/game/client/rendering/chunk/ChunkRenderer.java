@@ -82,11 +82,11 @@ public class ChunkRenderer {
             if(!chunk.featuresGenerated || !chunk.areNeighboursFullyGenerated()) {
                 continue;
             }
-
             if(chunk.chunkMesh == null) {
                 chunk.chunkMesh = new ChunkMesh(chunk);
                 this.chunkMeshGenerationManager.queue.add(chunk);
-                continue;
+            } else if(chunk.chunkMesh.state == ChunkMesh.State.WAITING_FOR_UPLOAD) {
+                chunk.chunkMesh.upload();
             } else if(chunk.needsRemesh()) {
                 chunk.chunkMesh.generate();
                 if(chunk.chunkMesh.state == ChunkMesh.State.FAILED) {
@@ -96,11 +96,8 @@ public class ChunkRenderer {
                 }
                 chunk.noLongerNeedsRemesh();
             }
-            if(chunk.chunkMesh != null && chunk.chunkMesh.state == ChunkMesh.State.WAITING_FOR_UPLOAD) {
-                chunk.chunkMesh.upload();
-            }
 
-            if(chunk.chunkMesh == null || chunk.chunkMesh.state != ChunkMesh.State.COMPLETED) {
+            if(chunk.chunkMesh.state != ChunkMesh.State.COMPLETED) {
                 continue;
             }
 

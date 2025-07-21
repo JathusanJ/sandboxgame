@@ -11,13 +11,13 @@ import game.client.rendering.chunk.ChunkVertexBuilder;
 import game.client.ui.item.ItemTextures;
 import game.client.ui.screen.*;
 import game.client.ui.text.Font;
-import game.client.ui.widget.ChatMessage;
 import game.client.ui.widget.TextFieldWidget;
 import game.client.world.SingleplayerWorld;
 import game.logic.util.json.WrappedJsonObject;
 import game.logic.world.World;
 import game.logic.world.blocks.Blocks;
 import game.client.world.creature.ClientPlayer;
+import game.logic.world.chunk.ChunkLoaderManager;
 import game.logic.world.creature.ItemCreature;
 import game.logic.world.creature.Player;
 import game.logic.TickManager;
@@ -25,7 +25,6 @@ import game.logic.world.blocks.Block;
 import game.client.world.ClientChunk;
 import game.client.world.ClientWorld;
 
-import game.logic.world.generators.DefaultWorldGenerator;
 import game.logic.world.items.BlockItem;
 import game.logic.world.items.Item;
 import game.logic.world.items.Items;
@@ -42,7 +41,6 @@ import java.lang.Math;
 import java.lang.Runtime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -62,6 +60,7 @@ public class GameRenderer {
     public UIRenderer uiRenderer = new UIRenderer();
     public ChunkRenderer chunkRenderer = new ChunkRenderer(this);
     public SkyRenderer skyRenderer = new SkyRenderer();
+    public CloudRenderer cloudRenderer = new CloudRenderer();
     public CreatureRenderer creatureRenderer = new CreatureRenderer(this);
     public BlockBreakingProgressRenderer blockBreakingProgressRenderer = new BlockBreakingProgressRenderer();
     public ChatRenderer chatRenderer = new ChatRenderer();
@@ -106,6 +105,12 @@ public class GameRenderer {
             this.player.load(json);
         }
 
+        world.chunkLoaderManager.addTicket(world.spawnLoadTicket);
+        if(world instanceof SingleplayerWorld singleplayerWorld) {
+            singleplayerWorld.playerTicket = new ChunkLoaderManager.Ticket(player.getChunkPosition().x, player.getChunkPosition().y, SandboxGame.getInstance().settings.renderDistance + 1);
+            singleplayerWorld.chunkLoaderManager.addTicket(singleplayerWorld.playerTicket);
+        }
+
         this.loadWorldWithoutMarkingReadyAndTicking(world);
     }
 
@@ -115,16 +120,14 @@ public class GameRenderer {
 
     public void loadWorldWithoutMarkingReadyAndTicking(ClientWorld world) {
         this.world = world;
-        this.world.loadWorld();
-
-        this.world.creatures.add(this.player);
-
-        this.world.generateChunksAround(this.player.getChunkPosition().x, this.player.getChunkPosition().y);
+        this.world.spawnCreature(this.player);
+        this.world.chunkLoaderManager.start();
     }
 
     public void unloadCurrentWorld() {
         if(this.world == null) return;
-        this.world.saveWorld();
+        this.world.stop();
+        this.world.save();
         this.world.deleteChunkMeshes();
         WrappedJsonObject json = new WrappedJsonObject();
         this.player.save(json);
@@ -143,6 +146,11 @@ public class GameRenderer {
         } catch (IOException e) {
             throw new IllegalStateException("Critical: couldn't write to player.json", e);
         }
+
+        SandboxGame.getInstance().doOnMainThread(() -> {
+            this.world = null;
+            this.player = null;
+        });
     }
 
     public void setup() {
@@ -152,6 +160,7 @@ public class GameRenderer {
         this.chunkRenderer.setup();
         this.uiRenderer.setup();
         this.skyRenderer.setup();
+        this.cloudRenderer.setup();
         this.creatureRenderer.setup();
         this.blockBreakingProgressRenderer.setup();
         this.blockSelectorRenderer.setup();
@@ -181,8 +190,8 @@ public class GameRenderer {
             this.renderCreatures(deltaTime);
             glDisable(GL_DEPTH_TEST);
 
-            Block blockInCamera = this.world.getBlockAt((int) Math.floor(this.camera.position.x), (int) Math.floor(this.camera.position.y), (int) Math.floor(this.camera.position.z));
-            if(blockInCamera.isLiquid()) {
+            Block blockInCamera = this.world.getBlock((int) Math.floor(this.camera.position.x), (int) Math.floor(this.camera.position.y), (int) Math.floor(this.camera.position.z));
+            if(blockInCamera != null && blockInCamera.isLiquid()) {
                 Vector4f color = new Vector4f(0.1F);
                 if(blockInCamera == Blocks.WATER) {
                     color = new Vector4f(6F / 255F, 2F / 255F, 112F / 255F, 50F / 255F);
@@ -281,7 +290,7 @@ public class GameRenderer {
             }
             if(KeyboardAndMouseInput.pressedMouseButton(GLFW_MOUSE_BUTTON_2)) {
                 World.WorldRaycastResult result = this.world.blockRaycast(this.camera.position, this.camera.getDirection(), 5);
-                if(result.success() && this.world.getBlockAt(result.position().x, result.position().y, result.position().z).onRightClick(this.world, result.position())) {
+                if(result.success() && this.world.getBlock(result.position().x, result.position().y, result.position().z).onRightClick(this.world, result.position())) {
                     if(this.world instanceof SingleplayerWorld) {
                         Item item = this.player.inventory[this.player.currentHotbarSlot].getItem();
                         if (item != null) {
@@ -322,7 +331,7 @@ public class GameRenderer {
                             this.player.inventory[this.player.currentHotbarSlot].decreaseBy(1);
                         }
 
-                        this.world.creatures.add(itemCreature);
+                        this.world.spawnCreature(itemCreature);
                     }
                 }
             }
@@ -443,23 +452,13 @@ public class GameRenderer {
 
                     Vector3i playerBlockPosition = new Vector3i((int) Math.floor(this.player.position.x), (int) Math.floor(this.player.position.y), (int) Math.floor(this.player.position.z));
 
-                    float skylight = this.world.getSkylightAt(playerBlockPosition.x, playerBlockPosition.y, playerBlockPosition.z) / 16F;
-                    float light = this.world.getLightAt(playerBlockPosition.x, playerBlockPosition.y, playerBlockPosition.z) / 16F;
+                    float skylight = this.world.getSkylight(playerBlockPosition.x, playerBlockPosition.y, playerBlockPosition.z) / 16F;
+                    float light = this.world.getLight(playerBlockPosition.x, playerBlockPosition.y, playerBlockPosition.z) / 16F;
 
                     this.uiRenderer.renderTextWithShadow("skylight: " + skylight + " light: " + light, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 11), 24);
-                    //this.uiRenderer.renderTextWithShadow("> with modification:" + values[1], new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 12), 24);
 
                     if(this.player.blockBreakingProgress != null) {
                         this.uiRenderer.renderTextWithShadow("Block breaking progress: " + this.player.blockBreakingProgress.breakingTicks, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 14), 24);
-                    }
-
-                    if(this.world.worldGenerator instanceof DefaultWorldGenerator defaultWorldGenerator) {
-                        List<Float> debugValues = defaultWorldGenerator.getDebugValues((int) Math.floor(this.player.position.x), (int) Math.floor(this.player.position.z));
-                        this.uiRenderer.renderTextWithShadow("islandNoise: " + debugValues.get(0), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 16), 24);
-                        this.uiRenderer.renderTextWithShadow("hillMountainNoise: " + debugValues.get(1), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 17), 24);
-                        this.uiRenderer.renderTextWithShadow("islandMultiplier: " + debugValues.get(2), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 18), 24);
-                        this.uiRenderer.renderTextWithShadow("hillMountainMultiplier: " + debugValues.get(3), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 19), 24);
-                        this.uiRenderer.renderTextWithShadow("final height: " + debugValues.get(4), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 20), 24);
                     }
 
                     this.uiRenderer.renderTextWithShadowRightSided("Java " + Runtime.version().feature() + " (" + Runtime.version().toString() + ")", new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth(), SandboxGame.getInstance().getWindow().getWindowHeight() - 24), 24);

@@ -7,8 +7,7 @@ import game.client.world.ClientChunk;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL30.*;
 
 public class ChunkMesh {
     public ClientChunk chunk;
@@ -17,6 +16,7 @@ public class ChunkMesh {
     public int length = 0;
     public State state = State.UNINITIALIZED;
     public Task task;
+    public boolean test = false;
 
     public ChunkMesh(ClientChunk chunk) {
         this.chunk = chunk;
@@ -25,15 +25,21 @@ public class ChunkMesh {
     }
 
     public void upload() {
-        glBindVertexArray(this.vaoId);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SandboxGame.getInstance().getGameRenderer().chunkRenderer.eboId);
-        glBindBuffer(GL_ARRAY_BUFFER, this.vboId);
-        glBufferData(GL_ARRAY_BUFFER, (long) this.task.vertices.length * Float.BYTES, GL_DYNAMIC_DRAW);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, this.task.vertices);
-        SandboxGame.getInstance().getGameRenderer().chunkRenderer.createVertexAttributes();
-        this.state = State.COMPLETED;
+        try {
+            glBindVertexArray(this.vaoId);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SandboxGame.getInstance().getGameRenderer().chunkRenderer.eboId);
+            glBindBuffer(GL_ARRAY_BUFFER, this.vboId);
+            glBufferData(GL_ARRAY_BUFFER, (long) this.task.vertices.length * Float.BYTES, GL_DYNAMIC_DRAW);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, this.task.vertices);
+            SandboxGame.getInstance().getGameRenderer().chunkRenderer.createVertexAttributes();
+            this.state = State.COMPLETED;
+        } catch(Exception e) {
+            System.out.println("Failed to upload chunk mesh (" + test + "): " + e);
+            e.printStackTrace();
+        }
         // The task can be removed
         this.task = null;
+        this.test = true;
     }
 
     public void generate() {
@@ -49,7 +55,7 @@ public class ChunkMesh {
 
     public void delete() {
         glDeleteBuffers(this.vboId);
-        glBindVertexArray(this.vaoId);
+        glDeleteVertexArrays(this.vaoId);
     }
 
     private float[] generateVertices() {
@@ -67,7 +73,7 @@ public class ChunkMesh {
             }
         }
 
-        float[] vertices = vertexBuilder.compile(this.chunk.chunkPosition.x * 16, 0, this.chunk.chunkPosition.z * 16);
+        float[] vertices = vertexBuilder.compile(this.chunk.chunkPosition.x * 16, 0, this.chunk.chunkPosition.y * 16);
         this.length = vertices.length;
         return vertices;
     }

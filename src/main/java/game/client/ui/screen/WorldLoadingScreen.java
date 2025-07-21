@@ -2,6 +2,7 @@ package game.client.ui.screen;
 
 import game.client.SandboxGame;
 import game.client.ui.text.Language;
+import game.client.world.SingleplayerWorld;
 import org.joml.Vector2f;
 
 public class WorldLoadingScreen extends Screen {
@@ -43,7 +44,14 @@ public class WorldLoadingScreen extends Screen {
             SandboxGame.getInstance().getWindow().captureCursor();
             return;
         }
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.world.loading"), new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() / 2F + 16), 32, true);
+
+        String loadingText = Language.translate("ui.world.loading");
+
+        if(this.gameRenderer.world instanceof SingleplayerWorld singleplayerWorld) {
+            loadingText = loadingText + " (" + singleplayerWorld.chunkLoadingPercentage + "%)";
+        }
+
+        this.uiRenderer.renderTextWithShadow(loadingText, new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() / 2F + 16), 32, true);
         this.uiRenderer.renderTextWithShadow(splashes[chosenSplash], new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() / 2F - 24), 28, true);
     }
 

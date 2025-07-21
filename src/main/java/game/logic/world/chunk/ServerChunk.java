@@ -5,8 +5,8 @@ import org.joml.Vector2i;
 import org.joml.Vector3i;
 
 public class ServerChunk extends Chunk {
-    public ServerChunk(Vector2i chunkPosition, ServerWorld world) {
-        this.chunkPosition = new Vector3i(chunkPosition.x, 0, chunkPosition.y);
+    public ServerChunk(int x, int y, ServerWorld world) {
+        this.chunkPosition = new Vector2i(x,y);
         this.world = world;
     }
 }

@@ -4,6 +4,7 @@ import game.client.ui.text.Language;
 import game.logic.util.json.WrappedJsonObject;
 import game.logic.world.World;
 import game.logic.world.ServerWorld;
+import game.logic.world.blocks.Block;
 import game.networking.packets.CreatureMovePacket;
 import io.netty.buffer.ByteBuf;
 import org.joml.Vector2i;
@@ -67,11 +68,11 @@ public abstract class Creature {
         }
 
         if(!this.lastChunkPosition.equals(this.getChunkPosition())) {
-            this.world.getChunkAt(this.lastChunkPosition.x, this.lastChunkPosition.y).setModified();
+            this.world.getChunk(this.lastChunkPosition.x, this.lastChunkPosition.y).setModified();
             this.lastChunkPosition = this.getChunkPosition();
         }
 
-        this.world.getChunkAt(this.getChunkPosition().x, this.getChunkPosition().y).setModified();
+        this.world.getChunk(this.getChunkPosition().x, this.getChunkPosition().y).setModified();
     }
 
     public void remove() {
@@ -93,7 +94,9 @@ public abstract class Creature {
         for (int y = (int) Math.floor(lowerCorner.y) - 1; y <= (int) Math.floor(upperCorner.y) + 1; y++) {
             for (int x = (int) Math.floor(lowerCorner.x) - 1; x <= (int) Math.floor(upperCorner.x) + 1; x++) {
                 for (int z = (int) Math.floor(lowerCorner.z) - 1; z <= (int) Math.floor(upperCorner.z) + 1; z++) {
-                    if(this.world.getBlockAt(x,y,z).hasCollision()) {
+                    Block block = this.world.getBlock(x,y,z);
+                    if(block == null) continue;
+                    if(block.hasCollision()) {
                         // Is it still colliding?
                         Box creatureBox = new Box(this.position.add(0, this.size.y / 2F, 0, new Vector3f()), this.size);
                         Box blockBox = new Box(new Vector3f(x + 0.5F,y + 0.5F,z + 0.5F), new Vector3f(1F,1F,1F));
