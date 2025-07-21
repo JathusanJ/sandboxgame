@@ -198,7 +198,7 @@ public abstract class Creature {
 
         this.position.add(this.velocity.x * 0.05F, 0F, this.velocity.z * 0.05F);
         this.checkAndHandleCollision(false);
-        this.position.add(0F, this.velocity.y * 0.05F, 0F);
+        this.position.add(0F, Math.clamp(this.velocity.y * 0.05F, -0.75F, 0.75F), 0F);
         this.checkAndHandleCollision(true);
 
         if(this.world instanceof ServerWorld serverWorld && serverWorld.worldTime % 20 == 0) {
