@@ -168,4 +168,12 @@ public class ClientPlayer extends Player {
         camera.pitch = json.getObject("camera").getFloat("pitch");
         camera.yaw = json.getObject("camera").getFloat("yaw");
     }
+
+    @Override
+    public void respawn() {
+        Camera camera = SandboxGame.getInstance().getGameRenderer().camera;
+        camera.yaw = 0F;
+        camera.pitch = 0F;
+        super.respawn();
+    }
 }

@@ -45,6 +45,8 @@ public class SingleplayerWorld extends ClientWorld {
 
     @Override
     public void tick() {
+        Player player = SandboxGame.getInstance().getGameRenderer().player;
+
         if(!this.ready) {
             int radius = SandboxGame.getInstance().settings.renderDistance - 1;
             int chunksReady = 0;
@@ -68,9 +70,13 @@ public class SingleplayerWorld extends ClientWorld {
             }
 
             this.ready = true;
+
+            if(this.worldTime <= (6.5 * 60 * 20)) {
+                player.respawn();
+            }
         }
 
-        Player player = SandboxGame.getInstance().getGameRenderer().player;
+
         playerTicket.centerX = player.getChunkPosition().x;
         playerTicket.centerY = player.getChunkPosition().y;
         playerTicket.radius = SandboxGame.getInstance().settings.renderDistance + 2;
