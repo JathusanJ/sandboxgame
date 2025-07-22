@@ -17,7 +17,7 @@ import org.joml.Vector2f;
 
 import java.util.ArrayList;
 
-public class CraftingTableScreen extends Screen {
+public class CraftingTableScreen extends Screen implements CraftingScreen {
     public RegularItemSlot holdingSlot = new RegularItemSlot();
     public ArrayList<ItemSlotWidget> inputSlots = new ArrayList<>();
     public ArrayList<ItemSlotWidget> playerInventorySlots = new ArrayList<>();
@@ -76,33 +76,7 @@ public class CraftingTableScreen extends Screen {
     public void close() {
         this.gameRenderer.setScreen(null);
         if(!this.holdingSlot.isEmpty()) {
-            // Find the nearest slot with the same item
-            for (int i = 0; i < this.gameRenderer.player.inventory.length; i++) {
-                ItemStack itemstack = this.gameRenderer.player.inventory[i];
-                if(this.holdingSlot.getItem() == itemstack.getItem() && itemstack.amount < 64) {
-                    int amountToTransfer = Math.min(this.holdingSlot.getAmount(), 64 - itemstack.amount);
-                    itemstack.setAmount(itemstack.amount + amountToTransfer);
-                    this.holdingSlot.setAmount(this.holdingSlot.getAmount() - amountToTransfer);
-                }
-                if(this.holdingSlot.getAmount() <= 0) break;
-            }
-            if(!this.holdingSlot.isEmpty()) {
-                // Find the nearest empty slot
-                for (int i = 0; i < this.gameRenderer.player.inventory.length; i++) {
-                    ItemStack itemstack = this.gameRenderer.player.inventory[i];
-                    if(itemstack.getItem() == Items.AIR) {
-                        itemstack.setItem(this.holdingSlot.getItem());
-                        itemstack.setAmount(0);
-                        int amountToTransfer = Math.min(this.holdingSlot.getAmount(), 64 - itemstack.amount);
-                        itemstack.setAmount(itemstack.amount + amountToTransfer);
-                        this.holdingSlot.setAmount(this.holdingSlot.getAmount() - amountToTransfer);
-                    }
-                    if(this.holdingSlot.getAmount() <= 0) break;
-                }
-                if(!this.holdingSlot.isEmpty()) {
-                    // Drop the item into the world (when entities are added)
-                }
-            }
+            this.gameRenderer.player.putInInventory(this.holdingSlot.getItemStack());
         }
     }
 
@@ -126,43 +100,17 @@ public class CraftingTableScreen extends Screen {
 
         // Hotbar (row 1)
         for(int x = 0; x < 9; x++) {
-            this.playerInventorySlots.get(x).position = new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50 + x * 50, this.getScreenHeight() / 2F - 1.5F * 50 - 3 * 50);
+            this.playerInventorySlots.get(x).position = new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50 + x * 50, this.getScreenHeight() / 2F - 5 * 50);
         }
     }
 
+    @Override
     public void onItemTaken(int amount) {
         if(amount < 1) return;
         for (int i = 0; i < 9; i++) {
             this.inputSlots.get(i).representingItemSlot.setAmount(this.inputSlots.get(i).representingItemSlot.getAmount() - amount);
             if(this.inputSlots.get(i).representingItemSlot.getAmount() == 0) {
                 this.inputSlots.get(i).representingItemSlot.setItem(Items.AIR);
-            }
-        }
-    }
-
-    public static class CraftingTableOutputSlot extends RegularItemSlot {
-        public CraftingTableScreen screen;
-
-        public CraftingTableOutputSlot(CraftingTableScreen craftingTableScreen) {
-            this.screen = craftingTableScreen;
-            this.representingItemStack = new ItemStack(Items.AIR);
-            this.representingItemStack.amount = 0;
-        }
-
-        @Override
-        public void transferTo(ItemSlot destination, int amount) {
-            destination.receiveFrom(this, amount);
-            this.screen.onItemTaken(amount);
-        }
-
-        @Override
-        public void receiveFrom(ItemSlot source, int amount) {
-            // Send back the amount transferred to here
-            source.receiveFrom(this, amount);
-            if(source.isItemIdentical(this) && source.getAmount() <= 64 - this.representingItemStack.amount) {
-                // And give more if the item in the holding slot is identical
-                source.receiveFrom(this, this.representingItemStack.amount);
-                this.screen.onItemTaken(this.representingItemStack.amount);
             }
         }
     }

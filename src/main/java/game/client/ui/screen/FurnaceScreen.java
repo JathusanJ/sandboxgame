@@ -83,7 +83,7 @@ public class FurnaceScreen extends Screen {
 
         // Hotbar (row 1)
         for(int x = 0; x < 9; x++) {
-            this.playerInventorySlots.get(x).position = new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50 + x * 50, this.getScreenHeight() / 2F - 1.5F * 50 - 3 * 50);
+            this.playerInventorySlots.get(x).position = new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50 + x * 50, this.getScreenHeight() / 2F - 5 * 50);
         }
     }
 }
