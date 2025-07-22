@@ -65,7 +65,7 @@ public class CraftingTableScreen extends Screen implements CraftingScreen {
         Recipe recipe = CraftingRecipes.findRecipe(input, 3, 3);
         if(recipe != null) {
             this.outputSlot.representingItemSlot.setItem(recipe.recipeOutput);
-            this.outputSlot.representingItemSlot.setAmount(1);
+            this.outputSlot.representingItemSlot.setAmount(recipe.amount);
         } else {
             this.outputSlot.representingItemSlot.setItem(Items.AIR);
         }

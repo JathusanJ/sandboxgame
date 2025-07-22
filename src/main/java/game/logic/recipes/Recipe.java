@@ -9,12 +9,18 @@ public class Recipe {
     public int columns;
     public List<Item> recipeInput;
     public Item recipeOutput;
+    public int amount;
 
-    public Recipe(List<Item> recipeInput, Item recipeOutput, int rows, int columns) {
+    public Recipe(List<Item> recipeInput, Item recipeOutput, int rows, int columns, int amount) {
         this.recipeInput = recipeInput;
         this.recipeOutput = recipeOutput;
         this.rows = rows;
         this.columns = columns;
+        this.amount = amount;
+    }
+
+    public Recipe(List<Item> recipeInput, Item recipeOutput, int rows, int columns) {
+        this(recipeInput, recipeOutput, rows, columns, 1);
     }
 
     public boolean matches(List<Item> input, int rows, int columns) {

@@ -115,13 +115,17 @@ public class CraftingRecipes {
         return recipes.get(recipeInputString);
     }
 
-    public static Recipe createRecipe(List<Item> input, Item output, int rows, int columns) {
+    public static Recipe createRecipe(List<Item> input, Item output, int rows, int columns, int amount) {
         String recipeInputString = Recipe.toRecipeInputString(input);
 
-        Recipe recipe = new Recipe(input, output, rows, columns);
+        Recipe recipe = new Recipe(input, output, rows, columns, amount);
         recipes.put(recipeInputString, recipe);
 
         return recipe;
+    }
+
+    public static Recipe createRecipe(List<Item> input, Item output, int rows, int columns) {
+        return createRecipe(input, output, rows, columns, 1);
     }
 
     public static void initialize() {
@@ -168,7 +172,8 @@ public class CraftingRecipes {
                 ),
                 Items.STICK,
                 2,
-                1
+                1,
+                4
         );
 
         // Oak Planks
@@ -178,7 +183,8 @@ public class CraftingRecipes {
                 ),
                 Items.OAK_PLANKS,
                 1,
-                1
+                1,
+                4
         );
 
         // Birch Planks
@@ -188,7 +194,8 @@ public class CraftingRecipes {
                 ),
                 Items.BIRCH_PLANKS,
                 1,
-                1
+                1,
+                4
         );
 
         // Acacia Planks
@@ -198,7 +205,8 @@ public class CraftingRecipes {
                 ),
                 Items.ACACIA_PLANKS,
                 1,
-                1
+                1,
+                4
         );
 
         // Jungle Planks
@@ -208,7 +216,8 @@ public class CraftingRecipes {
                 ),
                 Items.JUNGLE_PLANKS,
                 1,
-                1
+                1,
+                4
         );
     }
 }

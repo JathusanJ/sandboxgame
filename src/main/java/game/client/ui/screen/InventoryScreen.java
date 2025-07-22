@@ -73,7 +73,7 @@ public class InventoryScreen extends Screen implements CraftingScreen {
         Recipe recipe = CraftingRecipes.findRecipe(input, 2, 2);
         if(recipe != null) {
             this.craftingOutputSlot.representingItemSlot.setItem(recipe.recipeOutput);
-            this.craftingOutputSlot.representingItemSlot.setAmount(1);
+            this.craftingOutputSlot.representingItemSlot.setAmount(recipe.amount);
         } else {
             this.craftingOutputSlot.representingItemSlot.setItem(Items.AIR);
         }

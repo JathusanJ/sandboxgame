@@ -20,7 +20,7 @@ public interface CraftingScreen {
         @Override
         public void transferTo(ItemSlot destination, int amount) {
             destination.receiveFrom(this, amount);
-            this.screen.onItemTaken(amount);
+            this.screen.onItemTaken(1);
         }
 
         @Override
@@ -30,7 +30,7 @@ public interface CraftingScreen {
             if(source.isItemIdentical(this) && source.getAmount() <= 64 - this.representingItemStack.amount) {
                 // And give more if the item in the holding slot is identical
                 source.receiveFrom(this, this.representingItemStack.amount);
-                this.screen.onItemTaken(this.representingItemStack.amount);
+                this.screen.onItemTaken(1);
             }
         }
     }
