@@ -47,7 +47,7 @@ public class ItemSlotWidget extends Widget {
 
         if(!this.representingItemSlot.isEmpty()) {
             if(this.representingItemSlot.getItem() instanceof BlockItem blockItem && blockItem.getBlock() != Blocks.AIR) {
-                this.gameRenderer.uiRenderer.renderTexture(this.gameRenderer.getBlockItemTexture(blockItem.getBlock()), new Vector2f(this.position.x + this.size.x * 0.1F, this.position.y + this.size.y * 0.1F), new Vector2f(this.size.x * 0.8F,  this.size.y * 0.8F));
+                this.gameRenderer.uiRenderer.renderTexture(this.gameRenderer.getBlockItemTexture(blockItem), new Vector2f(this.position.x + this.size.x * 0.1F, this.position.y + this.size.y * 0.1F), new Vector2f(this.size.x * 0.8F,  this.size.y * 0.8F));
             } else {
                 this.gameRenderer.uiRenderer.renderTexture(ItemTextures.getTexture(this.representingItemSlot.getItem().id), new Vector2f(this.position.x + this.size.x * 0.1F, this.position.y + this.size.y * 0.1F), new Vector2f(this.size.x * 0.8F,  this.size.y * 0.8F));
             }

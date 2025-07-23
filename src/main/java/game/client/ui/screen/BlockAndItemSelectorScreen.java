@@ -17,15 +17,10 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockAndItemSelectorScreen extends Screen {
+public class BlockAndItemSelectorScreen extends ContainerScreen {
     public ArrayList<ItemSlotWidget> itemSlots = new ArrayList<>();
-
-    public RegularItemSlot holdingSlot;
-
     public BlockAndItemSelectorScreen() {
         List<Item> items = Items.sorted();
-
-        this.holdingSlot = new RegularItemSlot();
 
         int counter = 0;
         for(int y = 0; y < 4; y++) {
@@ -51,16 +46,7 @@ public class BlockAndItemSelectorScreen extends Screen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        if(!this.holdingSlot.isEmpty()) {
-            if(this.holdingSlot.getItem() instanceof BlockItem blockItem) {
-                this.gameRenderer.uiRenderer.renderTexture(this.gameRenderer.getBlockItemTexture(blockItem.getBlock()), new Vector2f(mouseX, mouseY), new Vector2f(40, 40));
-            } else {
-                this.gameRenderer.uiRenderer.renderTexture(ItemTextures.getTexture(this.holdingSlot.getItem().id), new Vector2f(mouseX, mouseY), new Vector2f(40, 40));
-            }
-            if(this.holdingSlot.getAmount() != 1) {
-                this.uiRenderer.renderText(String.valueOf(this.holdingSlot.getAmount()), new Vector2f(mouseX + 40 - Font.getTextWidth(String.valueOf(this.holdingSlot.getAmount()), 24), mouseY), 24);
-            }
-        }
+
     }
 
     @Override

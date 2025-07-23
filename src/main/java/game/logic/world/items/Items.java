@@ -42,10 +42,10 @@ public class Items {
 
     public static BlockItem BARREL = registerBlockItem(Blocks.BARREL);
 
-    public static BlockItem RED_TULIP = registerBlockItem(Blocks.RED_TULIP);
-    public static BlockItem ORANGE_TULIP = registerBlockItem(Blocks.ORANGE_TULIP);
-    public static BlockItem YELLOW_TULIP = registerBlockItem(Blocks.YELLOW_TULIP);
-    public static BlockItem SHORT_GRASS = registerBlockItem(Blocks.SHORT_GRASS);
+    public static BlockItem RED_TULIP = registerBlockItem(Blocks.RED_TULIP, "red_tulip");
+    public static BlockItem ORANGE_TULIP = registerBlockItem(Blocks.ORANGE_TULIP, "orange_tulip");
+    public static BlockItem YELLOW_TULIP = registerBlockItem(Blocks.YELLOW_TULIP, "yellow_tulip");
+    public static BlockItem SHORT_GRASS = registerBlockItem(Blocks.SHORT_GRASS, "short_grass");
 
     public static Item COAL = register(new Item(), "coal");
     public static Item STICK = register(new Item(), "stick");
@@ -54,10 +54,14 @@ public class Items {
     public static Item IRON_PICKAXE = register(new PickaxeItem(PickaxeItem.PickaxeTier.IRON), "iron_pickaxe");
     public static Item DIAMOND_PICKAXE = register(new PickaxeItem(PickaxeItem.PickaxeTier.DIAMOND), "diamond_pickaxe");
 
-    public static BlockItem registerBlockItem(Block block) {
-        BlockItem asItem = (BlockItem) register(new BlockItem(block), block.getBlockId());
+    public static BlockItem registerBlockItem(Block block, String itemTextureOvveride) {
+        BlockItem asItem = (BlockItem) register(new BlockItem(block, itemTextureOvveride), block.getBlockId());
         block.asItem = asItem;
         return asItem;
+    }
+
+    public static BlockItem registerBlockItem(Block block) {
+        return registerBlockItem(block, null);
     }
 
     public static Item register(Item item, String id) {

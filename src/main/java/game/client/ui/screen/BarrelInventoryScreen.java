@@ -13,8 +13,7 @@ import org.joml.Vector2f;
 
 import java.util.ArrayList;
 
-public class BarrelInventoryScreen extends Screen {
-    public RegularItemSlot holdingSlot = new RegularItemSlot();
+public class BarrelInventoryScreen extends ContainerScreen {
     public BarrelBlockEntity barrelBlockEntity;
 
     public ArrayList<ItemSlotWidget> barrelSlots = new ArrayList<>();
@@ -39,17 +38,6 @@ public class BarrelInventoryScreen extends Screen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        if(!this.holdingSlot.isEmpty()) {
-            if(this.holdingSlot.getItem() instanceof BlockItem blockItem) {
-                this.gameRenderer.uiRenderer.renderTexture(this.gameRenderer.getBlockItemTexture(blockItem.getBlock()), new Vector2f(mouseX, mouseY), new Vector2f(40, 40));
-            } else {
-                this.gameRenderer.uiRenderer.renderTexture(ItemTextures.getTexture(this.holdingSlot.getItem().id), new Vector2f(mouseX, mouseY), new Vector2f(40, 40));
-            }
-            if(this.holdingSlot.getAmount() != 1) {
-                this.uiRenderer.renderText(String.valueOf(this.holdingSlot.getAmount()), new Vector2f(mouseX + 40 - Font.getTextWidth(String.valueOf(this.holdingSlot.getAmount()), 24), mouseY), 24);
-            }
-        }
-
         this.uiRenderer.renderTextWithShadow(Language.translate("ui.screen.barrel"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F + 3.5F * 50), 24);
         this.uiRenderer.renderTextWithShadow(Language.translate("ui.screen.inventory"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F - 0.5F * 50), 24);
     }

@@ -46,8 +46,8 @@ public class ItemCreatureVertexGenerator extends CreatureVertexGenerator<ItemCre
             this.insertVertices(vertexBuilder, corner1, corner2, corner3, corner4);
         }
 
-        if(creature.representingItemStack.getItem() instanceof BlockItem blockItem && SandboxGame.getInstance().getGameRenderer().blockToItemIcon.containsKey(blockItem.getBlock())) {
-            SandboxGame.getInstance().getGameRenderer().blockToItemIcon.get(blockItem.getBlock()).bind();
+        if(creature.representingItemStack.getItem() instanceof BlockItem blockItem) {
+            SandboxGame.getInstance().getGameRenderer().getBlockItemTexture(blockItem).bind();
         } else {
             ItemTextures.getTexture(creature.representingItemStack.getItem().id).bind();
         }

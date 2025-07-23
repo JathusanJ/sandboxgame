@@ -20,9 +20,8 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InventoryScreen extends Screen implements CraftingScreen {
+public class InventoryScreen extends ContainerScreen implements CraftingScreen {
     public ArrayList<ItemSlotWidget> itemSlots = new ArrayList<>();
-    public RegularItemSlot holdingSlot = new RegularItemSlot();
     public ItemSlotWidget craftingOutputSlot = new ItemSlotWidget(new CraftingScreen.CraftingTableOutputSlot(this), holdingSlot);
     public ArrayList<ItemSlotWidget> craftingInputSlots = new ArrayList<>();
 
@@ -52,17 +51,6 @@ public class InventoryScreen extends Screen implements CraftingScreen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        if(!this.holdingSlot.isEmpty()) {
-            if(this.holdingSlot.getItem() instanceof BlockItem blockItem) {
-                this.gameRenderer.uiRenderer.renderTexture(this.gameRenderer.getBlockItemTexture(blockItem.getBlock()), new Vector2f(mouseX, mouseY), new Vector2f(40, 40));
-            } else {
-                this.gameRenderer.uiRenderer.renderTexture(ItemTextures.getTexture(this.holdingSlot.getItem().id), new Vector2f(mouseX, mouseY), new Vector2f(40, 40));
-            }
-            if(this.holdingSlot.getAmount() != 1) {
-                this.uiRenderer.renderText(String.valueOf(this.holdingSlot.getAmount()), new Vector2f(mouseX + 40 - Font.getTextWidth(String.valueOf(this.holdingSlot.getAmount()), 24), mouseY), 24);
-            }
-        }
-
         this.uiRenderer.renderTextWithShadow(Language.translate("ui.screen.inventory"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F - 0.5F * 50), 24);
 
         ArrayList<Item> input = new ArrayList<>();

@@ -8,10 +8,17 @@ import org.joml.Vector3i;
 
 public class BlockItem extends Item {
     private Block block;
+    private String itemTextureOverride;
 
     public BlockItem(Block block) {
         this.block = block;
     }
+
+    public BlockItem(Block block, String itemTextureOverride) {
+        this.block = block;
+        this.itemTextureOverride = itemTextureOverride;
+    }
+
 
     public Block getBlock() {
         return this.block;
@@ -44,5 +51,9 @@ public class BlockItem extends Item {
     @Override
     public String getName() {
         return Language.translate("block." + this.block.getBlockId());
+    }
+
+    public String getOverriddenItemTexture() {
+        return this.itemTextureOverride;
     }
 }

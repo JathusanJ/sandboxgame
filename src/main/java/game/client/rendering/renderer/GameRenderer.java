@@ -487,7 +487,7 @@ public class GameRenderer {
             this.uiRenderer.renderTexture(i == this.player.currentHotbarSlot ? this.hotbarSelectedTexture : this.hotbarUnselectedTexture, new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + i * 75, 0), new Vector2f(75, 75));
             if(this.player.inventory[i] != null && this.player.inventory[i].getItem() != Items.AIR) {
                 if(this.player.inventory[i].getItem() instanceof BlockItem blockItem) {
-                    this.uiRenderer.renderTexture(this.getBlockItemTexture(blockItem.getBlock()), new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + i * 75 + 7.5F, 7.5F), new Vector2f(60, 60));
+                    this.uiRenderer.renderTexture(this.getBlockItemTexture(blockItem), new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + i * 75 + 7.5F, 7.5F), new Vector2f(60, 60));
                 } else {
                     this.uiRenderer.renderTexture(ItemTextures.getTexture(this.player.inventory[i].getItem().id), new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + i * 75 + 7.5F, 7.5F), new Vector2f(60, 60));
                 }
@@ -525,6 +525,14 @@ public class GameRenderer {
                 this.uiRenderer.renderTexture(textureToUse, new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + i * 32, 80 + offset), new Vector2f(32,32));
             }
         }
+    }
+
+    public Texture getBlockItemTexture(BlockItem block) {
+        if(block.getOverriddenItemTexture() == null) {
+            return this.getBlockItemTexture(block.getBlock());
+        }
+
+        return ItemTextures.getTexture(block.getOverriddenItemTexture());
     }
 
     public Texture getBlockItemTexture(Block block) {

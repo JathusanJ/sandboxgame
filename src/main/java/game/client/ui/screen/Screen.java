@@ -11,6 +11,7 @@ import org.joml.Vector2f;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 
 public abstract class Screen {
@@ -41,7 +42,7 @@ public abstract class Screen {
 
         this.renderContents(deltaTime, mouseX, mouseY);
 
-        if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_ESCAPE)) {
+        if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_ESCAPE) || KeyboardAndMouseInput.pressedKey(GLFW_KEY_E)) {
             this.close();
         }
     }
