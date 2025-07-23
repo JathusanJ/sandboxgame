@@ -24,6 +24,8 @@ import game.client.networking.GameClientHandler;
 import game.networking.packets.PacketList;
 import game.networking.packets.PositionRotationPacket;
 import game.networking.packets.RequestChunkPacket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +36,8 @@ import java.util.UUID;
 import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
 
 public class SandboxGame extends Game implements Tickable {
+    public Logger logger = LoggerFactory.getLogger("Sandbox Game");
+
     private GameRenderer gameRenderer;
     private Version version;
     public GameSettings settings;

@@ -19,7 +19,7 @@ public class StartupArguments {
                 String value = unparsed.substring(unparsed.indexOf("=") + 1);
                 parsedArgs.put(key, value);
             } else {
-                System.out.println("Ignoring argument \"" + unparsed + "\", it doesn't start with \"-\"");
+                GameEngine.logger.warn("Ignoring argument {} because it doesn't start with \"-\"", unparsed);
             }
         }
 

@@ -17,18 +17,21 @@ public class ItemTextures {
         if(textures.get(itemId) != null) {
             return textures.get(itemId);
         } else {
-            System.out.println("Attempting to load assets/" + itemTexturesFolderPath + itemId + ".png");
-            if(Thread.currentThread().getContextClassLoader().getResource("assets/" + itemTexturesFolderPath + itemId + ".png") != null) {
-                textures.put(itemId, new Texture("textures/items/" + itemId + ".png"));
-                return textures.get(itemId);
-            } else {
-                if(textures.get("missing") != null) {
-                    textures.put(itemId, textures.get("missing"));
+            return loadTexture(itemId);
+        }
+    }
 
-                    return textures.get("missing");
-                } else {
-                    throw new IllegalStateException("Missing item texture missing (quite ironic)");
-                }
+    public static Texture loadTexture(String itemId) {
+        if(Thread.currentThread().getContextClassLoader().getResource("assets/" + itemTexturesFolderPath + itemId + ".png") != null) {
+            textures.put(itemId, new Texture("textures/items/" + itemId + ".png"));
+            return textures.get(itemId);
+        } else {
+            if(textures.get("missing") != null) {
+                textures.put(itemId, textures.get("missing"));
+
+                return textures.get("missing");
+            } else {
+                throw new IllegalStateException("Missing item texture missing (lol)");
             }
         }
     }

@@ -16,7 +16,6 @@ public class ChunkMesh {
     public int length = 0;
     public State state = State.UNINITIALIZED;
     public Task task;
-    public boolean test = false;
 
     public ChunkMesh(ClientChunk chunk) {
         this.chunk = chunk;
@@ -34,12 +33,11 @@ public class ChunkMesh {
             SandboxGame.getInstance().getGameRenderer().chunkRenderer.createVertexAttributes();
             this.state = State.COMPLETED;
         } catch(Exception e) {
-            System.out.println("Failed to upload chunk mesh (" + test + "): " + e);
-            e.printStackTrace();
+            SandboxGame.getInstance().logger.error("Failed upload of chunk mesh", e);
+            this.chunk.chunkMesh = null;
         }
-        // The task can be removed
+
         this.task = null;
-        this.test = true;
     }
 
     public void generate() {

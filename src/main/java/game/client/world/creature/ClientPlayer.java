@@ -145,6 +145,8 @@ public class ClientPlayer extends Player {
         for(String line : lines) {
             SandboxGame.getInstance().getGameRenderer().chatRenderer.add(new ChatMessage(line));
         }
+
+        SandboxGame.getInstance().logger.info("[CHAT] {}", message);
     }
 
     @Override

@@ -43,8 +43,7 @@ public class GameSettings {
             json = WrappedJsonObject.read(new JsonReader(new StringReader(new String(fileInputStream.readAllBytes()))));
             fileInputStream.close();
         } catch(Exception e) {
-            System.out.println("Couldn't read settings.json");
-            e.printStackTrace();
+            SandboxGame.getInstance().logger.error("Couldn't read settings.json", e);
             return;
         }
 

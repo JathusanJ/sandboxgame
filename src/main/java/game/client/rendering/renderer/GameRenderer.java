@@ -87,6 +87,8 @@ public class GameRenderer {
     public Queue<ChunkMesh> chunkMeshesToDelete = new ConcurrentLinkedQueue<>();
 
     public void loadWorld(ClientWorld world) {
+        SandboxGame.getInstance().logger.info("Loading world {}", world.name);
+
         this.player = new ClientPlayer();
         this.player.position.set(0, 100, 0);
         this.player.lastPosition.set(this.player.position);
@@ -127,24 +129,31 @@ public class GameRenderer {
     public void unloadCurrentWorld() {
         if(this.world == null) return;
         this.world.stop();
-        this.world.save();
         this.world.deleteChunkMeshes();
-        WrappedJsonObject json = new WrappedJsonObject();
-        this.player.save(json);
 
-        File playerJson = new File(world.worldFolder, "player.json");
-        try {
-            if(!playerJson.exists()) {
-                if(!playerJson.createNewFile()) {
-                    throw new IllegalStateException("player.json already present");
+        if(!GameClient.isConnectedToServer) {
+            SandboxGame.getInstance().logger.info("Saving world");
+
+            this.world.save();
+            WrappedJsonObject json = new WrappedJsonObject();
+            this.player.save(json);
+
+            File playerJson = new File(world.worldFolder, "player.json");
+            try {
+                if (!playerJson.exists()) {
+                    if (!playerJson.createNewFile()) {
+                        throw new IllegalStateException("player.json already present");
+                    }
                 }
-            }
 
-            FileOutputStream outputStream = new FileOutputStream(playerJson);
-            outputStream.write(json.toElement().toString().getBytes());
-            outputStream.close();
-        } catch (IOException e) {
-            throw new IllegalStateException("Critical: couldn't write to player.json", e);
+                FileOutputStream outputStream = new FileOutputStream(playerJson);
+                outputStream.write(json.toElement().toString().getBytes());
+                outputStream.close();
+            } catch (IOException e) {
+                throw new IllegalStateException("Couldn't write to player.json", e);
+            }
+        } else {
+            SandboxGame.getInstance().logger.info("Disconnecting from server");
         }
 
         SandboxGame.getInstance().doOnMainThread(() -> {
