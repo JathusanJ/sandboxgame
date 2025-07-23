@@ -3,11 +3,14 @@ package game.logic.world.blocks.block_entity;
 import game.logic.recipes.FurnaceRecipes;
 import game.logic.recipes.Recipe;
 import game.logic.util.json.WrappedJsonObject;
+import game.logic.world.World;
+import game.logic.world.blocks.FurnaceBlock;
 import game.logic.world.items.Item;
 import game.logic.world.items.ItemStack;
 import game.logic.world.items.Items;
 import game.logic.world.items.slot.ContainerItemSlot;
 import game.logic.world.items.slot.RegularItemSlot;
+import org.joml.Vector3i;
 
 import java.util.HashMap;
 
@@ -20,6 +23,11 @@ public class FurnaceBlockEntity extends BlockEntity {
     public RegularItemSlot outputSlot = new ContainerItemSlot(this);
 
     public static HashMap<Item, Integer> itemFuelTimes = new HashMap<>();
+
+    public FurnaceBlockEntity(World world, int x, int y, int z) {
+        this.world = world;
+        this.position = new Vector3i(x,y,z);
+    }
 
     @Override
     public void tick() {

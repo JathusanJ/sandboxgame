@@ -3,6 +3,7 @@ package game.logic.world;
 import com.google.gson.stream.JsonReader;
 import game.logic.util.json.WrappedJsonObject;
 import game.logic.world.blocks.Blocks;
+import game.logic.world.blocks.block_entity.BlockEntityGenerator;
 import game.logic.world.chunk.Chunk;
 import game.logic.Tickable;
 import game.logic.world.blocks.Block;
@@ -22,7 +23,7 @@ import java.util.function.Function;
 public abstract class World implements Tickable {
     public Map<Vector2i, Chunk> loadedChunks = new ConcurrentHashMap<>();
     public List<Creature> creatures = Collections.synchronizedList(new ArrayList<>());
-    public Map<Vector3i, BlockEntity> blockEntities = Collections.synchronizedMap(new HashMap<>());
+    public Map<Vector3i, BlockEntity> blockEntities = new ConcurrentHashMap<>();
     public File worldFolder;
     public File chunksFolder;
     public String worldFolderName;
@@ -104,7 +105,7 @@ public abstract class World implements Tickable {
 
     @Override
     public void tick() {
-        if(!this.ready) {
+        if(!this.ready || !this.shouldTick) {
             return;
         }
 
@@ -112,6 +113,10 @@ public abstract class World implements Tickable {
 
         for (Chunk chunk : this.loadedChunks.values()) {
             chunk.tick();
+        }
+
+        for (BlockEntity blockEntity : this.blockEntities.values()) {
+            blockEntity.tick();
         }
 
         for (int i = 0; i < this.creatures.size(); i++) {
@@ -208,6 +213,11 @@ public abstract class World implements Tickable {
         }
 
         chunk.setBlockAtLocalizedPosition(x - chunkPosition.x * 16, y, z - chunkPosition.y * 16, block);
+
+        if(block instanceof BlockEntityGenerator<?> generator) {
+            BlockEntity blockEntity = generator.createBlockEntity(this, x, y, z);
+            this.blockEntities.put(new Vector3i(x,y,z), blockEntity);
+        }
     }
 
     public void setBlockNoRemesh(int x, int y, int z, Block block) {
@@ -220,6 +230,11 @@ public abstract class World implements Tickable {
         }
 
         chunk.setBlockDirect(x - chunkPosition.x * 16, y, z - chunkPosition.y * 16, block);
+
+        if(block instanceof BlockEntityGenerator<?> generator) {
+            BlockEntity blockEntity = generator.createBlockEntity(this, x, y ,z);
+            this.blockEntities.put(new Vector3i(x,y,z), blockEntity);
+        }
     }
 
     public void setBlock(Vector3i blockPosition, Block block) {
@@ -240,6 +255,18 @@ public abstract class World implements Tickable {
 
     public Block getBlock(Vector3i blockPosition) {
         return this.getBlock(blockPosition.x, blockPosition.y, blockPosition.z);
+    }
+
+    public BlockEntity getBlockEntity(int x, int y, int z) {
+        return this.blockEntities.get(new Vector3i(x,y,z));
+    }
+
+    public void setBlockEntity(int x, int y, int z, BlockEntity blockEntity) {
+        this.blockEntities.put(new Vector3i(x,y,z), blockEntity);
+    }
+
+    public void removeBlockEntity(int x, int y, int z) {
+        this.blockEntities.remove(new Vector3i(x,y,z));
     }
 
     public int getSkylight(int x, int y, int z) {

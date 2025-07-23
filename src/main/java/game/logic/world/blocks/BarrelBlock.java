@@ -3,6 +3,7 @@ package game.logic.world.blocks;
 import game.client.SandboxGame;
 import game.client.ui.screen.BarrelInventoryScreen;
 import game.client.world.ClientWorld;
+import game.logic.world.World;
 import game.logic.world.blocks.block_entity.BarrelBlockEntity;
 import game.logic.world.blocks.block_entity.BlockEntityGenerator;
 import org.joml.Vector2f;
@@ -10,8 +11,8 @@ import org.joml.Vector3i;
 
 public class BarrelBlock extends Block implements BlockEntityGenerator<BarrelBlockEntity> {
     @Override
-    public BarrelBlockEntity createBlockEntity() {
-        return new BarrelBlockEntity();
+    public BarrelBlockEntity createBlockEntity(World world, int x, int y, int z) {
+        return new BarrelBlockEntity(world, x, y, z);
     }
 
     @Override
@@ -28,7 +29,7 @@ public class BarrelBlock extends Block implements BlockEntityGenerator<BarrelBlo
 
     @Override
     public boolean onRightClick(ClientWorld world, Vector3i blockPosition) {
-        //SandboxGame.getInstance().getGameRenderer().setScreen(new BarrelInventoryScreen((BarrelBlockEntity) world.getBlockEntity(blockPosition)));
+        SandboxGame.getInstance().getGameRenderer().setScreen(new BarrelInventoryScreen((BarrelBlockEntity) world.getBlockEntity(blockPosition.x, blockPosition.y, blockPosition.z)));
         return false;
     }
 }

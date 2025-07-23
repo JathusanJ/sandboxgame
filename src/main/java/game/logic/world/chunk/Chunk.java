@@ -72,8 +72,9 @@ public abstract class Chunk implements Tickable {
     public void setBlockAtLocalizedPositionDirect(int x, int y, int z, Block block) {
         if(x > 15 || x < 0 || y > 127 || y < 0 || z > 15 || z < 0) return;
         this.blocks[Chunk.positionToBlockArrayId(x,y,z)] = block;
-        if(block instanceof BlockEntityGenerator<?>) {
-            //this.world.createBlockEntityFor(new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.z * 16), block);
+        if(block instanceof BlockEntityGenerator<?> generator) {
+            BlockEntity blockEntity = generator.createBlockEntity(this.world, x + this.chunkPosition.x * 16, y, z + this.chunkPosition.y * 16);
+            this.world.setBlockEntity(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.y * 16, blockEntity);
         }
     }
 
@@ -83,7 +84,7 @@ public abstract class Chunk implements Tickable {
         if(existingBlock == block) return false;
 
         if(existingBlock instanceof BlockEntityGenerator<?>) {
-            //this.world.removeBlockEntityFor(new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.z * 16));
+            this.world.removeBlockEntity(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.y * 16);
         }
 
         this.blocks[Chunk.positionToBlockArrayId(x,y,z)] = block;
@@ -92,8 +93,9 @@ public abstract class Chunk implements Tickable {
         this.calculateSkylight();
 
 
-        if(block instanceof BlockEntityGenerator<?>) {
-            //this.world.createBlockEntityFor(new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.z * 16), block);
+        if(block instanceof BlockEntityGenerator<?> generator) {
+            BlockEntity blockEntity = generator.createBlockEntity(world, x + this.chunkPosition.x * 16, y, z + this.chunkPosition.y * 16);
+            this.world.setBlockEntity(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.y * 16, blockEntity);
         }
 
         return true;
@@ -146,10 +148,8 @@ public abstract class Chunk implements Tickable {
                     if(block instanceof BlockEntityGenerator<?>) {
                         Vector3i position = new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.y * 16);
                         WrappedJsonObject json = new WrappedJsonObject();
-                        //this.world.getBlockEntity(position).save(json);
+                        this.world.getBlockEntity(position.x, position.y, position.z).save(json);
                         blockEntities.put(String.valueOf(blockArrayId), json);
-
-                        //this.world.removeBlockEntityFor(position);
                     }
 
                     if(blockToChunkSavedIds.containsKey(block.getBlockId())) {
@@ -239,13 +239,13 @@ public abstract class Chunk implements Tickable {
                     if(!(block instanceof AirBlock)) {
                         this.blocks[blockArrayId] = block;
 
-                        if(block instanceof BlockEntityGenerator<?>) {
-                            Vector3i position = new Vector3i(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.y * 16);
-                            /*BlockEntity blockEntity = this.world.createBlockEntityFor(position, block);
+                        if(block instanceof BlockEntityGenerator<?> generator) {
+                            BlockEntity blockEntity = generator.createBlockEntity(this.world, x + this.chunkPosition.x * 16, y, z + this.chunkPosition.y * 16);
                             WrappedJsonObject blockEntityData = chunkData.getObject("blockEntities").getObject(String.valueOf(blockArrayId));
-                            if(blockEntity != null && blockEntityData != null) {
+                            if(blockEntityData != null) {
                                 blockEntity.load(blockEntityData);
-                            }*/
+                            }
+                            this.world.setBlockEntity(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.y * 16, blockEntity);
                         }
                     }
                 }
