@@ -25,14 +25,16 @@ public class BlockItem extends Item {
             world.setBlock(context.blockPosition().x + context.normal().x, context.blockPosition().y + context.normal().y, context.blockPosition().z + context.normal().z, this.block);
         } else if(context.world() instanceof SingleplayerWorld) {
             Block blockAtBlockPosition = context.world().getBlock(context.blockPosition());
-            if(blockAtBlockPosition.isEmpty() || blockAtBlockPosition.isReplaceable()) {
+            Block blockRightBelowThatBlock = context.world().getBlock(context.blockPosition().x, context.blockPosition().y - 1, context.blockPosition().z);
+            if((blockAtBlockPosition.isEmpty() || blockAtBlockPosition.isReplaceable()) && this.block.canBePlacedOn(blockRightBelowThatBlock)) {
                 context.world().setBlock(context.blockPosition(), this.block);
                 context.itemStack().decreaseByUnlessInCreative(1, context.player());
                 return;
             }
             Vector3i blockNextToBlockPosition = context.blockPosition().add(context.normal(), new Vector3i());
             Block blockNextToBlock = context.world().getBlock(blockNextToBlockPosition);
-            if(blockNextToBlock.isEmpty() || blockNextToBlock.isReplaceable()) {
+            Block blockRightBelowThatNexttoBlock = context.world().getBlock(blockNextToBlockPosition.x, blockNextToBlockPosition.y - 1, blockNextToBlockPosition.z);
+            if((blockNextToBlock.isEmpty() || blockNextToBlock.isReplaceable()) && this.block.canBePlacedOn(blockRightBelowThatNexttoBlock)) {
                 context.world().setBlock(blockNextToBlockPosition, this.block);
                 context.itemStack().decreaseByUnlessInCreative(1, context.player());
             }

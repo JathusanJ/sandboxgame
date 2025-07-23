@@ -167,4 +167,8 @@ public class Block {
     public boolean isReplaceable() {
         return false;
     }
+
+    public boolean canBePlacedOn(Block block) {
+        return true;
+    }
 }

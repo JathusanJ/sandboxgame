@@ -44,4 +44,9 @@ public class CrossBlock extends Block {
     public int getBlockBreakingTicks(Player player, ItemStack heldItemStack) {
         return 0;
     }
+
+    @Override
+    public boolean canBePlacedOn(Block block) {
+        return block == Blocks.GRASS || block == Blocks.DIRT;
+    }
 }
