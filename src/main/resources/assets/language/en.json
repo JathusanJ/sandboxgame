@@ -40,6 +40,9 @@
 
   "block.stone": "Stone",
   "block.coal_ore": "Coal Ore",
+  "block.iron_ore": "Iron Ore",
+  "block.raw_iron_chunk_block": "Raw Iron Chunk Block",
+  "block.iron_block": "Iron Block",
 
   "block.oak_planks": "Oak Planks",
   "block.oak_log": "Oak Log",

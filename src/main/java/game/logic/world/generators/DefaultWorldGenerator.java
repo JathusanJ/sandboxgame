@@ -78,8 +78,8 @@ public class DefaultWorldGenerator extends WorldGenerator {
         this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.YELLOW_TULIP, 2000, 3, 10, 10);
         this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.SHORT_GRASS, 200, 3, 10, 10);
         this.addTrees(chunkProxy, chunkX, chunkZ);
-        this.addOre(chunkProxy, chunkX, chunkZ, Blocks.COAL_ORE, 50, 5, 10, 0, 100);
-        this.addOre(chunkProxy, chunkX, chunkZ, Blocks.IRON_ORE, 75, 3, 8, 0, 75);
+        this.addOre(chunkProxy, chunkX, chunkZ, Blocks.COAL_ORE, 50, 5, 10, 0, 127);
+        this.addOre(chunkProxy, chunkX, chunkZ, Blocks.IRON_ORE, 250, 1, 3, 0, 127);
     }
 
     public void addUndergroundDirt(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
@@ -228,9 +228,9 @@ public class DefaultWorldGenerator extends WorldGenerator {
             int x = oreRandom.nextInt() % 16;
             int z = oreRandom.nextInt() % 16;
             int clusterSize = minClusterSize + oreRandom.nextInt() % (maxClusterSize - minClusterSize);
-            float stretchX = 3F + oreRandom.nextFloat() * 10;
-            float stretchY = 3F + oreRandom.nextFloat() * 10;
-            float stretchZ = 3F + oreRandom.nextFloat() * 10;
+            float stretchX = 3F + oreRandom.nextFloat() * clusterSize;
+            float stretchY = 3F + oreRandom.nextFloat() * clusterSize;
+            float stretchZ = 3F + oreRandom.nextFloat() * clusterSize;
 
             for(int x1 = x - 8; x1 <= x + 8; x1++) {
                 for (int z1 = z - 8; z1 <= z + 8; z1++) {

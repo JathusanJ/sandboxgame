@@ -18,7 +18,7 @@ public abstract class BlockEntity {
         Vector2i chunkPosition = this.world.getChunkPositionOfPosition(this.position.x, this.position.y, this.position.z);
         Chunk chunk = this.world.getChunk(chunkPosition.x, chunkPosition.y);
         if(chunk == null) {
-            throw new IllegalStateException("Block entity tried to mark parent chunk as modified, but the parent chunk doesn't exist or the block entity is in the wrong chunk");
+            return;
         }
 
         chunk.setModified();
