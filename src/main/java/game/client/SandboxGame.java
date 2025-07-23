@@ -31,6 +31,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
 
+import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
+
 public class SandboxGame extends Game implements Tickable {
     private GameRenderer gameRenderer;
     private Version version;
@@ -75,6 +77,8 @@ public class SandboxGame extends Game implements Tickable {
 
     @Override
     public void postWindowInitialization() {
+        glfwSwapInterval(SandboxGame.getInstance().settings.vsync ? 1 : 0);
+
         Sounds.initialize();
         this.gameRenderer = new GameRenderer();
         this.gameRenderer.setup();
