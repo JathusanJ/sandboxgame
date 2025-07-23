@@ -100,7 +100,8 @@ public class Items {
                 COAL,
                 STICK,
 
-                WOODEN_PICKAXE
+                WOODEN_PICKAXE,
+                STONE_PICKAXE
         );
     }
 }

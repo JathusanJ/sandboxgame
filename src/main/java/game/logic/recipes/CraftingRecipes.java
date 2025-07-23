@@ -150,17 +150,11 @@ public class CraftingRecipes {
                 2
         );
 
-        // Barrel (oak planks)
-        createRecipe(
-                List.of(
-                        Items.OAK_PLANKS, Items.OAK_PLANKS, Items.OAK_PLANKS,
-                        Items.OAK_PLANKS, Items.AIR,        Items.OAK_PLANKS,
-                        Items.OAK_PLANKS, Items.OAK_PLANKS, Items.OAK_PLANKS
-                ),
-                Items.BARREL,
-                3,
-                3
-        );
+        // Barrel
+        createBarrelRecipe(Items.OAK_PLANKS);
+        createBarrelRecipe(Items.BIRCH_PLANKS);
+        createBarrelRecipe(Items.ACACIA_PLANKS);
+        createBarrelRecipe(Items.JUNGLE_PLANKS);
 
         // Furnace
         createRecipe(
@@ -228,6 +222,39 @@ public class CraftingRecipes {
                 1,
                 1,
                 4
+        );
+
+        createPickaxeRecipe(Items.OAK_PLANKS, Items.WOODEN_PICKAXE);
+        createPickaxeRecipe(Items.BIRCH_PLANKS, Items.WOODEN_PICKAXE);
+        createPickaxeRecipe(Items.ACACIA_PLANKS, Items.WOODEN_PICKAXE);
+        createPickaxeRecipe(Items.JUNGLE_PLANKS, Items.WOODEN_PICKAXE);
+        createPickaxeRecipe(Items.COBBLESTONE, Items.STONE_PICKAXE);
+        createPickaxeRecipe(Items.STONE, Items.STONE_PICKAXE);
+    }
+
+    public static void createPickaxeRecipe(Item material, Item output) {
+        createRecipe(
+                List.of(
+                        material, material, material,
+                        Items.AIR, Items.STICK, Items.AIR,
+                        Items.AIR, Items.STICK, Items.AIR
+                ),
+                output,
+                3,
+                3
+        );
+    }
+
+    public static void createBarrelRecipe(Item material) {
+        createRecipe(
+                List.of(
+                        material, material, material,
+                        material, Items.AIR, material,
+                        material, material, material
+                ),
+                Items.BARREL,
+                3,
+                3
         );
     }
 }
