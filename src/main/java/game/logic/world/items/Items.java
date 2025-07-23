@@ -18,6 +18,10 @@ public class Items {
 
     public static BlockItem STONE = registerBlockItem(Blocks.STONE);
     public static BlockItem COAL_ORE = registerBlockItem(Blocks.COAL_ORE);
+    public static BlockItem IRON_ORE = registerBlockItem(Blocks.IRON_ORE);
+
+    public static BlockItem RAW_IRON_CHUNK_BLOCK = registerBlockItem(Blocks.RAW_IRON_CHUNK_BLOCK);
+    public static BlockItem IRON_BLOCK = registerBlockItem(Blocks.IRON_BLOCK);
 
     public static BlockItem OAK_LOG = registerBlockItem(Blocks.OAK_LOG);
     public static BlockItem OAK_PLANKS = registerBlockItem(Blocks.OAK_PLANKS);
@@ -48,6 +52,8 @@ public class Items {
     public static BlockItem SHORT_GRASS = registerBlockItem(Blocks.SHORT_GRASS, "short_grass");
 
     public static Item COAL = register(new Item(), "coal");
+    public static Item RAW_IRON_CHUNK = register(new Item(), "raw_iron_chunk");
+    public static Item IRON_INGOT = register(new Item(), "iron_ingot");
     public static Item STICK = register(new Item(), "stick");
     public static Item WOODEN_PICKAXE = register(new PickaxeItem(PickaxeItem.PickaxeTier.WOODEN), "wooden_pickaxe");
     public static Item STONE_PICKAXE = register(new PickaxeItem(PickaxeItem.PickaxeTier.STONE), "stone_pickaxe");
@@ -81,6 +87,9 @@ public class Items {
                 DIRT,
                 STONE,
                 COAL_ORE,
+                IRON_ORE,
+                RAW_IRON_CHUNK_BLOCK,
+                IRON_BLOCK,
                 COBBLESTONE,
                 BEDROCK,
                 WATER,
@@ -102,10 +111,13 @@ public class Items {
                 SHORT_GRASS,
 
                 COAL,
+                RAW_IRON_CHUNK,
+                IRON_INGOT,
                 STICK,
 
                 WOODEN_PICKAXE,
-                STONE_PICKAXE
+                STONE_PICKAXE,
+                IRON_PICKAXE
         );
     }
 }

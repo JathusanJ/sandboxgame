@@ -14,6 +14,10 @@ public class Blocks {
 
     public static StoneBlock STONE = (StoneBlock) register(new StoneBlock(), "stone");
     public static CoalOreBlock COAL_ORE = (CoalOreBlock) register(new CoalOreBlock(), "coal_ore");
+    public static IronOreBlock IRON_ORE = (IronOreBlock) register(new IronOreBlock(), "iron_ore");
+
+    public static IronBlock IRON_BLOCK = (IronBlock) register(new IronBlock(), "iron_block");
+    public static RawIronChunkBlock RAW_IRON_CHUNK_BLOCK = (RawIronChunkBlock) register(new RawIronChunkBlock(), "raw_iron_chunk_block");
 
     public static OakPlanksBlock OAK_PLANKS = (OakPlanksBlock) register(new OakPlanksBlock(), "oak_planks");
     public static OakLogBlock OAK_LOG = (OakLogBlock) register(new OakLogBlock(), "oak_log");

@@ -230,6 +230,51 @@ public class CraftingRecipes {
         createPickaxeRecipe(Items.JUNGLE_PLANKS, Items.WOODEN_PICKAXE);
         createPickaxeRecipe(Items.COBBLESTONE, Items.STONE_PICKAXE);
         createPickaxeRecipe(Items.STONE, Items.STONE_PICKAXE);
+        createPickaxeRecipe(Items.IRON_INGOT, Items.IRON_PICKAXE);
+
+        createRecipe(
+                List.of(
+                        Items.RAW_IRON_CHUNK, Items.RAW_IRON_CHUNK, Items.RAW_IRON_CHUNK,
+                        Items.RAW_IRON_CHUNK, Items.RAW_IRON_CHUNK, Items.RAW_IRON_CHUNK,
+                        Items.RAW_IRON_CHUNK, Items.RAW_IRON_CHUNK, Items.RAW_IRON_CHUNK
+                ),
+                Items.RAW_IRON_CHUNK_BLOCK,
+                3,
+                3,
+                1
+        );
+
+        createRecipe(
+                List.of(
+                        Items.RAW_IRON_CHUNK_BLOCK
+                ),
+                Items.RAW_IRON_CHUNK,
+                1,
+                1,
+                9
+        );
+
+        createRecipe(
+                List.of(
+                        Items.IRON_INGOT, Items.IRON_INGOT, Items.IRON_INGOT,
+                        Items.IRON_INGOT, Items.IRON_INGOT, Items.IRON_INGOT,
+                        Items.IRON_INGOT, Items.IRON_INGOT, Items.IRON_INGOT
+                ),
+                Items.IRON_BLOCK,
+                3,
+                3,
+                1
+        );
+
+        createRecipe(
+                List.of(
+                        Items.IRON_BLOCK
+                ),
+                Items.IRON_INGOT,
+                1,
+                1,
+                9
+        );
     }
 
     public static void createPickaxeRecipe(Item material, Item output) {

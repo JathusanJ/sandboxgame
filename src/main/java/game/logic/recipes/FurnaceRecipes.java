@@ -26,5 +26,8 @@ public class FurnaceRecipes {
 
     public static void initialize() {
         createRecipe(Items.COBBLESTONE, Items.STONE);
+        createRecipe(Items.RAW_IRON_CHUNK, Items.IRON_INGOT);
+        createRecipe(Items.IRON_ORE, Items.IRON_INGOT);
+        createRecipe(Items.COAL_ORE, Items.COAL);
     }
 }

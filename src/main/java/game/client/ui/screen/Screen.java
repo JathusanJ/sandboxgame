@@ -42,7 +42,7 @@ public abstract class Screen {
 
         this.renderContents(deltaTime, mouseX, mouseY);
 
-        if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_ESCAPE) || KeyboardAndMouseInput.pressedKey(GLFW_KEY_E)) {
+        if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_ESCAPE)) {
             this.close();
         }
     }

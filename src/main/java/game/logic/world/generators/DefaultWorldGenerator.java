@@ -79,6 +79,7 @@ public class DefaultWorldGenerator extends WorldGenerator {
         this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.SHORT_GRASS, 200, 3, 10, 10);
         this.addTrees(chunkProxy, chunkX, chunkZ);
         this.addOre(chunkProxy, chunkX, chunkZ, Blocks.COAL_ORE, 50, 5, 10, 0, 100);
+        this.addOre(chunkProxy, chunkX, chunkZ, Blocks.IRON_ORE, 75, 3, 8, 0, 75);
     }
 
     public void addUndergroundDirt(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
