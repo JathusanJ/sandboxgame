@@ -57,66 +57,76 @@ public class CraftingRecipes {
             }
         }
 
+        // I couldn't get the column stuff working with what I had originally, so I'm just gonna go for a very very very comprehensible solution instead
+
+        ArrayList<ArrayList<Item>> itemGrid = new ArrayList<>();
+
+        for (int i = 0; i < totalRows; i++) {
+            ArrayList<Item> row = new ArrayList<>();
+
+            for (int column = 0; column < totalColumns; column++) {
+                row.add(input.get(i * totalColumns + column));
+            }
+
+            itemGrid.add(row);
+        }
+
         // Remove any space to the left of the input
         for(int x = 0; x < totalColumns; x++) {
             boolean columnEmpty = true;
-            for(int y = 0; y < totalRows; y++) {
-                if(input.get(y * totalColumns + x) != Items.AIR) {
+
+            for(ArrayList<Item> row : itemGrid) {
+                if(row.getFirst() != Items.AIR) {
                     columnEmpty = false;
                     break;
                 }
             }
 
             if(columnEmpty) {
-                ArrayList<Item> newInput = new ArrayList<>();
-
-                for(int x2 = 1; x2 < totalColumns; x2++) {
-                    for(int y = 0; y < totalRows; y++) {
-                       newInput.add(input.get(y * totalColumns + x2));
-                    }
+                for(ArrayList<Item> row : itemGrid) {
+                    row.removeFirst();
                 }
-
-                totalColumns = totalColumns - 1;
-                x = x - 1;
-
-                input = newInput;
             } else {
                 break;
             }
         }
 
         // Clear out space to the right of the input
-        for(int x = totalColumns - 1; x > 0; x--) {
+        for(int column = 0; column < totalColumns; column++) {
             boolean columnEmpty = true;
-            for(int y = 0; y < totalRows; y++) {
-                if(input.get(y * totalColumns + x) != Items.AIR) {
+
+            for(ArrayList<Item> row : itemGrid) {
+                if(row.getLast() != Items.AIR) {
                     columnEmpty = false;
                     break;
                 }
             }
 
             if(columnEmpty) {
-                ArrayList<Item> newInput = new ArrayList<>();
-                for(int x2 = 0; x2 < totalColumns - 1; x2++) {
-                    for(int y = 0; y < totalRows; y++) {
-                        newInput.add(input.get(y * totalColumns + x2));
-                    }
+                for(ArrayList<Item> row : itemGrid) {
+                    row.removeLast();
                 }
-
-                input = newInput;
-                totalColumns = totalColumns - 1;
             } else {
                 break;
             }
         }
 
-        String recipeInputString = Recipe.toRecipeInputString(input);
+        input.clear();
 
+        totalColumns = itemGrid.getFirst().size();
+        totalRows = itemGrid.size();
+        for(ArrayList<Item> row : itemGrid) {
+            for(Item item : row) {
+                input.add(item);
+            }
+        }
+
+        String recipeInputString = Recipe.toRecipeInputString(input, totalRows, totalColumns);
         return recipes.get(recipeInputString);
     }
 
     public static Recipe createRecipe(List<Item> input, Item output, int rows, int columns, int amount) {
-        String recipeInputString = Recipe.toRecipeInputString(input);
+        String recipeInputString = Recipe.toRecipeInputString(input, rows, columns);
 
         Recipe recipe = new Recipe(input, output, rows, columns, amount);
         recipes.put(recipeInputString, recipe);

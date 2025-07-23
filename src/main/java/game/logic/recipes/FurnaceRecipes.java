@@ -10,13 +10,13 @@ public class FurnaceRecipes {
     public static HashMap<String, Recipe> recipes = new HashMap<>();
 
     public static Recipe findRecipe(Item input) {
-        String recipeInputString = Recipe.toRecipeInputString(List.of(input));
+        String recipeInputString = Recipe.toRecipeInputString(List.of(input), 1, 1);
 
         return recipes.get(recipeInputString);
     }
 
     public static Recipe createRecipe(Item input, Item output) {
-        String recipeInputString = Recipe.toRecipeInputString(List.of(input));
+        String recipeInputString = Recipe.toRecipeInputString(List.of(input), 1, 1);
 
         Recipe recipe = new Recipe(List.of(input), output, 1, 1);
         recipes.put(recipeInputString, recipe);

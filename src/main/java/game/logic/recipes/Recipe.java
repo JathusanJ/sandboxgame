@@ -33,7 +33,7 @@ public class Recipe {
         return true;
     }
 
-    public static String toRecipeInputString(List<Item> input) {
+    public static String toRecipeInputString(List<Item> input, int rows, int columns) {
         String recipeInputString = "";
 
         for(Item item : input) {
@@ -43,6 +43,8 @@ public class Recipe {
 
             recipeInputString = recipeInputString + item.id;
         }
+
+        recipeInputString = recipeInputString + "_" + rows + "_" + columns;
 
         return recipeInputString;
     }
