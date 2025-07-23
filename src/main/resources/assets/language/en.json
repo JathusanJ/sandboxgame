@@ -64,8 +64,18 @@
   "block.orange_tulip": "Orange Tulip",
   "block.yellow_tulip": "Yellow Tulip",
 
+  "block.short_grass": "Short Grass",
+
   "item.coal": "Coal",
+  "item.raw_iron_chunk": "Raw Iron Chunk",
+  "item.iron_ingot": "Iron Ingot",
+
   "item.stick": "Stick",
+
+  "item.wooden_pickaxe": "Wooden Pickaxe",
+  "item.stone_pickaxe": "Stone Pickaxe",
+  "item.iron_pickaxe": "Iron Pickaxe",
+  "item.diamond_pickaxe": "Diamond Pickaxe",
 
   "damage_source.none": "%s died",
   "damage_source.fall_damage": "%s fell to death",
