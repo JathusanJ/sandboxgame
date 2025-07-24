@@ -1,6 +1,7 @@
 package game.logic.world;
 
 import com.google.gson.stream.JsonReader;
+import game.client.SandboxGame;
 import game.logic.util.json.WrappedJsonObject;
 import game.logic.world.blocks.Blocks;
 import game.logic.world.blocks.block_entity.BlockEntityGenerator;
@@ -93,10 +94,13 @@ public abstract class World implements Tickable {
 
     public void save() {
         for(Chunk chunk : this.loadedChunks.values()) {
+            SandboxGame.getInstance().logger.debug("Saving chunk {}", chunk.chunkPosition);
             chunk.save();
         }
 
         this.writeWorldInfo();
+
+        SandboxGame.getInstance().logger.info("Saved world");
     }
 
     public void stop() {
