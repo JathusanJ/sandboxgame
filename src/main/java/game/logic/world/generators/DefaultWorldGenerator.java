@@ -6,9 +6,7 @@ import game.logic.world.blocks.Block;
 import game.logic.world.blocks.Blocks;
 import game.logic.world.chunk.ChunkProxy;
 import org.joml.Vector2f;
-import org.joml.Vector3i;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -21,6 +19,10 @@ public class DefaultWorldGenerator extends WorldGenerator {
     public FastNoiseLite density;
     public FastNoiseLite undergroundDirtNoise;
     public FastNoiseLite forestNoise;
+    public FastNoiseLite cavePositionNoise1;
+    public FastNoiseLite cavePositionNoise2;
+    public FastNoiseLite caveHeightNoise1;
+    public FastNoiseLite caveHeightNoise2;
 
     public DefaultWorldGenerator(int seed) {
         this.seed = seed;
@@ -62,6 +64,24 @@ public class DefaultWorldGenerator extends WorldGenerator {
         this.forestNoise.SetFractalType(FastNoiseLite.FractalType.FBm);
         this.forestNoise.SetFractalOctaves(4);
         this.forestNoise.SetFrequency(0.01F);
+
+        this.cavePositionNoise1 = new FastNoiseLite(this.seed + 4);
+        this.cavePositionNoise1.SetFractalType(FastNoiseLite.FractalType.Ridged);
+        this.cavePositionNoise1.SetFrequency(0.005F);
+        this.cavePositionNoise1.SetFractalOctaves(1);
+
+        this.caveHeightNoise1 = new FastNoiseLite(this.seed + 5);
+        this.caveHeightNoise1.SetFractalType(FastNoiseLite.FractalType.FBm);
+        this.caveHeightNoise1.SetFrequency(0.002F);
+
+        this.cavePositionNoise2 = new FastNoiseLite(this.seed + 6);
+        this.cavePositionNoise2.SetFractalType(FastNoiseLite.FractalType.Ridged);
+        this.cavePositionNoise2.SetFrequency(0.005F);
+        this.cavePositionNoise2.SetFractalOctaves(1);
+
+        this.caveHeightNoise2 = new FastNoiseLite(this.seed + 7);
+        this.caveHeightNoise2.SetFractalType(FastNoiseLite.FractalType.FBm);
+        this.caveHeightNoise2.SetFrequency(0.002F);
     }
 
     @Override
@@ -69,6 +89,8 @@ public class DefaultWorldGenerator extends WorldGenerator {
         this.terrainShape(chunkProxy, chunkX, chunkZ);
         this.addGrassAndDirt(chunkProxy, chunkX, chunkZ);
         this.addUndergroundDirt(chunkProxy, chunkX, chunkZ);
+        this.carveOutCaves(chunkProxy, chunkX, chunkZ, 127, cavePositionNoise1, caveHeightNoise1);
+        this.carveOutCaves(chunkProxy, chunkX, chunkZ, 80, cavePositionNoise2, caveHeightNoise2);
     }
 
     @Override
@@ -79,7 +101,7 @@ public class DefaultWorldGenerator extends WorldGenerator {
         this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.SHORT_GRASS, 200, 3, 10, 10);
         this.addTrees(chunkProxy, chunkX, chunkZ);
         this.addOre(chunkProxy, chunkX, chunkZ, Blocks.COAL_ORE, 50, 5, 10, 0, 127);
-        this.addOre(chunkProxy, chunkX, chunkZ, Blocks.IRON_ORE, 250, 1, 3, 0, 127);
+        this.addOre(chunkProxy, chunkX, chunkZ, Blocks.IRON_ORE, 30, 1, 3, 0, 127);
     }
 
     public void addUndergroundDirt(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
@@ -264,6 +286,35 @@ public class DefaultWorldGenerator extends WorldGenerator {
                         for (int y = 127; y > 40; y--) {
                             if(chunkProxy.getRelative(positionX, y, positionZ) == Blocks.GRASS) {
                                 chunkProxy.setRelative(positionX,y + 1,positionZ, tulip);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void carveOutCaves(ChunkProxy chunkProxy, int chunkX, int chunkZ, int maxHeight, FastNoiseLite cavePositionNoise, FastNoiseLite caveHeightNoise) {
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                float caveNoise = cavePositionNoise.GetNoise(chunkX * 16 + x, chunkZ * 16 + z);
+                if(caveNoise > 0.85F) {
+                    int caveHeight = (int) Math.floor(Math.abs(caveHeightNoise.GetNoise(chunkX * 16 + x, chunkZ * 16 + z)) * maxHeight);
+
+                    for (int x2 = 0; x2 < 16; x2++) {
+                        for (int z2 = 0; z2 < 16; z2++) {
+                            for (int y = caveHeight - 10; y < caveHeight + 10; y++) {
+                                float circleValue = (float) (Math.pow(x2 - x, 2) + Math.pow(y - caveHeight, 2) + Math.pow(z2 - z, 2));
+                                if(circleValue < 10F) {
+                                    Block blockAtPosition = chunkProxy.getRelative(x2, y, z2);
+                                    if(blockAtPosition != Blocks.SAND && blockAtPosition != Blocks.WATER && blockAtPosition != Blocks.BEDROCK) {
+                                        if(y < 5) {
+                                            chunkProxy.setRelative(x2, y, z2, Blocks.LAVA);
+                                        } else {
+                                            chunkProxy.setRelative(x2, y, z2, null);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

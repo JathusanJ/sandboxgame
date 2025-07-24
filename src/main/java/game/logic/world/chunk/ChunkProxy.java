@@ -15,6 +15,8 @@ public class ChunkProxy {
     }
 
     public void setRelative(int x, int y, int z, Block block) {
+        if(y < 0 || y > 127) return;
+
         if(this.isRelativePositionInChunk(x,y,z)) {
             this.chunk.setBlockAtLocalizedPositionDirect(x, y, z, block);
         } else {
