@@ -22,17 +22,15 @@ public class MoonWorldGenerator extends WorldGenerator {
 
     @Override
     public void generate(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
-        HashMap<Vector3i, Block> blocks = new HashMap<>(16 * 16 * 128);
-
         for(int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 int worldX = chunkX * 16 + x;
                 int worldZ = chunkZ * 16 + z;
                 int height = 60 + (int) (this.noise.GetNoise(worldX / 150F, worldZ / 150F) * 20);
                 for (int y = 1; y < height; y++) {
-                    blocks.put(new Vector3i(x,y,z), Blocks.MOONDUST);
+                    chunkProxy.setRelative(x,y,z, Blocks.MOONDUST);
                 }
-                blocks.put(new Vector3i(x, 0, z), Blocks.BEDROCK);
+                chunkProxy.setRelative(x, 0, z, Blocks.BEDROCK);
             }
         }
     }
