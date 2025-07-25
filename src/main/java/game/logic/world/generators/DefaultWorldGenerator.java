@@ -145,7 +145,7 @@ public class DefaultWorldGenerator extends WorldGenerator {
                     }
                 }
 
-                for(int y = 60; y > 30; y--) {
+                for(int y = 60; y > 10; y--) {
                     if(!chunkProxy.hasBlockAtRelative(x,y,z)) {
                         chunkProxy.setRelative(x,y,z, Blocks.WATER);
                     }
