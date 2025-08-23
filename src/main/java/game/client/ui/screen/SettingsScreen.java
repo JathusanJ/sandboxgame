@@ -38,6 +38,10 @@ public class SettingsScreen extends Screen {
         this.gameRenderer.setScreen(new UsernameSetupScreen(new SkinSetupScreen(this)));
     });
 
+    public ButtonWidget controlsButton = new ButtonWidget(new Text.Translated("ui.controls"), () -> {
+        this.gameRenderer.setScreen(new ControlsScreen(this));
+    });
+
     public Screen prevScreen;
 
     public SettingsScreen(Screen prevScreen) {
@@ -56,6 +60,7 @@ public class SettingsScreen extends Screen {
         this.renderableWidgets.add(this.languageButton);
         this.renderableWidgets.add(this.creditsButton);
         this.renderableWidgets.add(this.changeUsernameSkin);
+        this.renderableWidgets.add(this.controlsButton);
     }
 
     @Override
@@ -85,5 +90,7 @@ public class SettingsScreen extends Screen {
         this.changeUsernameSkin.size = new Vector2f(400F, 50F);
         this.creditsButton.position = new Vector2f(475F, this.getScreenHeight() - 50 - 32 - 25 - 50 - 225 - 75);
         this.creditsButton.size = new Vector2f(300F, 50F);
+        this.controlsButton.position = new Vector2f(475F, this.getScreenHeight() - 50 - 32 - 25 - 50 - 225);
+        this.controlsButton.size = new Vector2f(300F, 50F);
     }
 }

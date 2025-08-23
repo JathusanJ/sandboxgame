@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GameServer implements Tickable {
     private int port;
@@ -35,7 +36,7 @@ public class GameServer implements Tickable {
     public EventLoopGroup workersGroup;
     private int nextNetworkId = 0;
     public Logger logger = LoggerFactory.getLogger("Server");
-    public int worldSize = 32;
+    public int worldSize = 16;
     public long startTime;
 
     public GameServer(int port) {
@@ -60,11 +61,11 @@ public class GameServer implements Tickable {
         Creatures.init();
 
         this.logger.info("Loading world");
-        File worldFolder = new File(System.getProperty("user.home") + "\\AppData\\Roaming\\sandboxgame\\server\\worlds\\world");
+        File worldFolder = new File("world");
         if(worldFolder.exists()) {
             this.world = new ServerWorld(worldFolder, this);
         } else {
-            this.world = new ServerWorld("world", 0, World.WorldType.DEFAULT, worldFolder, this);
+            this.world = new ServerWorld("world", new Random().nextInt(), World.WorldType.DEFAULT, worldFolder, this);
         }
 
         this.world.chunkLoaderManager.addTicket(this.world.spawnLoadTicket);

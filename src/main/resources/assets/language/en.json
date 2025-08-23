@@ -70,6 +70,17 @@
   "ui.credits.textures": "Textures",
   "ui.credits.developed_by": "Developed by Jathusan Jeyabalachandran",
 
+  "ui.controls": "Controls",
+  "ui.controls.movement": "Movement",
+  "ui.controls.inventory": "Inventory",
+  "ui.controls.chat": "Chat",
+  "ui.controls.pause": "Pause",
+  "ui.controls.commands_only": "When commands are enabled",
+  "ui.controls.change_mode": "Change gamemode",
+  "ui.controls.creative": "Creative mode",
+  "ui.controls.fly": "Toggle Flight",
+
+
   "block.moondust": "Moondust",
   "block.air": "Air",
   "block.bedrock": "Bedrock",
