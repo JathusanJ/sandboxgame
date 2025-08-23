@@ -1,5 +1,6 @@
 package game.client.rendering.chunk;
 
+import game.client.SandboxGame;
 import game.client.rendering.renderer.GameRenderer;
 import engine.renderer.Shader;
 import engine.renderer.Texture;
@@ -38,7 +39,7 @@ public class ChunkRenderer {
 
     public void setup() {
         this.shader = new Shader("shaders/chunk.vertex.glsl", "shaders/chunk.fragment.glsl");
-        this.texture = new Texture("textures/blocks.png");
+        this.texture = new Texture("textures/blocks.png", SandboxGame.getInstance().settings.useMipmaps);
 
         this.eboId = glGenBuffers();
     }
@@ -78,7 +79,9 @@ public class ChunkRenderer {
 
         this.chunkMeshGenerationManager.tick();
 
-        for(ClientChunk chunk : chunks.stream().sorted().toList()) {
+        ArrayList<ClientChunk> chunksWithWater = new ArrayList<>();
+
+        for(ClientChunk chunk : chunks) {
             if(!chunk.featuresGenerated || !chunk.areNeighboursFullyGenerated()) {
                 continue;
             }
@@ -129,6 +132,16 @@ public class ChunkRenderer {
 
             this.chunksRendered++;
             this.verticesRendered = this.verticesRendered + chunk.chunkMesh.length / 8;
+
+            if(chunk.chunkMesh.waterLength > 0) {
+                chunksWithWater.add(chunk);
+            }
+        }
+
+        for(ClientChunk chunk : chunksWithWater.stream().sorted().toList()) {
+            glBindVertexArray(chunk.chunkMesh.waterVaoId);
+            glDrawElements(GL_TRIANGLES, chunk.chunkMesh.waterLength / 4, GL_UNSIGNED_INT, 0);
+            this.verticesRendered = this.verticesRendered + chunk.chunkMesh.waterLength / 8;
         }
     }
 }

@@ -1,9 +1,9 @@
 package game.client.world;
 
 import game.client.SandboxGame;
-import game.logic.world.chunk.Chunk;
-import game.logic.world.chunk.ChunkLoaderManager;
-import game.logic.world.creature.Player;
+import game.shared.world.chunk.Chunk;
+import game.shared.world.chunk.ChunkLoaderManager;
+import game.shared.world.creature.Player;
 import org.joml.Vector2i;
 
 import java.io.File;
@@ -38,9 +38,11 @@ public class SingleplayerWorld extends ClientWorld {
 
         this.worldFolderName = worldFolderName;
 
-        this.loadWorldInfo();
-
-        this.worldGenerator = this.worldType.getGenerator(this.seed);
+        if(!this.loadWorldInfo()) {
+            this.worldFolder = null;
+        } else {
+            this.worldGenerator = this.worldType.getGenerator(this.seed);
+        }
     }
 
     @Override

@@ -2,6 +2,7 @@ package game.client.ui.text;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import game.client.SandboxGame;
 
 import java.util.HashMap;
 
@@ -12,15 +13,16 @@ public class Language {
             .setPrettyPrinting()
             .create();
 
-    public static void load(String languageId){
+    public static void load(String languageId) {
         try {
             currentLanguage = gson.fromJson(new String(Thread.currentThread().getContextClassLoader().getResourceAsStream("assets/language/" + languageId + ".json").readAllBytes()), HashMap.class);
+            SandboxGame.getInstance().settings.language = languageId;
         } catch (Exception e) {
             throw new RuntimeException("Couldn't load language file: " + e);
         }
     }
 
-    public static String translate(String key){
+    public static String translate(String key) {
         return currentLanguage.getOrDefault(key, key);
     }
 }

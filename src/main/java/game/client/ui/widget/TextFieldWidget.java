@@ -14,10 +14,9 @@ public class TextFieldWidget extends Widget {
 
     @Override
     public void render(double deltaTime, int mouseX, int mouseY) {
+        this.uiRenderer.renderTexture(TEXT_FIELD_UNSELECTED_BACKGROUND_TEXTURE, this.position, this.size);
         if(this.gameRenderer.getCurrentTextField() == this) {
             this.uiRenderer.renderTexture(TEXT_FIELD_SELECTED_BACKGROUND_TEXTURE, this.position, this.size);
-        } else {
-            this.uiRenderer.renderTexture(TEXT_FIELD_UNSELECTED_BACKGROUND_TEXTURE, this.position, this.size);
         }
 
         if(this.gameRenderer.getCurrentTextField() == this && (KeyboardAndMouseInput.pressedKey(GLFW_KEY_BACKSPACE)) && !content.isEmpty()) {

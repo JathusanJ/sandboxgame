@@ -3,6 +3,7 @@ package game.client.ui.screen;
 import game.client.SandboxGame;
 import game.client.ui.text.Language;
 import game.client.world.SingleplayerWorld;
+import game.shared.multiplayer.skin.Skins;
 import org.joml.Vector2f;
 
 public class WorldLoadingScreen extends Screen {
@@ -17,17 +18,23 @@ public class WorldLoadingScreen extends Screen {
             "Craving RAM",
             "Have you tried playing Minecraft?",
             "Acting is my passion",
-            "Breaking water",
             "Eated it all",
             "Graphic design is my passion",
             "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
             "An attempt was made",
             "Now you're breathing manually",
-            "You lost the game",
             "Multiplayer (partially) functional!",
             "Bugs? What are those?",
             "No bugs! (I hope)",
-            "593 meters above the sea!",
+            "Spinning player 5 kilometers away!",
+            "3 am coding!",
+            "Fazzoletti overload!",
+            "Multiplayer world barrier 255% not a block!",
+            "Contains some traces of floating point imprecision!",
+            "Don't confuse powdered sugar with sugar!",
+            "public class WorldLoadingScreen extends Screen",
+            Skins.idToSkin.size() + " different skins!",
+            "Over 9000 lines of code!",
             "Placeholder text, you shouldn't be able to see this!"
     };
 

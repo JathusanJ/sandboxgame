@@ -1,14 +1,16 @@
 package game.client.ui.screen;
 
+import game.client.ui.text.Language;
+import game.client.ui.text.Text;
 import game.client.ui.widget.ButtonWidget;
-import game.client.networking.GameClientHandler;
+import game.client.multiplayer.GameClientHandler;
 import org.joml.Vector2f;
 
 public class ConnectingToServerScreen extends Screen {
     public int chosenSplash;
     public Screen parent;
 
-    public ButtonWidget cancel = new ButtonWidget("Cancel", () -> {
+    public ButtonWidget cancel = new ButtonWidget(new Text.Translated("ui.cancel"), () -> {
         if(GameClientHandler.serverHandler != null) {
             GameClientHandler.serverHandler.close();
         }
@@ -24,7 +26,7 @@ public class ConnectingToServerScreen extends Screen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow("Connecting to server", new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() / 2F + 16), 32, true);
+        this.uiRenderer.renderTextWithShadow(Language.translate("ui.multiplayer.connecting"), new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() / 2F + 16), 32, true);
         this.uiRenderer.renderTextWithShadow(WorldLoadingScreen.splashes[chosenSplash], new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() / 2F - 24), 28, true);
     }
 

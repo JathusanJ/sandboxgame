@@ -1,19 +1,16 @@
 package game.client.ui.screen;
 
-import game.client.ui.item.ItemTextures;
-import game.client.ui.text.Font;
 import game.client.ui.text.Language;
 import game.client.ui.widget.ItemSlotWidget;
-import game.logic.recipes.Recipe;
-import game.logic.recipes.CraftingRecipes;
-import game.logic.world.items.BlockItem;
-import game.logic.world.items.Item;
-import game.logic.world.items.ItemStack;
-import game.logic.world.items.Items;
-import game.logic.world.items.slot.InventoryItemSlot;
-import game.logic.world.items.slot.ItemSlot;
-import game.logic.world.items.slot.RegularItemSlot;
+import game.shared.recipes.Recipe;
+import game.shared.recipes.CraftingRecipes;
+import game.shared.world.items.Item;
+import game.shared.world.items.Items;
+import game.shared.world.items.slot.InventoryItemSlot;
+import game.shared.world.items.slot.RegularItemSlot;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.ArrayList;
 
@@ -21,7 +18,6 @@ public class CraftingTableScreen extends ContainerScreen implements CraftingScre
     public ArrayList<ItemSlotWidget> inputSlots = new ArrayList<>();
     public ArrayList<ItemSlotWidget> playerInventorySlots = new ArrayList<>();
     public ItemSlotWidget outputSlot = new ItemSlotWidget(new CraftingTableOutputSlot(this), holdingSlot);
-    public Recipe currentRecipe;
 
     public CraftingTableScreen() {
         for (int i = 0; i < 9; i++) {
@@ -41,8 +37,9 @@ public class CraftingTableScreen extends ContainerScreen implements CraftingScre
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.screen.crafting_table"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F + 3.5F * 50), 24);
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.screen.inventory"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F - 0.5F * 50), 24);
+        this.uiRenderer.renderTextWithShadow(Language.translate("ui.crafting_table"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F + 3.5F * 50), 24);
+        this.uiRenderer.renderTextWithShadow(Language.translate("ui.inventory"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F - 0.5F * 50), 24);
+        this.uiRenderer.renderTexture(craftingArrow, new Vector2f(this.getScreenWidth() / 2F + 2.5F * 50 - 100, this.getScreenHeight() / 2F + 1.5F * 50 - 10), new Vector2f(64, 64));
 
         // Find recipe
         ArrayList<Item> input = new ArrayList<>();
@@ -59,7 +56,11 @@ public class CraftingTableScreen extends ContainerScreen implements CraftingScre
         }
     }
 
-    // Duplicated from the block and item selector screen, I should look into reducing duplicated code sometime
+    @Override
+    public void renderBeforeWidgets(double deltaTime, int mouseX, int mouseY) {
+        this.uiRenderer.renderColoredQuad(new Vector2f(this.getScreenWidth() / 2F - 4.75F * 50, this.getScreenHeight() / 2F - 5.25F * 50), new Vector2f(475, 475), new Vector4f(0.25F, 0.25F, 0.25F, 0.95F));
+    }
+
     @Override
     public void close() {
         this.gameRenderer.setScreen(null);

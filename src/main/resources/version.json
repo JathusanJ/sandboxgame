@@ -1,4 +1,5 @@
 {
   "versionId": "${versionId}",
-  "versionName": "Pre-Alpha ${versionId}"
+  "versionName": "${versionName}",
+  "git": "${git}"
 }

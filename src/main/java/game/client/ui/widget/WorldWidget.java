@@ -10,7 +10,7 @@ public class WorldWidget extends Widget {
     private SingleplayerWorld world;
     private WorldSelectScreen worldSelectScreen;
 
-    private static Texture BORDER_SELECTED_TEXTURE = new Texture("textures/ui/border_selected.png");
+    public static Texture BORDER_SELECTED_TEXTURE = new Texture("textures/ui/border_selected.png");
 
     public WorldWidget(SingleplayerWorld world, WorldSelectScreen worldSelectScreen) {
         this.world = world;

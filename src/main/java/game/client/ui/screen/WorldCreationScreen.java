@@ -7,16 +7,23 @@ import game.client.ui.widget.ButtonWidget;
 import game.client.ui.widget.EnumSelectWidget;
 import game.client.ui.widget.TextFieldWidget;
 import game.client.world.SingleplayerWorld;
-import game.logic.world.World;
+import game.shared.world.World;
 import org.joml.Vector2f;
 
+import java.io.File;
 import java.util.random.RandomGeneratorFactory;
 
 public class WorldCreationScreen extends Screen {
     public Screen prevScreen;
     public ButtonWidget closeButton = new ButtonWidget(Language.translate("ui.close"), this::close);
     public ButtonWidget createWorldButton = new ButtonWidget(Language.translate("ui.screen.create_world"), () -> {
-        if(this.worldNameTextField.content.isEmpty()) return;
+        if(this.worldNameTextField.content.trim().isEmpty()) return;
+
+        String worldName = this.worldNameTextField.content.replaceAll("[^a-zA-Z0-9\\\\._ ]+", "_");
+
+        if(new File(this.client.getWorldsFolder(), worldName).exists()) {
+            return;
+        }
 
         int worldSeed;
         if(this.worldSeedTextField.content.isEmpty()) {
@@ -32,7 +39,7 @@ public class WorldCreationScreen extends Screen {
         // "Variable used in lambda expression should be final or effectively final" or something
         int finalWorldSeed = worldSeed;
         // https://stackoverflow.com/a/17745189
-        SingleplayerWorld world = new SingleplayerWorld(this.worldNameTextField.content, finalWorldSeed, this.worldTypeEnumSelectWidget.getValue(), this.worldNameTextField.content.replaceAll("[^a-zA-Z0-9\\\\._ ]+", "_"), SandboxGame.getInstance().getWorldsFolder());
+        SingleplayerWorld world = new SingleplayerWorld(this.worldNameTextField.content, finalWorldSeed, this.worldTypeEnumSelectWidget.getValue(), worldName, this.client.getWorldsFolder());
         world.commandsEnabled = this.commandsEnabled;
         world.writeWorldInfo();
         Thread worldLoadingThread = new Thread(() -> {

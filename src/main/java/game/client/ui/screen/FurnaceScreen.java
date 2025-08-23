@@ -1,17 +1,17 @@
 package game.client.ui.screen;
 
 import engine.renderer.Texture;
-import game.client.ui.item.ItemTextures;
-import game.client.ui.text.Font;
 import game.client.ui.text.Language;
 import game.client.ui.widget.ItemSlotWidget;
-import game.logic.world.blocks.block_entity.FurnaceBlockEntity;
-import game.logic.world.items.BlockItem;
-import game.logic.world.items.slot.InventoryItemSlot;
-import game.logic.world.items.slot.RegularItemSlot;
+import game.shared.world.blocks.block_entity.FurnaceBlockEntity;
+import game.shared.world.items.slot.InventoryItemSlot;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.ArrayList;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public class FurnaceScreen extends ContainerScreen {
     public FurnaceBlockEntity blockEntity;
@@ -19,7 +19,8 @@ public class FurnaceScreen extends ContainerScreen {
     public ItemSlotWidget inputSlot;
     public ItemSlotWidget fuelSlot;
     public ItemSlotWidget outputSlot;
-    public Texture test = new Texture("textures/texture.png");
+    public static Texture fireTexture = new Texture("textures/ui/fire.png");
+    public static Texture fireOutlineTexture = new Texture("textures/ui/fire_outline.png");
 
     public FurnaceScreen(FurnaceBlockEntity blockEntity) {
         this.blockEntity = blockEntity;
@@ -41,10 +42,32 @@ public class FurnaceScreen extends ContainerScreen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.screen.furnace"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F + 3.5F * 50), 24);
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.screen.inventory"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F - 0.5F * 50), 24);
+        this.uiRenderer.renderTextWithShadow(Language.translate("ui.furnace"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F + 3.5F * 50), 24);
+        this.uiRenderer.renderTextWithShadow(Language.translate("ui.inventory"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F - 0.5F * 50), 24);
 
-        this.uiRenderer.renderTexture(test, new Vector2f(this.getScreenWidth() / 2F - 125, this.getScreenHeight() / 2F + 1.5F * 50), new Vector2f((float) (250 * this.blockEntity.burnTime) / 100, 50));
+        this.uiRenderer.renderTexture(CraftingScreen.craftingArrowOutline, new Vector2f(this.getScreenWidth() / 2F - 32, this.getScreenHeight() / 2F + 1.5F * 50 - 16), new Vector2f(64,64));
+        glEnable(GL_SCISSOR_TEST);
+        glScissor((int) (this.getScreenWidth() / 2F - 32), (int) (this.getScreenHeight() / 2F + 1.5F * 50 - 16), (int) (this.blockEntity.burnTime / 100F * 64),64);
+        this.uiRenderer.renderTexture(CraftingScreen.craftingArrow, new Vector2f(this.getScreenWidth() / 2F - 32, this.getScreenHeight() / 2F + 1.5F * 50 - 16), new Vector2f(64,64));
+        glScissor(0,0, this.getScreenWidth(), this.getScreenHeight());
+        glDisable(GL_SCISSOR_TEST);
+
+        float maxFuelTime = 100;
+        if(this.blockEntity.lastFuelItem != null) {
+            maxFuelTime = FurnaceBlockEntity.itemFuelTimes.get(this.blockEntity.lastFuelItem);
+        }
+
+        this.uiRenderer.renderTexture(fireOutlineTexture, new Vector2f(this.getScreenWidth() / 2F - 125, this.getScreenHeight() / 2F + 1.5F * 50), new Vector2f(50, 50));
+        glEnable(GL_SCISSOR_TEST);
+        glScissor((int) (this.getScreenWidth() / 2F - 125), (int) (this.getScreenHeight() / 2F + 1.5F * 50), 50, (int) Math.min(this.blockEntity.remainingFuelTime / maxFuelTime * 50, 50));
+        this.uiRenderer.renderTexture(fireTexture, new Vector2f(this.getScreenWidth() / 2F - 125, this.getScreenHeight() / 2F + 1.5F * 50), new Vector2f(50, 50));
+        glScissor(0,0, this.getScreenWidth(), this.getScreenHeight());
+        glDisable(GL_SCISSOR_TEST);
+    }
+
+    @Override
+    public void renderBeforeWidgets(double deltaTime, int mouseX, int mouseY) {
+        this.uiRenderer.renderColoredQuad(new Vector2f(this.getScreenWidth() / 2F - 4.75F * 50, this.getScreenHeight() / 2F - 5.25F * 50), new Vector2f(475, 475), new Vector4f(0.25F, 0.25F, 0.25F, 0.95F));
     }
 
     @Override
@@ -60,7 +83,7 @@ public class FurnaceScreen extends ContainerScreen {
 
         this.inputSlot.position = new Vector2f(this.getScreenWidth() / 2F - 2.5F * 50, this.getScreenHeight() / 2F + 2.5F * 50);
         this.fuelSlot.position = new Vector2f(this.getScreenWidth() / 2F - 2.5F * 50, this.getScreenHeight() / 2F + 0.5F * 50);
-        this.outputSlot.position = new Vector2f(this.getScreenWidth() / 2F + 2.5F * 50, this.getScreenHeight() / 2F + 1.5F * 50);
+        this.outputSlot.position = new Vector2f(this.getScreenWidth() / 2F + 1.5F * 50, this.getScreenHeight() / 2F + 1.5F * 50);
 
         // Inventory (rows 2 - 4)
         for(int y = 0; y < 3; y++) {

@@ -11,13 +11,12 @@ import org.joml.Vector2f;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 
 public abstract class Screen {
     public GameRenderer gameRenderer = SandboxGame.getInstance().getGameRenderer();
     public UIRenderer uiRenderer = this.gameRenderer.uiRenderer;
-    public SandboxGame gameClient = SandboxGame.getInstance();
+    public SandboxGame client = SandboxGame.getInstance();
 
     public List<Widget> renderableWidgets = new ArrayList<>();
 
@@ -25,7 +24,7 @@ public abstract class Screen {
 
     public void renderBackground(double deltaTime, int mouseX, int mouseY) {
         if(this.gameRenderer.world != null && this.gameRenderer.world.ready) {
-            this.uiRenderer.renderTexture(PAUSE_BACKGROUND_TEXTURE, new Vector2f(), new Vector2f(this.gameClient.getWindow().width, this.gameClient.getWindow().height));
+            this.uiRenderer.renderTexture(PAUSE_BACKGROUND_TEXTURE, new Vector2f(), new Vector2f(this.client.getWindow().width, this.client.getWindow().height));
         } else {
             TitleScreen.backgroundScroll = (TitleScreen.backgroundScroll + (float) deltaTime / 60F) % 1;
             this.uiRenderer.renderTexture(TitleScreen.BACKGROUND_TEXTURE, new Vector2f(this.getScreenHeight() * 4 * -TitleScreen.backgroundScroll, 0), new Vector2f(this.getScreenHeight() * 4, this.getScreenHeight()));
@@ -35,6 +34,8 @@ public abstract class Screen {
 
     public void render(double deltaTime, int mouseX, int mouseY) {
         this.renderBackground(deltaTime, mouseX, mouseY);
+
+        this.renderBeforeWidgets(deltaTime, mouseX, mouseY);
 
         for(Widget widget : this.renderableWidgets) {
             widget.render(deltaTime, mouseX, mouseY);
@@ -64,6 +65,7 @@ public abstract class Screen {
     }
 
     public abstract void renderContents(double deltaTime, int mouseX, int mouseY);
+    public void renderBeforeWidgets(double deltaTime, int mouseX, int mouseY) {}
     public abstract void close();
     public abstract void positionContent();
 }

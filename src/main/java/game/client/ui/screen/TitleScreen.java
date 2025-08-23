@@ -3,30 +3,22 @@ package game.client.ui.screen;
 import game.client.SandboxGame;
 import game.client.ui.text.Language;
 import engine.renderer.Texture;
+import game.client.ui.text.Text;
 import game.client.ui.widget.ButtonWidget;
-import game.client.networking.GameClient;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 
 public class TitleScreen extends Screen {
-    public ButtonWidget singleplayerButton = new ButtonWidget(Language.translate("ui.screen.singleplayer"), () -> {
+    public ButtonWidget singleplayerButton = new ButtonWidget(new Text.Translated("ui.screen.singleplayer"), () -> {
         this.gameRenderer.setScreen(new WorldSelectScreen(this));
     });
-    public ButtonWidget closeGameButton = new ButtonWidget(Language.translate("ui.screen.title_screen.close_game"), this::close);
+    public ButtonWidget closeGameButton = new ButtonWidget(new Text.Translated("ui.screen.title_screen.close_game"), this::close);
 
-    public ButtonWidget multiplayerButton = new ButtonWidget(Language.translate("ui.screen.multiplayer"), () -> {
-        this.gameRenderer.setScreen(new ConnectingToServerScreen(this));
-        Thread networkingThread = new Thread(() -> {
-            try {
-                GameClient.connect("localhost", 8080);
-            } catch (InterruptedException e) {
-                this.gameRenderer.setScreen(new DisconnectedScreen(e.getMessage()));
-            }}, "client-network");
-
-        networkingThread.start();
+    public ButtonWidget multiplayerButton = new ButtonWidget(new Text.Translated("ui.screen.multiplayer"), () -> {
+        this.gameRenderer.setScreen(new MultiplayerScreen());
     });
 
-    public ButtonWidget settingsButton = new ButtonWidget(Language.translate("ui.screen.settings"), () -> {
+    public ButtonWidget settingsButton = new ButtonWidget(new Text.Translated("ui.screen.settings"), () -> {
         this.gameRenderer.setScreen(new SettingsScreen(this));
     });
 

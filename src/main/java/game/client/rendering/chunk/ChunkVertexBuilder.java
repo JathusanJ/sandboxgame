@@ -1,7 +1,7 @@
 package game.client.rendering.chunk;
 
 import game.client.rendering.UVPicker;
-import game.logic.world.blocks.Block;
+import game.shared.world.blocks.Block;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;

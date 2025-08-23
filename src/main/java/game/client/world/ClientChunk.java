@@ -2,15 +2,14 @@ package game.client.world;
 
 import game.client.SandboxGame;
 import game.client.rendering.chunk.ChunkMesh;
-import game.logic.world.World;
-import game.logic.world.chunk.Chunk;
-import game.logic.world.blocks.Block;
-import game.client.networking.GameClient;
+import game.shared.world.World;
+import game.shared.world.chunk.Chunk;
+import game.shared.world.blocks.Block;
+import game.client.multiplayer.GameClient;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import org.joml.Vector3i;
 
 public class ClientChunk extends Chunk implements Comparable<ClientChunk> {
     public ChunkMesh chunkMesh;

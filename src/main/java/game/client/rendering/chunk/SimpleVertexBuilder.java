@@ -1,13 +1,10 @@
 package game.client.rendering.chunk;
 
-import game.client.rendering.UVPicker;
-import game.logic.world.blocks.Block;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class SimpleVertexBuilder {
     public ArrayList<VertexData> data = new ArrayList<>();
@@ -34,6 +31,13 @@ public class SimpleVertexBuilder {
         }
 
         return vertices;
+    }
+
+    public void rotate(float rotation) {
+        for(VertexData vertexData : this.data) {
+            Vector4f rotatedPosition = new Vector4f(vertexData.position, 0).rotateY(rotation);
+            vertexData.position.set(rotatedPosition);
+        }
     }
 
     public record VertexData(Vector3f position, Vector2f textureCoordinates) {}

@@ -1,8 +1,9 @@
 package game.client.rendering.chunk;
 
 import game.client.SandboxGame;
-import game.logic.world.blocks.Block;
+import game.shared.world.blocks.Block;
 import game.client.world.ClientChunk;
+import game.shared.world.blocks.Blocks;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
@@ -13,7 +14,10 @@ public class ChunkMesh {
     public ClientChunk chunk;
     public int vaoId;
     public int vboId;
+    public int waterVaoId;
+    public int waterVboId;
     public int length = 0;
+    public int waterLength = 0;
     public State state = State.UNINITIALIZED;
     public Task task;
 
@@ -21,6 +25,8 @@ public class ChunkMesh {
         this.chunk = chunk;
         this.vboId = glGenBuffers();
         this.vaoId = glGenVertexArrays();
+        this.waterVaoId = glGenVertexArrays();
+        this.waterVboId = glGenBuffers();
     }
 
     public void upload() {
@@ -31,6 +37,15 @@ public class ChunkMesh {
             glBufferData(GL_ARRAY_BUFFER, (long) this.task.vertices.length * Float.BYTES, GL_DYNAMIC_DRAW);
             glBufferSubData(GL_ARRAY_BUFFER, 0, this.task.vertices);
             SandboxGame.getInstance().getGameRenderer().chunkRenderer.createVertexAttributes();
+
+            if(this.waterLength > 0) {
+                glBindVertexArray(this.waterVaoId);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SandboxGame.getInstance().getGameRenderer().chunkRenderer.eboId);
+                glBindBuffer(GL_ARRAY_BUFFER, this.waterVboId);
+                glBufferData(GL_ARRAY_BUFFER, (long) this.task.waterVertices.length * Float.BYTES, GL_DYNAMIC_DRAW);
+                glBufferSubData(GL_ARRAY_BUFFER, 0, this.task.waterVertices);
+                SandboxGame.getInstance().getGameRenderer().chunkRenderer.createVertexAttributes();
+            }
             this.state = State.COMPLETED;
         } catch(Exception e) {
             SandboxGame.getInstance().logger.error("Failed upload of chunk mesh", e);
@@ -53,27 +68,35 @@ public class ChunkMesh {
 
     public void delete() {
         glDeleteBuffers(this.vboId);
+        glDeleteBuffers(this.waterVboId);
         glDeleteVertexArrays(this.vaoId);
+        glDeleteVertexArrays(this.waterVaoId);
     }
 
-    private float[] generateVertices() {
+    private void generateVertices(Task task) {
         ChunkVertexBuilder vertexBuilder = new ChunkVertexBuilder();
+        ChunkVertexBuilder waterVertexBuilder = new ChunkVertexBuilder();
 
         for(int y = 0; y < 128; y++) {
             for(int x = 0; x < 16; x++) {
                 for(int z = 0; z < 16; z++) {
                     Block block = chunk.getBlockAtLocalizedPosition(x,y,z);
                     if(!block.isEmpty()) {
-                        // Build a cube
-                       block.buildBlockVertices(vertexBuilder, this.chunk, x, y, z);
+                        if(block == Blocks.WATER) {
+                            block.buildBlockVertices(waterVertexBuilder, this.chunk, x, y, z);
+                        } else {
+                            block.buildBlockVertices(vertexBuilder, this.chunk, x, y, z);
+                        }
                     }
                 }
             }
         }
 
-        float[] vertices = vertexBuilder.compile(this.chunk.chunkPosition.x * 16, 0, this.chunk.chunkPosition.y * 16);
-        this.length = vertices.length;
-        return vertices;
+        task.vertices = vertexBuilder.compile(this.chunk.chunkPosition.x * 16, 0, this.chunk.chunkPosition.y * 16);
+        this.length = task.vertices.length;
+
+        task.waterVertices = waterVertexBuilder.compile(this.chunk.chunkPosition.x * 16, 0, this.chunk.chunkPosition.y * 16);
+        this.waterLength = task.waterVertices.length;
     }
 
     public enum State {
@@ -87,6 +110,7 @@ public class ChunkMesh {
 
     public static class Task {
         public float[] vertices;
+        public float[] waterVertices;
         public ChunkMesh chunkMesh;
 
         public Task(ChunkMesh chunkMesh) {
@@ -94,7 +118,7 @@ public class ChunkMesh {
         }
 
         public void run() {
-            this.vertices = this.chunkMesh.generateVertices();
+            this.chunkMesh.generateVertices(this);
             this.chunkMesh.state = State.WAITING_TO_BE_ENQUEUED;
         }
     }

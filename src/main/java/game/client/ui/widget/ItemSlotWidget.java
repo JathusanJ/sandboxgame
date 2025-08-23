@@ -4,10 +4,10 @@ import engine.input.KeyboardAndMouseInput;
 import game.client.ui.item.ItemTextures;
 import game.client.ui.text.Font;
 import engine.renderer.Texture;
-import game.logic.world.blocks.Blocks;
-import game.logic.world.items.BlockItem;
-import game.logic.world.items.slot.InfiniteItemSlot;
-import game.logic.world.items.slot.ItemSlot;
+import game.shared.world.blocks.Blocks;
+import game.shared.world.items.BlockItem;
+import game.shared.world.items.slot.InfiniteItemSlot;
+import game.shared.world.items.slot.ItemSlot;
 import org.joml.Vector2f;
 
 public class ItemSlotWidget extends Widget {

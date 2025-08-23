@@ -8,7 +8,7 @@ import org.joml.Vector2f;
 public abstract class Widget {
     public GameRenderer gameRenderer = SandboxGame.getInstance().getGameRenderer();
     public UIRenderer uiRenderer = this.gameRenderer.uiRenderer;
-    public SandboxGame gameClient = SandboxGame.getInstance();
+    public SandboxGame client = SandboxGame.getInstance();
 
     public Vector2f position = new Vector2f();
     public Vector2f size = new Vector2f();

@@ -1,5 +1,14 @@
 {
   "ui.close": "Close",
+  "ui.back": "Back",
+  "ui.cancel": "Cancel",
+  "ui.proceed": "Proceed",
+  "ui.next": "Next",
+
+  "ui.setup.open": "Change username and skin",
+  "ui.setup.username": "Set username",
+  "ui.setup.username.field": "Username",
+  "ui.setup.skin": "Set skin",
 
   "ui.screen.singleplayer": "Singleplayer",
   "ui.screen.multiplayer": "Multiplayer",
@@ -11,9 +20,12 @@
   "ui.screen.settings.field_of_view": "Field of View",
   "ui.screen.settings.vsync": "V-Sync",
 
+  "ui.language_select": "Select language",
+
   "ui.screen.pause.resume": "Resume",
   "ui.screen.pause.quit": "Quit and save world",
   "ui.screen.pause.game_paused": "Game paused",
+  "ui.screen.pause.disconnect": "Disconnect",
 
   "ui.screen.world_select": "Select world",
   "ui.screen.world_select.load_world": "Load selected world",
@@ -26,10 +38,37 @@
   "ui.world.loading": "Loading world",
   "ui.world.saving": "Saving world",
 
-  "ui.screen.barrel": "Barrel",
-  "ui.screen.inventory": "Inventory",
-  "ui.screen.crafting_table": "Crafting Table",
-  "ui.screen.furnace": "Furnace",
+  "ui.multiplayer.experimental": "Multiplayer is experimental",
+  "ui.multiplayer.experimental.warning": "You may experience issues when playing in multiplayer.",
+  "ui.multiplayer.experimental.proceed": "Proceed",
+  "ui.multiplayer.experimental.back": "Back",
+
+  "ui.multiplayer.connect": "Connect to server",
+  "ui.multiplayer.address": "Server address",
+  "ui.multiplayer.settings": "Change skin",
+
+  "ui.multiplayer.connecting" : "Connecting to server",
+  "ui.multiplayer.downloading" : "Downloading world",
+  "ui.multiplayer.downloading.while" : "(Might take a while)",
+  "ui.multiplayer.downloading.moment" : "(Might take a moment)",
+
+  "ui.multiplayer.skin": "Change skin",
+  "ui.multiplayer.skin.next": ">",
+  "ui.multiplayer.skin.previous": "<",
+  "skin.default": "Default",
+  "skin.missing": "missing.png",
+  "skin.oak_tree": "Oak Tree",
+  "skin.lava": "Lava",
+
+  "ui.barrel": "Barrel",
+  "ui.inventory": "Inventory",
+  "ui.inventory.crafting": "Crafting",
+  "ui.crafting_table": "Crafting Table",
+  "ui.furnace": "Furnace",
+
+  "ui.credits": "Credits",
+  "ui.credits.textures": "Textures",
+  "ui.credits.developed_by": "Developed by Jathusan Jeyabalachandran",
 
   "block.moondust": "Moondust",
   "block.air": "Air",

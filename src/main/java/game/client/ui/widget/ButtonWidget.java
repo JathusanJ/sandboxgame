@@ -3,11 +3,12 @@ package game.client.ui.widget;
 import engine.input.KeyboardAndMouseInput;
 import engine.renderer.Texture;
 import engine.sound.Sounds;
+import game.client.ui.text.Text;
 import org.joml.Vector2f;
 
 public class ButtonWidget extends Widget {
     public boolean disabled = false;
-    private String text;
+    private Text text;
     private ButtonClickHandler buttonClickHandler;
 
     public static Texture BUTTON_UNSELECTED_TEXTURE = new Texture("textures/ui/button_unselected.png");
@@ -15,6 +16,11 @@ public class ButtonWidget extends Widget {
     public static Texture BUTTON_DISABLED_TEXTURE = new Texture("textures/ui/button_disabled.png");
 
     public ButtonWidget(String text, ButtonClickHandler buttonClickHandler) {
+        this.text = new Text.Static(text);
+        this.buttonClickHandler = buttonClickHandler;
+    }
+
+    public ButtonWidget(Text text, ButtonClickHandler buttonClickHandler) {
         this.text = text;
         this.buttonClickHandler = buttonClickHandler;
     }
@@ -35,15 +41,15 @@ public class ButtonWidget extends Widget {
             }
         }
 
-        this.uiRenderer.renderTextWithShadow(this.text, this.position.add(this.size.x / 2F, this.size.y / 2F - 12, new Vector2f()), 24, true);
+        this.uiRenderer.renderTextWithShadow(this.text.toString(), this.position.add(this.size.x / 2F, this.size.y / 2F - 12, new Vector2f()), 24, true);
     }
 
     public void setText(String text) {
-        this.text = text;
+        this.text = new Text.Static(text);
     }
 
-    public String getText() {
-        return this.text;
+    public void setText(Text text) {
+        this.text = text;
     }
 
     public interface ButtonClickHandler {

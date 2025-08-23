@@ -3,7 +3,7 @@ package game.client.rendering.renderer;
 import game.client.SandboxGame;
 import engine.renderer.Texture;
 import game.client.rendering.chunk.SimpleVertexBuilder;
-import game.logic.world.creature.Player;
+import game.shared.world.creature.Player;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 

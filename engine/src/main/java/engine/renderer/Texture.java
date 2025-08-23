@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.stb.STBImage.*;
@@ -15,7 +16,11 @@ public class Texture {
     private int height;
     private int width;
 
-    public Texture(String filePath){
+    public Texture(String filePath) {
+        this(filePath, false);
+    }
+
+    public Texture(String filePath, boolean generateMipmaps){
         this.textureId = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, textureId);
 
@@ -24,8 +29,15 @@ public class Texture {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
         // Use nearest neighbour for scaling images
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        if(generateMipmaps) {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 4);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4);
+        } else {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        }
 
         IntBuffer width = BufferUtils.createIntBuffer(1);
         IntBuffer height = BufferUtils.createIntBuffer(1);
@@ -58,7 +70,10 @@ public class Texture {
             } else {
                 throw new IllegalStateException("Couldn't load image: The image doesn't have exactly 4 or 3 channels");
             }
-            glGenerateMipmap(GL_TEXTURE_2D);
+
+            if(generateMipmaps) {
+                glGenerateMipmap(GL_TEXTURE_2D);
+            }
         } else {
             throw new IllegalStateException("Couldn't load image: " + stbi_failure_reason());
         }

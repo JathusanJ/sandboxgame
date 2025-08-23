@@ -5,10 +5,11 @@ import game.client.rendering.chunk.SimpleVertexBuilder;
 import game.client.rendering.creature.CreatureVertexGenerator;
 import game.client.rendering.creature.ItemCreatureVertexGenerator;
 import game.client.rendering.creature.PlayerVertexGenerator;
-import game.logic.world.creature.Creature;
-import game.logic.world.creature.ItemCreature;
-import game.logic.world.creature.OtherPlayer;
-import game.logic.world.creature.Player;
+import game.client.world.creature.ClientPlayer;
+import game.shared.world.creature.Creature;
+import game.shared.world.creature.ItemCreature;
+import game.shared.world.creature.OtherPlayer;
+import game.shared.world.creature.Player;
 import org.joml.Matrix4f;
 
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class CreatureRenderer {
 
     public CreatureRenderer(GameRenderer gameRenderer) {
         this.gameRenderer = gameRenderer;
-        creatureToVertexGenerator.put(Player.class, new PlayerVertexGenerator());
+        creatureToVertexGenerator.put(ClientPlayer.class, new PlayerVertexGenerator());
         creatureToVertexGenerator.put(OtherPlayer.class, new PlayerVertexGenerator());
         creatureToVertexGenerator.put(ItemCreature.class, new ItemCreatureVertexGenerator());
     }
@@ -64,7 +65,7 @@ public class CreatureRenderer {
         glEnableVertexAttribArray(1);
     }
 
-    public void render(Creature creature, double deltaTickTime) {
+    public void render(Creature creature, double deltaTickTime, float light) {
         CreatureVertexGenerator<?> creatureVertexGenerator = creatureToVertexGenerator.get(creature.getClass());
         if(creatureVertexGenerator == null) return;
 
@@ -82,12 +83,12 @@ public class CreatureRenderer {
         );
 
         this.shader.uploadMatrix4f("model", model);
-        this.shader.uploadFloat("light", 0.25F + this.gameRenderer.skyRenderer.skyColorSpline.calculateLinear(this.gameRenderer.world.getDayTime()) * 0.75F);
+        this.shader.uploadFloat("light", light);
 
         glBindVertexArray(this.vaoId);
         glBindBuffer(GL_ARRAY_BUFFER, this.vboId);
         glBufferSubData(GL_ARRAY_BUFFER, 0, data);
         this.createVertexAttributes();
-        glDrawArrays(GL_TRIANGLES, 0, data.length); // Usually I'd just put in data.length as the parameter, but that causes weird rendering artifacts. And thus I am doing vertexBuilder.data.size(), but also prevents drawing any other quads in the same draw call :(
+        glDrawArrays(GL_TRIANGLES, 0, data.length / 5);
     }
 }

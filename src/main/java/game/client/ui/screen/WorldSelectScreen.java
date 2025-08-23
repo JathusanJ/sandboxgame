@@ -36,7 +36,10 @@ public class WorldSelectScreen extends Screen {
         this.renderableWidgets.add(this.createWorldButton);
 
         for(File worldFolder : SandboxGame.getInstance().getWorldsFolder().listFiles()) {
-            this.listWidget.widgets.add(new WorldWidget(new SingleplayerWorld(worldFolder.getName(), SandboxGame.getInstance().getWorldsFolder()), this));
+            SingleplayerWorld world = new SingleplayerWorld(worldFolder.getName(), SandboxGame.getInstance().getWorldsFolder());
+            if(world.worldFolder != null) {
+                this.listWidget.widgets.add(new WorldWidget(world, this));
+            }
         }
     }
 

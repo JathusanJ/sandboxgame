@@ -2,24 +2,21 @@ package game.client.ui.screen;
 
 import game.client.SandboxGame;
 import game.client.ui.text.Language;
+import game.client.ui.text.Text;
 import game.client.ui.widget.ButtonWidget;
-import game.client.networking.GameClient;
+import game.client.multiplayer.GameClient;
 import org.joml.Vector2f;
 
 public class PauseMenuScreen extends Screen {
-    public ButtonWidget resumeButton = new ButtonWidget(Language.translate("ui.screen.pause.resume"), this::close);
+    public ButtonWidget resumeButton = new ButtonWidget(new Text.Translated("ui.screen.pause.resume"), this::close);
     public ButtonWidget quitButton = new ButtonWidget("", () -> {
         this.gameRenderer.chunkRenderer.uploadQueue.clear();
-        if(GameClient.isConnectedToServer) {
-            GameClient.disconnect();
-        } else {
-            SandboxGame.getInstance().doOnTickingThread(() -> {
-                this.gameRenderer.unloadCurrentWorld();
-            });
-        }
+        SandboxGame.getInstance().doOnTickingThread(() -> {
+            this.gameRenderer.unloadCurrentWorld();
+        });
         this.gameRenderer.setScreen(new WorldSavingScreen());
     });
-    public ButtonWidget settingsButton = new ButtonWidget(Language.translate("ui.screen.settings"), () -> {
+    public ButtonWidget settingsButton = new ButtonWidget(new Text.Translated("ui.screen.settings"), () -> {
         this.gameRenderer.setScreen(new SettingsScreen(this));
     });
 
@@ -29,9 +26,9 @@ public class PauseMenuScreen extends Screen {
         this.renderableWidgets.add(this.settingsButton);
 
         if(GameClient.isConnectedToServer) {
-            quitButton.setText(Language.translate("ui.screen.pause.disconnect"));
+            quitButton.setText(new Text.Translated("ui.screen.pause.disconnect"));
         } else {
-            quitButton.setText(Language.translate("ui.screen.pause.quit"));
+            quitButton.setText(new Text.Translated("ui.screen.pause.quit"));
         }
     }
 

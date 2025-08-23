@@ -13,26 +13,26 @@ import game.client.ui.screen.*;
 import game.client.ui.text.Font;
 import game.client.ui.widget.TextFieldWidget;
 import game.client.world.SingleplayerWorld;
-import game.logic.util.json.WrappedJsonObject;
-import game.logic.world.World;
-import game.logic.world.blocks.Blocks;
+import game.shared.multiplayer.skin.Skins;
+import game.shared.util.json.WrappedJsonObject;
+import game.shared.world.World;
+import game.shared.world.blocks.Blocks;
 import game.client.world.creature.ClientPlayer;
-import game.logic.world.chunk.ChunkLoaderManager;
-import game.logic.world.creature.ItemCreature;
-import game.logic.world.creature.Player;
-import game.logic.TickManager;
-import game.logic.world.blocks.Block;
+import game.shared.world.chunk.ChunkLoaderManager;
+import game.shared.world.creature.ItemCreature;
+import game.shared.world.creature.Player;
+import game.shared.TickManager;
+import game.shared.world.blocks.Block;
 import game.client.world.ClientChunk;
 import game.client.world.ClientWorld;
 
-import game.logic.world.items.BlockItem;
-import game.logic.world.items.Item;
-import game.logic.world.items.Items;
-import game.client.networking.GameClient;
-import game.client.networking.GameClientHandler;
-import game.networking.packets.BlockBreakingPacket;
-import game.networking.packets.DropItemPacket;
-import game.networking.packets.UseItemPacket;
+import game.shared.world.items.BlockItem;
+import game.shared.world.items.Item;
+import game.shared.world.items.Items;
+import game.client.multiplayer.GameClient;
+import game.client.multiplayer.GameClientHandler;
+import game.shared.multiplayer.packets.DropItemPacket;
+import game.shared.multiplayer.packets.SetBlockPacket;
 import org.joml.*;
 import org.lwjgl.system.MemoryUtil;
 
@@ -60,12 +60,12 @@ public class GameRenderer {
     public UIRenderer uiRenderer = new UIRenderer();
     public ChunkRenderer chunkRenderer = new ChunkRenderer(this);
     public SkyRenderer skyRenderer = new SkyRenderer();
-    public CloudRenderer cloudRenderer = new CloudRenderer();
     public CreatureRenderer creatureRenderer = new CreatureRenderer(this);
     public BlockBreakingProgressRenderer blockBreakingProgressRenderer = new BlockBreakingProgressRenderer();
     public ChatRenderer chatRenderer = new ChatRenderer();
     public BlockSelectorRenderer blockSelectorRenderer = new BlockSelectorRenderer();
     public Vector3i blockCurrentlySelecting;
+    public BlockItemTextureRenderer blockItemTextureRenderer = new BlockItemTextureRenderer(this);
 
     public ClientWorld world;
     public ClientPlayer player;
@@ -140,6 +140,8 @@ public class GameRenderer {
 
             File playerJson = new File(world.worldFolder, "player.json");
             try {
+                SandboxGame.getInstance().logger.info("Saving player data");
+
                 if (!playerJson.exists()) {
                     if (!playerJson.createNewFile()) {
                         throw new IllegalStateException("player.json already present");
@@ -149,16 +151,20 @@ public class GameRenderer {
                 FileOutputStream outputStream = new FileOutputStream(playerJson);
                 outputStream.write(json.toElement().toString().getBytes());
                 outputStream.close();
+
+                SandboxGame.getInstance().logger.info("Saved player data");
             } catch (IOException e) {
                 throw new IllegalStateException("Couldn't write to player.json", e);
             }
         } else {
             SandboxGame.getInstance().logger.info("Disconnecting from server");
+            GameClient.disconnect();
         }
 
         SandboxGame.getInstance().doOnMainThread(() -> {
             this.world = null;
             this.player = null;
+            this.chatRenderer.clear();
         });
     }
 
@@ -169,11 +175,12 @@ public class GameRenderer {
         this.chunkRenderer.setup();
         this.uiRenderer.setup();
         this.skyRenderer.setup();
-        this.cloudRenderer.setup();
         this.creatureRenderer.setup();
         this.blockBreakingProgressRenderer.setup();
         this.blockSelectorRenderer.setup();
+        this.blockItemTextureRenderer.setup();
         ItemTextures.initialize();
+        Skins.loadTextures();
 
         this.crosshairTexture = new Texture("textures/ui/crosshair.png");
         this.hotbarUnselectedTexture = new Texture("textures/ui/hotbar_unselected.png");
@@ -231,40 +238,15 @@ public class GameRenderer {
         double deltaTickTime = Math.clamp((glfwGetTime() - this.tickManager.lastTickTime) / 0.05F, 0, 1);
 
         for(int i = 0; i < this.world.creatures.size(); i++) {
-            this.creatureRenderer.render(this.world.creatures.get(i), deltaTickTime);
+            if(this.world.creatures.get(i) == this.player) {
+                continue;
+            }
+            this.creatureRenderer.render(this.world.creatures.get(i), deltaTickTime, 0.25F + this.skyRenderer.skyColorSpline.calculateLinear(this.world.getDayTime()) * 0.75F);
         }
     }
 
     public void renderWorld(double deltaTime) {
-        if(this.currentScreen == null && this.player != null) {
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_LEFT_SHIFT)) {
-                this.cameraSpeed = 50F;
-            } else {
-                this.cameraSpeed = 4F;
-            }
-
-            if(this.player != null && this.player.world != null) {
-                this.player.pitch = this.camera.pitch;
-                this.player.handleMovement((float) deltaTime, this.camera.getFront(), this.camera.getRight());
-                if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_M)) {
-                    if(this.world.commandsEnabled) {
-                        if (this.player.gamemode == Player.Gamemode.CREATIVE) {
-                            this.player.setGamemode(Player.Gamemode.SURVIVAL);
-                        } else {
-                            this.player.setGamemode(Player.Gamemode.CREATIVE);
-                        }
-                        this.player.sendChatMessage("Changed gamemode to " + this.player.gamemode.name());
-                    } else {
-                        this.player.sendChatMessage("Cannot change gamemode: Commands aren't enabled in this world");
-                    }
-                }
-            }
-
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_E)) {
-                SandboxGame.getInstance().getWindow().freeCursor();
-            } else if (KeyboardAndMouseInput.pressingKey(GLFW_KEY_R)) {
-                SandboxGame.getInstance().getWindow().captureCursor();
-            }
+        if(this.player != null) {
             World.WorldRaycastResult raycastResult = this.world.blockRaycast(this.camera.position, this.camera.getDirection(), 5);
             if(raycastResult.success()) {
                 this.blockCurrentlySelecting = raycastResult.position();
@@ -272,149 +254,177 @@ public class GameRenderer {
                 this.blockCurrentlySelecting = null;
             }
 
-            if(KeyboardAndMouseInput.pressingMouseButton(GLFW_MOUSE_BUTTON_1)) {
-                if (raycastResult.success()) {
-                    if(this.player.blockBreakingProgress == null) {
-                        this.player.blockBreakingProgress = new Player.BlockBreakingProgress(raycastResult.position(), this.player);
-                        if(GameClient.isConnectedToServer) {
-                            GameClientHandler.sendPacket(new BlockBreakingPacket(this.player.blockBreakingProgress.blockPosition));
+            this.player.resetMovement();
+
+            if(this.currentScreen == null) {
+                if (KeyboardAndMouseInput.pressingKey(GLFW_KEY_LEFT_CONTROL) && this.player.gamemode == Player.Gamemode.CREATIVE) {
+                    this.cameraSpeed = 50F;
+                } else {
+                    this.cameraSpeed = 4F;
+                }
+
+                this.player.pitch = this.camera.pitch;
+
+                if (this.player.world != null) {
+                    this.player.handleMovement((float) deltaTime, this.camera.getFront(), this.camera.getRight());
+                    if (KeyboardAndMouseInput.pressedKey(GLFW_KEY_M)) {
+                        if (this.world.commandsEnabled) {
+                            if (this.player.gamemode == Player.Gamemode.CREATIVE) {
+                                this.player.setGamemode(Player.Gamemode.SURVIVAL);
+                            } else {
+                                this.player.setGamemode(Player.Gamemode.CREATIVE);
+                            }
+                            this.player.sendChatMessage("Changed gamemode to " + this.player.gamemode.name());
+                        } else if (GameClient.isConnectedToServer) {
+                            this.player.sendChatMessage("Cannot change gamemode: Survival isn't available in multiplayer");
+                        } else {
+                            this.player.sendChatMessage("Cannot change gamemode: Commands aren't enabled in this world");
                         }
-                    } else if(!this.player.blockBreakingProgress.blockPosition.equals(raycastResult.position()) || this.player.currentHotbarSlot != this.player.blockBreakingProgress.hotbarSlot){
-                        if(GameClient.isConnectedToServer) {
+                    }
+                }
+
+                if(KeyboardAndMouseInput.pressingMouseButton(GLFW_MOUSE_BUTTON_1)) {
+                    if(raycastResult.success()) {
+                        if(this.player.blockBreakingProgress == null) {
+                            if(KeyboardAndMouseInput.pressedMouseButton(GLFW_MOUSE_BUTTON_1) || this.player.breakingCooldown == 0) {
+                                this.player.blockBreakingProgress = new Player.BlockBreakingProgress(raycastResult.position(), this.player);
+                                if (GameClient.isConnectedToServer) {
+                                    GameClientHandler.sendPacket(new SetBlockPacket(raycastResult.position().x, raycastResult.position().y, raycastResult.position().z, Blocks.AIR));
+                                    this.player.breakingCooldown = 5;
+                                }
+                            }
+                        } else if(!this.player.blockBreakingProgress.blockPosition.equals(raycastResult.position()) || this.player.currentHotbarSlot != this.player.blockBreakingProgress.hotbarSlot){
+                        /*if(GameClient.isConnectedToServer) {
                             GameClientHandler.sendPacket(new BlockBreakingPacket(BlockBreakingPacket.State.CLIENT_STOP));
+                        }*/
+                            this.player.blockBreakingProgress = null;
                         }
+                    } else if(this.player.blockBreakingProgress != null) {
+                    /*if(GameClient.isConnectedToServer) {
+                        GameClientHandler.sendPacket(new BlockBreakingPacket(BlockBreakingPacket.State.CLIENT_STOP));
+                    }*/
                         this.player.blockBreakingProgress = null;
                     }
                 } else if(this.player.blockBreakingProgress != null) {
-                    if(GameClient.isConnectedToServer) {
-                        GameClientHandler.sendPacket(new BlockBreakingPacket(BlockBreakingPacket.State.CLIENT_STOP));
-                    }
+                /*if(GameClient.isConnectedToServer) {
+                    GameClientHandler.sendPacket(new BlockBreakingPacket(BlockBreakingPacket.State.CLIENT_STOP));
+                }*/
                     this.player.blockBreakingProgress = null;
                 }
-            } else if(this.player.blockBreakingProgress != null) {
-                if(GameClient.isConnectedToServer) {
-                    GameClientHandler.sendPacket(new BlockBreakingPacket(BlockBreakingPacket.State.CLIENT_STOP));
-                }
-                this.player.blockBreakingProgress = null;
-            }
-            if(KeyboardAndMouseInput.pressedMouseButton(GLFW_MOUSE_BUTTON_2)) {
-                World.WorldRaycastResult result = this.world.blockRaycast(this.camera.position, this.camera.getDirection(), 5);
-                if(result.success() && this.world.getBlock(result.position().x, result.position().y, result.position().z).onRightClick(this.world, result.position())) {
-                    if(this.world instanceof SingleplayerWorld) {
+                if(KeyboardAndMouseInput.pressedMouseButton(GLFW_MOUSE_BUTTON_2)) {
+                    World.WorldRaycastResult result = this.world.blockRaycast(this.camera.position, this.camera.getDirection(), 5);
+                    if(result.success() && this.world.getBlock(result.position().x, result.position().y, result.position().z).onRightClick(this.world, result.position())) {
                         Item item = this.player.inventory[this.player.currentHotbarSlot].getItem();
                         if (item != null) {
                             item.onUse(new Item.ItemUsageContext(this.world, this.player, this.player.inventory[this.player.currentHotbarSlot], result.position(), result.normal()));
                         }
-                    } else {
-                        UseItemPacket useItemPacket = new UseItemPacket(result.position().x, result.position().y, result.position().z, result.normal().x, result.normal().y, result.normal().z);
-                        GameClientHandler.sendPacket(useItemPacket);
                     }
                 }
-            }
 
-            if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_Q)) {
-                if(GameClient.isConnectedToServer) {
-                    DropItemPacket packet;
+                if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_Q)) {
+                    if(GameClient.isConnectedToServer) {
+                        DropItemPacket packet;
 
-                    if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_LEFT_SHIFT)) {
-                        packet = new DropItemPacket(this.player.currentHotbarSlot, this.player.inventory[this.player.currentHotbarSlot].amount);
-                    } else {
-                        packet = new DropItemPacket(this.player.currentHotbarSlot, 1);
-                    }
-
-                    GameClientHandler.sendPacket(packet);
-                } else {
-                    if (this.player.inventory[this.player.currentHotbarSlot].getItem() != Items.AIR) {
-                        ItemCreature itemCreature = new ItemCreature();
-                        itemCreature.representingItemStack.setItem(this.player.inventory[this.player.currentHotbarSlot].getItem());
-
-                        itemCreature.position.set(this.player.position);
-                        itemCreature.position.add(0, 1.75F, 0);
-                        itemCreature.velocity.add(this.camera.getFront().x * 4F, 2F, this.camera.getFront().z * 4F);
-
-                        if (KeyboardAndMouseInput.pressedKey(GLFW_KEY_LEFT_SHIFT)) {
-                            itemCreature.representingItemStack.setAmount(this.player.inventory[this.player.currentHotbarSlot].amount);
-                            this.player.inventory[this.player.currentHotbarSlot].decreaseBy(this.player.inventory[this.player.currentHotbarSlot].amount);
+                        if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_LEFT_SHIFT)) {
+                            packet = new DropItemPacket(this.player.currentHotbarSlot, this.player.inventory[this.player.currentHotbarSlot].amount);
                         } else {
-                            itemCreature.representingItemStack.setAmount(1);
-                            this.player.inventory[this.player.currentHotbarSlot].decreaseBy(1);
+                            packet = new DropItemPacket(this.player.currentHotbarSlot, 1);
                         }
 
-                        this.world.spawnCreature(itemCreature);
+                        GameClientHandler.sendPacket(packet);
+                    } else {
+                        if (this.player.inventory[this.player.currentHotbarSlot].getItem() != Items.AIR) {
+                            ItemCreature itemCreature = new ItemCreature();
+                            itemCreature.representingItemStack.setItem(this.player.inventory[this.player.currentHotbarSlot].getItem());
+
+                            itemCreature.position.set(this.player.position);
+                            itemCreature.position.add(0, 1.75F, 0);
+                            itemCreature.velocity.add(this.camera.getFront().x * 4F, 2F, this.camera.getFront().z * 4F);
+
+                            if (KeyboardAndMouseInput.pressedKey(GLFW_KEY_LEFT_SHIFT)) {
+                                itemCreature.representingItemStack.setAmount(this.player.inventory[this.player.currentHotbarSlot].amount);
+                                this.player.inventory[this.player.currentHotbarSlot].decreaseBy(this.player.inventory[this.player.currentHotbarSlot].amount);
+                            } else {
+                                itemCreature.representingItemStack.setAmount(1);
+                                this.player.inventory[this.player.currentHotbarSlot].decreaseBy(1);
+                            }
+
+                            this.world.spawnCreature(itemCreature);
+                        }
                     }
+                }
+
+                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_1)) {
+                    this.player.switchToHotbarSlot(0);
+                }
+                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_2)) {
+                    this.player.switchToHotbarSlot(1);
+                }
+                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_3)) {
+                    this.player.switchToHotbarSlot(2);
+                }
+                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_4)) {
+                    this.player.switchToHotbarSlot(3);
+                }
+                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_5)) {
+                    this.player.switchToHotbarSlot(4);
+                }
+                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_6)) {
+                    this.player.switchToHotbarSlot(5);
+                }
+                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_7)) {
+                    this.player.switchToHotbarSlot(6);
+                }
+                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_8)) {
+                    this.player.switchToHotbarSlot(7);
+                }
+                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_9)) {
+                    this.player.switchToHotbarSlot(8);
+                }
+                if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_ESCAPE)) {
+                    this.setScreen(new PauseMenuScreen());
+                    this.world.shouldTick = false;
+                }
+                if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_F3)) {
+                    this.showDebugInfo = !this.showDebugInfo;
+                }
+                if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_E)) {
+                    if(this.player.gamemode == Player.Gamemode.SURVIVAL) {
+                        this.setScreen(new InventoryScreen());
+                    } else {
+                        this.setScreen(new BlockAndItemSelectorScreen());
+                    }
+                }
+                if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_T)) {
+                    this.setScreen(new ChatHudScreen());
+                }
+                if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_F2)) {
+                    this.hideHUD = !this.hideHUD;
+                }
+                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_P) && KeyboardAndMouseInput.pressedKey(GLFW_KEY_1)) {
+                    this.camera.pitch = 0F;
+                    this.camera.yaw = 0F;
+                }
+                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_P) && KeyboardAndMouseInput.pressedKey(GLFW_KEY_2)) {
+                    this.camera.pitch = 0F;
+                    this.camera.yaw = 90F;
+                }
+                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_P) && KeyboardAndMouseInput.pressedKey(GLFW_KEY_3)) {
+                    this.camera.pitch = 0F;
+                    this.camera.yaw = 180F;
+                }
+                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_P) && KeyboardAndMouseInput.pressedKey(GLFW_KEY_4)) {
+                    this.camera.pitch = 0F;
+                    this.camera.yaw = 270F;
                 }
             }
 
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_O)) {
-                testCulling = !testCulling;
-            }
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_1)) {
-                this.player.switchToHotbarSlot(0);
-            }
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_2)) {
-                this.player.switchToHotbarSlot(1);
-            }
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_3)) {
-                this.player.switchToHotbarSlot(2);
-            }
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_4)) {
-                this.player.switchToHotbarSlot(3);
-            }
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_5)) {
-                this.player.switchToHotbarSlot(4);
-            }
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_6)) {
-                this.player.switchToHotbarSlot(5);
-            }
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_7)) {
-                this.player.switchToHotbarSlot(6);
-            }
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_8)) {
-                this.player.switchToHotbarSlot(7);
-            }
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_9)) {
-                this.player.switchToHotbarSlot(8);
-            }
-            if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_ESCAPE)) {
-                this.setScreen(new PauseMenuScreen());
-                this.world.shouldTick = false;
-            }
-            if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_F3)) {
-                this.showDebugInfo = !this.showDebugInfo;
-            }
-            if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_E)) {
-                if(this.player.gamemode == Player.Gamemode.SURVIVAL) {
-                    this.setScreen(new InventoryScreen());
-                } else {
-                    this.setScreen(new BlockAndItemSelectorScreen());
-                }
-            }
-            if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_T)) {
-                this.setScreen(new ChatHudScreen());
-            }
-            if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_F2)) {
-                this.hideHUD = !this.hideHUD;
-            }
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_P) && KeyboardAndMouseInput.pressedKey(GLFW_KEY_1)) {
-                this.camera.pitch = 0F;
-                this.camera.yaw = 0F;
-            }
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_P) && KeyboardAndMouseInput.pressedKey(GLFW_KEY_2)) {
-                this.camera.pitch = 0F;
-                this.camera.yaw = 90F;
-            }
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_P) && KeyboardAndMouseInput.pressedKey(GLFW_KEY_3)) {
-                this.camera.pitch = 0F;
-                this.camera.yaw = 180F;
-            }
-            if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_P) && KeyboardAndMouseInput.pressedKey(GLFW_KEY_4)) {
-                this.camera.pitch = 0F;
-                this.camera.yaw = 270F;
+            if(this.world != null && this.world.shouldTick && this.world.ready) {
+                this.player.applyPhysics((float) deltaTime);
             }
         }
 
         if(this.player != null && !(this.currentScreen instanceof WorldSavingScreen)) {
-            // Temporary for now
             this.camera.position.set(this.player.position).add(0, 1.75F, 0);
 
             ArrayList<ClientChunk> chunksToRender = new ArrayList<>();
@@ -480,7 +490,11 @@ public class GameRenderer {
     }
 
     public void renderHUD(double deltaTime) {
-        this.chatRenderer.render(deltaTime);
+        if(this.currentScreen instanceof ChatHudScreen) {
+            this.chatRenderer.render(deltaTime, true);
+        } else {
+            this.chatRenderer.render(deltaTime);
+        }
 
         this.uiRenderer.renderTexture(this.crosshairTexture, new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 10, SandboxGame.getInstance().getWindow().getWindowHeight() / 2F - 10), new Vector2f(20, 20));
         for(int i = 0; i < 9; i++) {
@@ -639,7 +653,7 @@ public class GameRenderer {
         glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
 
         glEnable(GL_CULL_FACE);
-        glDrawArrays(GL_TRIANGLES, 0, vertices.length);
+        glDrawArrays(GL_TRIANGLES, 0, vertices.length / 8);
         glDisable(GL_CULL_FACE);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);

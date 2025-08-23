@@ -1,0 +1,125 @@
+{
+  "ui.close": "Schliessen",
+  "ui.back": "Zurück",
+  "ui.cancel": "Abbrechen",
+  "ui.proceed": "Fortfahren",
+  "ui.next": "Weiter",
+
+  "ui.setup.open": "Benutzernamen und Skin ändern",
+  "ui.setup.username": "Benutzernamen wählen",
+  "ui.setup.username.field": "Benutzername",
+  "ui.setup.skin": "Skin wählen",
+
+  "ui.screen.singleplayer": "Einzelspieler",
+  "ui.screen.multiplayer": "Mehrspieler",
+  "ui.screen.settings": "Einstellungen",
+
+  "ui.screen.title_screen.close_game": "Spiel beenden",
+
+  "ui.screen.settings.render_distance": "Sichtweite",
+  "ui.screen.settings.field_of_view": "Sichtfeld",
+  "ui.screen.settings.vsync": "V-Sync",
+
+  "ui.language_select": "Sprache auswählen",
+
+  "ui.screen.pause.resume": "Weiterspielen",
+  "ui.screen.pause.quit": "Welt speichern und verlassen",
+  "ui.screen.pause.game_paused": "Spiel pausiert",
+  "ui.screen.pause.disconnect": "Verbindung trennen",
+
+  "ui.screen.world_select": "Weltauswahl",
+  "ui.screen.world_select.load_world": "Welt laden",
+
+  "ui.screen.create_world": "Welt erstellen",
+  "ui.screen.create_world.world_name": "Name",
+  "ui.screen.create_world.world_seed": "Seed",
+  "ui.screen.create_world.commands_enabled": "Befehle aktiviert",
+
+  "ui.world.loading": "Welt wird geladen",
+  "ui.world.saving": "Welt wird gespeichert",
+
+  "ui.multiplayer.experimental": "Mehrspieler ist experimentell",
+  "ui.multiplayer.experimental.warning": "Es können Probleme auftauchen.",
+  "ui.multiplayer.experimental.proceed": "Fortfahren",
+  "ui.multiplayer.experimental.back": "Zurück",
+
+  "ui.multiplayer.connect": "Verbinden",
+  "ui.multiplayer.address": "Serveraddresse",
+  "ui.multiplayer.settings": "Skin ändern",
+
+  "ui.multiplayer.connecting" : "Verbindung wird hergestellt",
+  "ui.multiplayer.downloading" : "Welt wird heruntergeladen",
+  "ui.multiplayer.downloading.while" : "(Könnte eine Weile dauern)",
+  "ui.multiplayer.downloading.moment" : "(Könnte einen Moment dauern)",
+
+  "ui.multiplayer.skin": "Skinauswahl",
+  "ui.multiplayer.skin.next": ">",
+  "ui.multiplayer.skin.previous": "<",
+  "skin.default": "Standard",
+  "skin.missing": "missing.png",
+  "skin.oak_tree": "Eichenbaum",
+  "skin.lava": "Lava",
+
+  "ui.barrel": "Fass",
+  "ui.inventory": "Inventar",
+  "ui.inventory.crafting": "Zusammenstellen",
+  "ui.crafting_table": "Werkbank",
+  "ui.furnace": "Ofen",
+
+  "ui.credits": "Danksagung",
+  "ui.credits.textures": "Texturen",
+  "ui.credits.developed_by": "Entwickelt von Jathusan Jeyabalachandran",
+
+  "block.moondust": "Mondstaub",
+  "block.air": "Luft",
+  "block.bedrock": "Grundgestein",
+  "block.cobblestone": "Bruchstein",
+  "block.grass": "Gras",
+  "block.dirt": "Erde",
+
+  "block.stone": "Stein",
+  "block.coal_ore": "Kohlenerz",
+  "block.iron_ore": "Eisenerz",
+  "block.raw_iron_chunk_block": "Roher Eisenklumpen-Block",
+  "block.iron_block": "Eisen-Block",
+
+  "block.oak_planks": "Eichenbretter",
+  "block.oak_log": "Eichenstamm",
+  "block.oak_leaves": "Eichenblätter",
+
+  "block.birch_planks": "Birch Planks",
+  "block.birch_log": "Birch Log",
+
+  "block.acacia_planks": "Acacia Planks",
+  "block.acacia_log": "Acacia Log",
+
+  "block.jungle_planks": "Jungle Planks",
+  "block.jungle_log": "Jungle Log",
+
+  "block.crafting_table": "Werkbank",
+  "block.sand": "Sand",
+  "block.water": "Wasser",
+  "block.barrel": "Fass",
+  "block.furnace": "Ofen",
+
+  "block.red_tulip": "Rote Tulpe",
+  "block.orange_tulip": "Orange Tulpe",
+  "block.yellow_tulip": "Gelbe Tulpe",
+
+  "block.short_grass": "Kurzes Gras",
+
+  "item.coal": "Kohle",
+  "item.raw_iron_chunk": "Roher Eisenklumpen",
+  "item.iron_ingot": "Eisenbarren",
+
+  "item.stick": "Stock",
+
+  "item.wooden_pickaxe": "Holzspitzhacke",
+  "item.stone_pickaxe": "Steinpitzhacke",
+  "item.iron_pickaxe": "Eisenspitzhacke",
+  "item.diamond_pickaxe": "Diamantspitzhacke",
+
+  "damage_source.none": "%s starb",
+  "damage_source.fall_damage": "%s ist in den Tod gefallen",
+  "damage_source.fire": "%s verbrannte"
+}

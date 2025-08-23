@@ -1,37 +1,38 @@
 package game.client;
 
-import com.google.gson.GsonBuilder;
 import engine.Game;
 import engine.GameEngine;
 import engine.StartupArguments;
 import engine.input.KeyboardAndMouseInput;
 import game.client.rendering.renderer.GameRenderer;
 import engine.sound.Sounds;
+import game.client.ui.screen.SkinSetupScreen;
+import game.client.ui.screen.UsernameSetupScreen;
 import game.client.ui.screen.WorldLoadingScreen;
 import game.client.ui.text.Language;
 import engine.renderer.Window;
 import game.client.ui.screen.TitleScreen;
-import game.logic.Tickable;
-import game.logic.recipes.CraftingRecipes;
-import game.logic.recipes.FurnaceRecipes;
-import game.logic.util.PlayerProfile;
-import game.logic.world.blocks.Blocks;
-import game.logic.world.blocks.block_entity.FurnaceBlockEntity;
-import game.logic.world.creature.Creatures;
-import game.logic.world.items.Items;
-import game.client.networking.GameClient;
-import game.client.networking.GameClientHandler;
-import game.networking.packets.PacketList;
-import game.networking.packets.PositionRotationPacket;
-import game.networking.packets.RequestChunkPacket;
+import game.shared.Tickable;
+import game.shared.Version;
+import game.shared.multiplayer.skin.Skins;
+import game.shared.recipes.CraftingRecipes;
+import game.shared.recipes.FurnaceRecipes;
+import game.shared.util.PlayerProfile;
+import game.shared.world.blocks.Blocks;
+import game.shared.world.blocks.block_entity.FurnaceBlockEntity;
+import game.shared.world.creature.Creatures;
+import game.shared.world.items.Items;
+import game.client.multiplayer.GameClient;
+import game.client.multiplayer.GameClientHandler;
+import game.shared.multiplayer.packets.PacketList;
+import game.shared.multiplayer.packets.PositionRotationPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
 
@@ -39,7 +40,6 @@ public class SandboxGame extends Game implements Tickable {
     public Logger logger = LoggerFactory.getLogger("Sandbox Game");
 
     private GameRenderer gameRenderer;
-    private Version version;
     public GameSettings settings;
 
     private File gameFolder;
@@ -51,20 +51,22 @@ public class SandboxGame extends Game implements Tickable {
         return (SandboxGame) GameEngine.getGame();
     }
 
-    public Queue<Runnable> stuffToDoOnMainThread = new LinkedList<>();
-    public Queue<Runnable> stuffToDoOnTickingThread = new LinkedList<>();
+    public Queue<Runnable> stuffToDoOnMainThread = new ConcurrentLinkedQueue<>();
+    public Queue<Runnable> stuffToDoOnTickingThread = new ConcurrentLinkedQueue <>();
+
+    public boolean firstTimeLaunch = false;
 
     @Override
     public void initialize(StartupArguments arguments) {
-        try {
-            this.version = new GsonBuilder().create().fromJson(new String(Thread.currentThread().getContextClassLoader().getResourceAsStream("version.json").readAllBytes()) , Version.class);
-        } catch (IOException e) {
-            throw new RuntimeException("Couldn't load game version data", e);
-        }
+        Version.load();
 
         this.createDirectoriesIfNeeded();
 
-        this.settings = new GameSettings(new File(gameFolder, "settings.json"));
+        File settingsFile = new File(gameFolder, "settings.json");
+
+        this.firstTimeLaunch = !settingsFile.exists();
+
+        this.settings = new GameSettings(settingsFile);
         this.settings.load();
 
         Blocks.init();
@@ -73,10 +75,10 @@ public class SandboxGame extends Game implements Tickable {
         CraftingRecipes.initialize();
         FurnaceRecipes.initialize();
         FurnaceBlockEntity.loadFuelTimes();
-        Language.load("en");
+        Language.load(this.settings.language);
         PacketList.setup();
 
-        this.playerProfile = new PlayerProfile(arguments.map.getOrDefault("username", "Player"), UUID.randomUUID());
+        this.playerProfile = new PlayerProfile(arguments.map.getOrDefault("username", this.settings.username), UUID.randomUUID(), Skins.getSkin(this.settings.skin));
     }
 
     @Override
@@ -86,8 +88,14 @@ public class SandboxGame extends Game implements Tickable {
         Sounds.initialize();
         this.gameRenderer = new GameRenderer();
         this.gameRenderer.setup();
-        this.gameRenderer.setScreen(new TitleScreen());
         WorldLoadingScreen.splashes[WorldLoadingScreen.splashes.length - 1] = WorldLoadingScreen.splashes.length + " total world loading splashes!";
+
+        if(this.firstTimeLaunch) {
+            this.gameRenderer.setScreen(new UsernameSetupScreen(new SkinSetupScreen(new TitleScreen())));
+        } else {
+            this.gameRenderer.setScreen(new TitleScreen());
+        }
+
     }
 
     @Override
@@ -118,7 +126,7 @@ public class SandboxGame extends Game implements Tickable {
 
     @Override
     public String getGameVersion() {
-        return this.version.versionName;
+        return Version.GAME_VERSION.versionName();
     }
 
     @Override
@@ -166,7 +174,7 @@ public class SandboxGame extends Game implements Tickable {
     }
 
     public Version getVersion() {
-        return this.version;
+        return Version.GAME_VERSION;
     }
 
     public PlayerProfile getPlayerProfile() {
@@ -197,16 +205,9 @@ public class SandboxGame extends Game implements Tickable {
                         GameClientHandler.sendPacket(positionRotationPacket);
                     }
                 }
-                GameClient.chunkDataRequestDelay -= 1;
-                if(GameClient.chunkDataReceived && !GameClient.chunksToRequest.isEmpty() && GameClient.chunkDataRequestDelay < 1) {
-                    RequestChunkPacket requestChunkPacket = new RequestChunkPacket(GameClient.chunksToRequest.removeFirst());
-                    GameClientHandler.sendPacket(requestChunkPacket);
-                    GameClient.chunkDataReceived = false;
-                }
+
             }
             this.gameRenderer.world.tick();
         }
     }
-
-    public record Version(String versionId, String versionName){}
 }

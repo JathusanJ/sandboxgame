@@ -1,11 +1,14 @@
 package game.client.ui.screen;
 
-import game.logic.world.items.ItemStack;
-import game.logic.world.items.Items;
-import game.logic.world.items.slot.ItemSlot;
-import game.logic.world.items.slot.RegularItemSlot;
+import engine.renderer.Texture;
+import game.shared.world.items.ItemStack;
+import game.shared.world.items.Items;
+import game.shared.world.items.slot.ItemSlot;
+import game.shared.world.items.slot.RegularItemSlot;
 
 public interface CraftingScreen {
+    Texture craftingArrow = new Texture("textures/ui/crafting_arrow.png");
+    Texture craftingArrowOutline = new Texture("textures/ui/crafting_arrow_outline.png");
     void onItemTaken(int amount);
 
     class CraftingTableOutputSlot extends RegularItemSlot {

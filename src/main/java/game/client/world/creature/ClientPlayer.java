@@ -5,15 +5,17 @@ import engine.renderer.Camera;
 import game.client.SandboxGame;
 import game.client.ui.text.Font;
 import game.client.ui.widget.ChatMessage;
-import game.logic.util.json.WrappedJsonObject;
-import game.logic.world.blocks.Blocks;
-import game.logic.world.creature.ItemCreature;
-import game.logic.world.creature.Player;
-import game.logic.world.items.ItemStack;
-import game.logic.world.items.Items;
-import game.client.networking.GameClient;
-import game.client.networking.GameClientHandler;
-import game.networking.packets.SetHotbarSlotPacket;
+import game.shared.multiplayer.skin.Skin;
+import game.shared.multiplayer.skin.Skins;
+import game.shared.util.json.WrappedJsonObject;
+import game.shared.world.blocks.Blocks;
+import game.shared.world.creature.ItemCreature;
+import game.shared.world.creature.Player;
+import game.shared.world.items.ItemStack;
+import game.shared.world.items.Items;
+import game.client.multiplayer.GameClient;
+import game.client.multiplayer.GameClientHandler;
+import game.shared.multiplayer.packets.SetHotbarSlotPacket;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -21,9 +23,19 @@ import java.util.ArrayList;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class ClientPlayer extends Player {
+    public boolean movedUp = false;
+
+    public ClientPlayer() {
+        this.playerProfile = SandboxGame.getInstance().getPlayerProfile();
+    }
+
     @Override
     public void tick() {
         super.tick();
+
+        if(this.breakingCooldown > 0) {
+            this.breakingCooldown = this.breakingCooldown - 1;
+        }
 
         if(this.world.getChunk(this.getChunkPosition().x, this.getChunkPosition().y) == null) {
             this.position.set(this.lastPosition);
@@ -36,9 +48,12 @@ public class ClientPlayer extends Player {
 
         if(this.blockBreakingProgress != null) {
             if(this.blockBreakingProgress.isDone()) {
+                if(KeyboardAndMouseInput.pressingMouseButton(GLFW_MOUSE_BUTTON_1) && !KeyboardAndMouseInput.pressedMouseButton(GLFW_MOUSE_BUTTON_1)) {
+                    this.breakingCooldown = 5;
+                }
                 if(!GameClient.isConnectedToServer) {
                     ItemStack itemStack = this.world.getBlock(this.blockBreakingProgress.blockPosition.x,this.blockBreakingProgress.blockPosition.y,this.blockBreakingProgress.blockPosition.z).getAsDroppedItem(blockBreakingProgress.player, blockBreakingProgress.player.inventory[blockBreakingProgress.hotbarSlot]);
-                    if(itemStack != null && itemStack.item != Items.AIR) {
+                    if(itemStack != null && itemStack.item != Items.AIR && this.gamemode != Gamemode.CREATIVE) {
                         ItemCreature droppedBlock = new ItemCreature();
                         droppedBlock.representingItemStack = itemStack;
                         droppedBlock.position = new Vector3f(this.blockBreakingProgress.blockPosition.x + 0.5F, this.blockBreakingProgress.blockPosition.y + 0.5F, this.blockBreakingProgress.blockPosition.z + 0.5F);
@@ -51,8 +66,6 @@ public class ClientPlayer extends Player {
                 this.blockBreakingProgress.breakingTicks = this.blockBreakingProgress.breakingTicks + 1;
             }
         }
-
-        this.playerProfile = SandboxGame.getInstance().getPlayerProfile();
     }
 
     @Override
@@ -60,12 +73,16 @@ public class ClientPlayer extends Player {
         // Let's not remove the local player lol
     }
 
-    public void handleMovement(float deltaTime, Vector3f forwards, Vector3f right) {
+    public void resetMovement() {
         this.velocity.x = 0F;
         this.velocity.z = 0F;
         if(this.flying) {
             this.velocity.y = 0F;
         }
+        this.movedUp = false;
+    }
+
+    public void handleMovement(float deltaTime, Vector3f forwards, Vector3f right) {
         if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_W)) {
             this.velocity.add(forwards.mul(1, 0, 1, new Vector3f()).normalize().mul(SandboxGame.getInstance().getGameRenderer().cameraSpeed));
         }
@@ -81,7 +98,7 @@ public class ClientPlayer extends Player {
         if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_LEFT_SHIFT) && (this.flying || this.isInLiquid())) {
             this.velocity.y = -7F;
         }
-        if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_F) && this.world.commandsEnabled && this.gamemode == Gamemode.CREATIVE) {
+        if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_F) && this.gamemode == Gamemode.CREATIVE) {
             this.flying = !this.flying;
         }
         if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_SPACE) && (this.isOnGround || this.flying || this.isInLiquid())) {
@@ -89,7 +106,12 @@ public class ClientPlayer extends Player {
             if(this.isInLiquid()) {
                 this.velocity.y = 2F;
             }
-        } else if(!this.flying) {
+            this.movedUp = true;
+        }
+    }
+
+    public void applyPhysics(float deltaTime) {
+        if(!this.movedUp && !this.flying) {
             float acceleration = -9.81F * 2F;
             boolean isInWater = this.isInLiquid();
             if(isInWater) {
@@ -118,6 +140,8 @@ public class ClientPlayer extends Player {
 
     @Override
     public void sendChatMessage(String message) {
+        SandboxGame.getInstance().logger.info("[CHAT] {}", message);
+
         float textWidth = Font.getTextWidth(message, 24);
         ArrayList<String> lines = new ArrayList<>();
         while(textWidth > 400) {
@@ -145,8 +169,6 @@ public class ClientPlayer extends Player {
         for(String line : lines) {
             SandboxGame.getInstance().getGameRenderer().chatRenderer.add(new ChatMessage(line));
         }
-
-        SandboxGame.getInstance().logger.info("[CHAT] {}", message);
     }
 
     @Override
@@ -177,5 +199,10 @@ public class ClientPlayer extends Player {
         camera.yaw = 0F;
         camera.pitch = 0F;
         super.respawn();
+    }
+
+    @Override
+    public Skin getSkin() {
+        return Skins.getSkin(SandboxGame.getInstance().settings.skin);
     }
 }

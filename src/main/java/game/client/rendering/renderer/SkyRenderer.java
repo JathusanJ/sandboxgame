@@ -3,7 +3,7 @@ package game.client.rendering.renderer;
 import game.client.SandboxGame;
 import engine.renderer.Shader;
 import engine.renderer.Texture;
-import game.logic.util.Spline;
+import game.shared.util.Spline;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;

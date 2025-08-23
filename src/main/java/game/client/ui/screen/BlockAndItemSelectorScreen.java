@@ -1,18 +1,11 @@
 package game.client.ui.screen;
 
-import game.client.ui.item.ItemTextures;
-import game.client.ui.text.Font;
 import game.client.ui.widget.ItemSlotWidget;
-import game.logic.world.creature.ItemCreature;
-import game.logic.world.items.BlockItem;
-import game.logic.world.items.Item;
-import game.logic.world.items.ItemStack;
-import game.logic.world.items.Items;
-import game.logic.world.items.slot.InfiniteItemSlot;
-import game.logic.world.items.slot.InventoryItemSlot;
-import game.logic.world.items.slot.RegularItemSlot;
+import game.shared.world.items.Item;
+import game.shared.world.items.Items;
+import game.shared.world.items.slot.InfiniteItemSlot;
+import game.shared.world.items.slot.InventoryItemSlot;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;

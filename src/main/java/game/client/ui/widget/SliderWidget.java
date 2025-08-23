@@ -3,6 +3,7 @@ package game.client.ui.widget;
 import engine.input.KeyboardAndMouseInput;
 import engine.renderer.Texture;
 import engine.sound.Sounds;
+import game.client.ui.text.Text;
 import org.joml.Vector2f;
 
 import java.util.function.BiFunction;
@@ -15,7 +16,7 @@ public class SliderWidget extends Widget {
     public float maxValue = 100F;
     public float minValue = 0F;
     public float step = 1F;
-    public String label;
+    public Text label;
     public BiFunction<Float, Float, String> valueDisplayProcessor;
     public Consumer<Float> onValueChange;
 
@@ -25,7 +26,7 @@ public class SliderWidget extends Widget {
     public static Texture SLIDER_BAR_SELECTED_TEXTURE = new Texture("textures/ui/slider_bar_selected.png");
     public static Texture SLIDER_BAR_UNSELECTED_TEXTURE = new Texture("textures/ui/slider_bar_unselected.png");
 
-    public SliderWidget(String label, BiFunction<Float, Float, String> valueDisplayProcessor, Consumer<Float> onValueChange) {
+    public SliderWidget(Text label, BiFunction<Float, Float, String> valueDisplayProcessor, Consumer<Float> onValueChange) {
         this.size = new Vector2f(200F, 50F);
         this.label = label;
         this.valueDisplayProcessor = valueDisplayProcessor;

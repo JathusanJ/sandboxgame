@@ -2,8 +2,8 @@ package game.client.ui.screen;
 
 import game.client.ui.item.ItemTextures;
 import game.client.ui.text.Font;
-import game.logic.world.items.BlockItem;
-import game.logic.world.items.slot.RegularItemSlot;
+import game.shared.world.items.BlockItem;
+import game.shared.world.items.slot.RegularItemSlot;
 import org.joml.Vector2f;
 
 public abstract class ContainerScreen extends Screen {
