@@ -3,8 +3,11 @@ package game.client.ui.widget;
 import engine.input.KeyboardAndMouseInput;
 import engine.renderer.Texture;
 import game.client.ui.screen.WorldSelectScreen;
+import game.client.ui.text.Language;
 import game.client.world.SingleplayerWorld;
+import game.shared.world.World;
 import org.joml.Vector2f;
+import org.joml.Vector4f;
 
 public class WorldWidget extends Widget {
     private SingleplayerWorld world;
@@ -15,20 +18,38 @@ public class WorldWidget extends Widget {
     public WorldWidget(SingleplayerWorld world, WorldSelectScreen worldSelectScreen) {
         this.world = world;
         this.worldSelectScreen = worldSelectScreen;
-        this.size = new Vector2f(400F, 50F);
+        this.size = new Vector2f(400F, 75F);
     }
 
     @Override
     public void render(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderText(this.world.name == null ? this.world.worldFolderName : this.world.name, new Vector2f(this.position.x + 10F, this.position.y + this.size.y / 2F - 12F), 24);
+        if(this.world.worldFolder == null) {
+            this.uiRenderer.renderTextWithShadow(this.world.worldFolderName, new Vector2f(this.position.x + 10F, this.position.y + this.size.y - 37.5F), 24, new Vector4f(1F, 0.1F, 0.1F, 1F));
+            this.uiRenderer.renderTextWithShadow(Language.translate("ui.world_select.invalid"), new Vector2f(this.position.x + 30F, this.position.y + this.size.y - 37.5F - 25F), 24F, new Vector4f(0.33F, 0.33F, 0.33F, 1F));
+        } else {
+            String lowerText = Language.translate("ui.world_select.last_saved_in").formatted(this.world.lastSavedIn);
 
-        boolean mouseHoveringOver = mouseX > this.position.x && mouseX < this.position.x + this.size.x && mouseY > this.position.y && mouseY < this.position.y + this.size.y;
-        if(mouseHoveringOver && KeyboardAndMouseInput.hasLeftClicked()) {
-            this.worldSelectScreen.selectWorld(this);
-        }
+            if(this.world.commandsEnabled) {
+                lowerText = lowerText + " | " + Language.translate("ui.world_select.commands_enabled");
+            }
 
-        if(this.worldSelectScreen.getSelectedWorld() == this) {
-            this.uiRenderer.renderTexture(BORDER_SELECTED_TEXTURE, this.position, this.size);
+            if(this.world.chunkVersion > World.CHUNK_VERSION) {
+                lowerText = Language.translate("ui.world_select.format_too_new") + " | " + lowerText;
+                this.uiRenderer.renderTextWithShadow(this.world.name == null ? this.world.worldFolderName : this.world.name, new Vector2f(this.position.x + 10F, this.position.y + this.size.y - 37.5F), 24, new Vector4f(1F, 0.1F, 0.1F, 1F));
+                this.uiRenderer.renderTextWithShadow(lowerText, new Vector2f(this.position.x + 30F, this.position.y + this.size.y - 37.5F - 25F), 24F, new Vector4f(0.33F, 0.33F, 0.33F, 1F));
+            } else {
+                this.uiRenderer.renderTextWithShadow(this.world.name == null ? this.world.worldFolderName : this.world.name, new Vector2f(this.position.x + 10F, this.position.y + this.size.y - 37.5F), 24);
+                this.uiRenderer.renderTextWithShadow(lowerText, new Vector2f(this.position.x + 30F, this.position.y + this.size.y - 37.5F - 25F), 24F, new Vector4f(0.8F, 0.8F, 0.8F, 1F));
+
+                boolean mouseHoveringOver = mouseX > this.position.x && mouseX < this.position.x + this.size.x && mouseY > this.position.y && mouseY < this.position.y + this.size.y;
+                if (mouseHoveringOver && KeyboardAndMouseInput.hasLeftClicked()) {
+                    this.worldSelectScreen.selectWorld(this);
+                }
+
+                if (this.worldSelectScreen.getSelectedWorld() == this) {
+                    this.uiRenderer.renderTexture(BORDER_SELECTED_TEXTURE, this.position, this.size);
+                }
+            }
         }
     }
 

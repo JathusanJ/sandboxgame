@@ -67,6 +67,14 @@ public class WrappedJsonObject {
         return (long) this.get(name);
     }
 
+    public long getLongOrDefault(String name, long defaultValue) {
+        if(this.get(name) == null) {
+            return defaultValue;
+        }
+
+        return this.getLong(name);
+    }
+
     public boolean getBoolean(String name) {
         return (boolean) this.get(name);
     }

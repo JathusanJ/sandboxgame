@@ -9,7 +9,7 @@ public class Font {
     public static Texture FONT_TEXTURE = new Texture("textures/font.png");
 
     private static final HashMap<String, Float> characterSize = new HashMap<>();
-    private static char[] fontIndex = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.?!$:=+-[]()_;\",<>/\\#*%&'äüö      ".toCharArray();
+    private static char[] fontIndex = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.?!$:=+-[]()_;\",<>/\\#*%&'äüö|     ".toCharArray();
 
     public static void initialize(){
         if(!characterSize.isEmpty()) return;
@@ -106,6 +106,7 @@ public class Font {
         characterSize.put("ä", 9F);
         characterSize.put("ü", 9F);
         characterSize.put("ö", 11F);
+        characterSize.put("|", 4F);
     }
 
     public static float getCharacterWidth(String character){

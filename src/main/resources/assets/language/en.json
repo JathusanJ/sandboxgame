@@ -27,13 +27,17 @@
   "ui.screen.pause.game_paused": "Game paused",
   "ui.screen.pause.disconnect": "Disconnect",
 
-  "ui.screen.world_select": "Select world",
-  "ui.screen.world_select.load_world": "Load selected world",
+  "ui.world_select": "Select world",
+  "ui.world_select.load_world": "Load selected world",
+  "ui.world_select.invalid": "Invalid World",
+  "ui.world_select.last_saved_in": "Version: %s",
+  "ui.world_select.commands_enabled": "Commands enabled",
+  "ui.world_select.format_too_new": "From a newer version",
 
-  "ui.screen.create_world": "Create world",
-  "ui.screen.create_world.world_name": "World name",
-  "ui.screen.create_world.world_seed": "World seed",
-  "ui.screen.create_world.commands_enabled": "Commands enabled",
+  "ui.create_world": "Create world",
+  "ui.create_world.world_name": "World name",
+  "ui.create_world.world_seed": "World seed",
+  "ui.create_world.commands_enabled": "Commands enabled",
 
   "ui.world.loading": "Loading world",
   "ui.world.saving": "Saving world",

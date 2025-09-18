@@ -1,6 +1,7 @@
 package game.shared.world;
 
 import com.google.gson.stream.JsonReader;
+import game.shared.Version;
 import game.shared.util.json.WrappedJsonObject;
 import game.shared.world.blocks.Blocks;
 import game.shared.world.blocks.block_entity.BlockEntityGenerator;
@@ -37,6 +38,7 @@ public abstract class World implements Tickable {
     public WorldType worldType;
     public int worldTime = (int) (6.5 * 60 * 20);
     public boolean shouldTick = true;
+    public int chunkVersion;
 
     public boolean ready = false;
     public ChunkLoaderManager chunkLoaderManager = new ChunkLoaderManager(this);
@@ -45,6 +47,8 @@ public abstract class World implements Tickable {
     public boolean commandsEnabled = false;
 
     public Logger logger = LoggerFactory.getLogger("World");
+    public String lastSavedIn;
+    public long lastSavedAt;
 
     public boolean loadWorldInfo() {
         File worldInfoFile = new File(this.worldFolder, "world.json");
@@ -63,6 +67,9 @@ public abstract class World implements Tickable {
                 this.worldType = WorldType.valueOf(json.getStringOrDefault("worldType", "DEFAULT"));
                 this.worldTime = json.getIntOrDefault("worldTime", 0);
                 this.commandsEnabled = json.getBooleanOrDefault("commandsEnabled", false);
+                this.lastSavedIn = json.getStringOrDefault("lastSavedIn", "N/A");
+                this.lastSavedAt = json.getLongOrDefault("lastSavedAt", 0);
+                this.chunkVersion = json.getIntOrDefault("chunkVersion", 0);
 
                 return true;
             } catch (Exception e) {
@@ -82,6 +89,8 @@ public abstract class World implements Tickable {
         json.put("worldType", this.worldType);
         json.put("worldTime", this.worldTime);
         json.put("commandsEnabled", this.commandsEnabled);
+        json.put("lastSavedIn", Version.GAME_VERSION.versionName());
+        json.put("lastSavedAt", System.currentTimeMillis());
 
         if(!worldInfoFile.exists()) {
             try {

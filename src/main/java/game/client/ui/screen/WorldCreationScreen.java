@@ -16,7 +16,7 @@ import java.util.random.RandomGeneratorFactory;
 public class WorldCreationScreen extends Screen {
     public Screen prevScreen;
     public ButtonWidget closeButton = new ButtonWidget(Language.translate("ui.close"), this::close);
-    public ButtonWidget createWorldButton = new ButtonWidget(Language.translate("ui.screen.create_world"), () -> {
+    public ButtonWidget createWorldButton = new ButtonWidget(Language.translate("ui.create_world"), () -> {
         if(this.worldNameTextField.content.trim().isEmpty()) return;
 
         String worldName = this.worldNameTextField.content.replaceAll("[^a-zA-Z0-9\\\\._ ]+", "_");
@@ -50,7 +50,7 @@ public class WorldCreationScreen extends Screen {
     public TextFieldWidget worldNameTextField = new TextFieldWidget();
     public TextFieldWidget worldSeedTextField = new TextFieldWidget();
     public EnumSelectWidget<World.WorldType> worldTypeEnumSelectWidget = new EnumSelectWidget<>("World type", World.WorldType.class);
-    public BooleanToggleWidget commandsEnabledWidget = new BooleanToggleWidget(Language.translate("ui.screen.create_world.commands_enabled"), (value) -> this.commandsEnabled = value, () -> this.commandsEnabled);
+    public BooleanToggleWidget commandsEnabledWidget = new BooleanToggleWidget(Language.translate("ui.create_world.commands_enabled"), (value) -> this.commandsEnabled = value, () -> this.commandsEnabled);
     public boolean commandsEnabled = false;
 
     public WorldCreationScreen(Screen prevScreen) {
@@ -66,9 +66,9 @@ public class WorldCreationScreen extends Screen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.screen.create_world"), new Vector2f(50, this.getScreenHeight() - 32 - 50), 32);
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.screen.create_world.world_name"), new Vector2f(this.getScreenWidth() / 2F - 200F, this.getScreenHeight() - 125F), 24);
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.screen.create_world.world_seed"), new Vector2f(this.getScreenWidth() / 2F - 200F, this.getScreenHeight() - 225F), 24);
+        this.uiRenderer.renderTextWithShadow(Language.translate("ui.create_world"), new Vector2f(50, this.getScreenHeight() - 32 - 50), 32);
+        this.uiRenderer.renderTextWithShadow(Language.translate("ui.create_world.world_name"), new Vector2f(this.getScreenWidth() / 2F - 200F, this.getScreenHeight() - 125F), 24);
+        this.uiRenderer.renderTextWithShadow(Language.translate("ui.create_world.world_seed"), new Vector2f(this.getScreenWidth() / 2F - 200F, this.getScreenHeight() - 225F), 24);
     }
 
     @Override
