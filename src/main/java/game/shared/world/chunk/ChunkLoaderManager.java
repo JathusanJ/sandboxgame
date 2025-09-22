@@ -1,6 +1,9 @@
 package game.shared.world.chunk;
 
+import game.client.SandboxGame;
 import game.client.multiplayer.GameClient;
+import game.client.ui.screen.StaticWorldSavingScreen;
+import game.client.world.SingleplayerWorld;
 import game.shared.TickManager;
 import game.shared.Tickable;
 import game.shared.world.World;
@@ -18,7 +21,7 @@ public class ChunkLoaderManager implements Tickable {
 
     public ChunkLoaderManager(World world) {
         this.world = world;
-        tickManager.tickables.add(this);
+        this.tickManager.tickables.add(this);
     }
 
     @Override
@@ -38,7 +41,16 @@ public class ChunkLoaderManager implements Tickable {
 
     public void start() {
         if(GameClient.isConnectedToServer) return;
-        this.tickManager.start();
+        this.tickManager.start((thread, e) -> {
+            if(this.world instanceof SingleplayerWorld) {
+                SandboxGame.getInstance().getGameRenderer().setScreen(new StaticWorldSavingScreen());
+            }
+            this.world.shouldTick = false;
+            this.world.save();
+            this.world.stop();
+            this.world.logger.error("Error in ChunkLoaderManager ", e);
+            System.exit(0);
+        });
     }
 
     public void stop() {

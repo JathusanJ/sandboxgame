@@ -11,6 +11,7 @@ public class TickManager {
     private double lastTimeValue = 0;
     public double lastTickTime = 0;
     public boolean isRunning = false;
+    public Thread.UncaughtExceptionHandler exceptionHandler;
 
     public void tick() {
         for(Tickable tickable : this.tickables) {
@@ -18,11 +19,19 @@ public class TickManager {
         }
     }
 
+    public void start(Thread.UncaughtExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
+        this.start();
+    }
+
     public void start() {
         this.lastTimeValue = System.nanoTime() / Math.pow(10,9);
         this.lastTickTime = lastTimeValue;
         this.isRunning = true;
         this.thread = new Thread(this::loop);
+        if(this.exceptionHandler != null) {
+            this.thread.setUncaughtExceptionHandler(this.exceptionHandler);
+        }
         this.thread.start();
     }
 

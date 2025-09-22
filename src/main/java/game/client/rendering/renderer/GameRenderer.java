@@ -190,7 +190,16 @@ public class GameRenderer {
         this.heartEmptyTexture = new Texture("textures/ui/heart_empty.png");
 
         this.tickManager.tickables.add(SandboxGame.getInstance());
-        this.tickManager.start();
+        this.tickManager.start((thread, e) -> {
+            this.setScreen(new StaticWorldSavingScreen());
+            if(this.world != null) {
+                this.world.shouldTick = false;
+                this.world.save();
+                this.world.stop();
+            }
+            SandboxGame.getInstance().logger.error("Error while ticking ", e);
+            System.exit(0);
+        });
     }
 
     public void render(double deltaTime, int mouseX, int mouseY) {
