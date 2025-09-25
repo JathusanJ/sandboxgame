@@ -311,7 +311,7 @@ public abstract class Chunk implements Tickable {
                 for (int y = 127; y >= 0; y--) {
                     Block block = this.getBlockAtLocalizedPosition(x, y, z);
                     if(block.isEmpty() || block instanceof CrossBlock) {
-                        skylight[ClientChunk.positionToBlockArrayId(x, y, z)] = 16;
+                        skylight[Chunk.positionToBlockArrayId(x, y, z)] = 16;
                     } else {
                         break;
                     }

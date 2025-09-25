@@ -62,10 +62,38 @@ public class Block {
             float skylight = chunk.world.getSkylight(worldPosition.x, worldPosition.y + 1, worldPosition.z) / 16F;
             float light = chunk.world.getLight(worldPosition.x, worldPosition.y + 1, worldPosition.z) / 16F;
 
-            vertexBuilder.vertex(x + 1, y + 1, z + 1, 1, 0, ChunkVertexBuilder.Normal.TOP, this, skylight, light);
-            vertexBuilder.vertex(x + 1, y + 1, z, 1, 1, ChunkVertexBuilder.Normal.TOP, this, skylight, light);
-            vertexBuilder.vertex(x, y + 1, z, 0, 1, ChunkVertexBuilder.Normal.TOP, this, skylight, light);
-            vertexBuilder.vertex(x, y + 1, z + 1, 0, 0, ChunkVertexBuilder.Normal.TOP, this, skylight, light);
+            float skylight1 = (
+                    skylight +
+                    (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y + 1, worldPosition.z) / 16F) +
+                    (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y + 1, worldPosition.z + 1) / 16F) +
+                    (chunk.world.getSkylight(worldPosition.x, worldPosition.y + 1, worldPosition.z + 1) / 16F)
+            ) / 4;
+
+            float skylight2 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y + 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y + 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y + 1, worldPosition.z - 1) / 16F)
+            ) / 4;
+
+            float skylight3 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y + 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y + 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y + 1, worldPosition.z - 1) / 16F)
+            ) / 4;
+
+            float skylight4 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y + 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y + 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y + 1, worldPosition.z + 1) / 16F)
+            ) / 4;
+
+            vertexBuilder.vertex(x + 1, y + 1, z + 1, 1, 0, ChunkVertexBuilder.Normal.TOP, this, skylight1, light);
+            vertexBuilder.vertex(x + 1, y + 1, z, 1, 1, ChunkVertexBuilder.Normal.TOP, this, skylight2, light);
+            vertexBuilder.vertex(x, y + 1, z, 0, 1, ChunkVertexBuilder.Normal.TOP, this, skylight3, light);
+            vertexBuilder.vertex(x, y + 1, z + 1, 0, 0, ChunkVertexBuilder.Normal.TOP, this, skylight4, light);
         }
 
         // Bottom side
@@ -73,10 +101,38 @@ public class Block {
             float skylight = chunk.world.getSkylight(worldPosition.x, worldPosition.y - 1, worldPosition.z) / 16F;
             float light = chunk.world.getLight(worldPosition.x, worldPosition.y - 1, worldPosition.z) / 16F;
 
-            vertexBuilder.vertex(x, y, z, 0, 1, ChunkVertexBuilder.Normal.BOTTOM, this, skylight, light);
-            vertexBuilder.vertex(x + 1, y, z, 1, 1, ChunkVertexBuilder.Normal.BOTTOM, this, skylight, light);
-            vertexBuilder.vertex(x + 1, y, z + 1, 1, 0, ChunkVertexBuilder.Normal.BOTTOM, this, skylight, light);
-            vertexBuilder.vertex(x, y, z + 1, 0, 0, ChunkVertexBuilder.Normal.BOTTOM, this, skylight, light);
+            float skylight1 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y - 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y - 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y - 1, worldPosition.z - 1) / 16F)
+            ) / 4;
+
+            float skylight2 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y - 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y - 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y - 1, worldPosition.z - 1) / 16F)
+            ) / 4;
+
+            float skylight3 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y - 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y - 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y - 1, worldPosition.z + 1) / 16F)
+            ) / 4;
+
+            float skylight4 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y - 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y - 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y - 1, worldPosition.z + 1) / 16F)
+            ) / 4;
+
+            vertexBuilder.vertex(x, y, z, 0, 1, ChunkVertexBuilder.Normal.BOTTOM, this, skylight1, light);
+            vertexBuilder.vertex(x + 1, y, z, 1, 1, ChunkVertexBuilder.Normal.BOTTOM, this, skylight2, light);
+            vertexBuilder.vertex(x + 1, y, z + 1, 1, 0, ChunkVertexBuilder.Normal.BOTTOM, this, skylight3, light);
+            vertexBuilder.vertex(x, y, z + 1, 0, 0, ChunkVertexBuilder.Normal.BOTTOM, this, skylight4, light);
         }
 
         // Right side
@@ -84,10 +140,38 @@ public class Block {
             float skylight = chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y, worldPosition.z) / 16F;
             float light = chunk.world.getLight(worldPosition.x + 1, worldPosition.y, worldPosition.z) / 16F;
 
-            vertexBuilder.vertex(x + 1, y, z, 1, 0, ChunkVertexBuilder.Normal.RIGHT, this, skylight, light);
-            vertexBuilder.vertex(x + 1, y + 1, z, 1, 1, ChunkVertexBuilder.Normal.RIGHT, this, skylight, light);
-            vertexBuilder.vertex(x + 1, y + 1, z + 1, 0, 1, ChunkVertexBuilder.Normal.RIGHT, this, skylight, light);
-            vertexBuilder.vertex(x + 1, y, z + 1, 0, 0, ChunkVertexBuilder.Normal.RIGHT, this, skylight, light);
+            float skylight1 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y - 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y - 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y, worldPosition.z - 1) / 16F)
+            ) / 4;
+
+            float skylight2 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y + 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y + 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y, worldPosition.z - 1) / 16F)
+            ) / 4;
+
+            float skylight3 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y + 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y + 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y, worldPosition.z + 1) / 16F)
+            ) / 4;
+
+            float skylight4 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y - 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y - 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y, worldPosition.z + 1) / 16F)
+            ) / 4;
+
+            vertexBuilder.vertex(x + 1, y, z, 1, 0, ChunkVertexBuilder.Normal.RIGHT, this, skylight1, light);
+            vertexBuilder.vertex(x + 1, y + 1, z, 1, 1, ChunkVertexBuilder.Normal.RIGHT, this, skylight2, light);
+            vertexBuilder.vertex(x + 1, y + 1, z + 1, 0, 1, ChunkVertexBuilder.Normal.RIGHT, this, skylight3, light);
+            vertexBuilder.vertex(x + 1, y, z + 1, 0, 0, ChunkVertexBuilder.Normal.RIGHT, this, skylight4, light);
         }
 
         // Left side
@@ -95,10 +179,38 @@ public class Block {
             float skylight = chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y, worldPosition.z) / 16F;
             float light = chunk.world.getLight(worldPosition.x - 1, worldPosition.y, worldPosition.z) / 16F;
 
-            vertexBuilder.vertex(x, y + 1, z + 1, 1, 1, ChunkVertexBuilder.Normal.LEFT, this, skylight, light);
-            vertexBuilder.vertex(x, y + 1, z, 0, 1, ChunkVertexBuilder.Normal.LEFT, this, skylight, light);
-            vertexBuilder.vertex(x, y, z, 0, 0, ChunkVertexBuilder.Normal.LEFT, this, skylight, light);
-            vertexBuilder.vertex(x, y, z + 1, 1, 0, ChunkVertexBuilder.Normal.LEFT, this, skylight, light);
+            float skylight1 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y + 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y + 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y, worldPosition.z + 1) / 16F)
+            ) / 4;
+
+            float skylight2 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y + 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y + 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y, worldPosition.z - 1) / 16F)
+            ) / 4;
+
+            float skylight3 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y - 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y - 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y, worldPosition.z - 1) / 16F)
+            ) / 4;
+
+            float skylight4 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y - 1, worldPosition.z) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y - 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y, worldPosition.z + 1) / 16F)
+            ) / 4;
+
+            vertexBuilder.vertex(x, y + 1, z + 1, 1, 1, ChunkVertexBuilder.Normal.LEFT, this, skylight1, light);
+            vertexBuilder.vertex(x, y + 1, z, 0, 1, ChunkVertexBuilder.Normal.LEFT, this, skylight2, light);
+            vertexBuilder.vertex(x, y, z, 0, 0, ChunkVertexBuilder.Normal.LEFT, this, skylight3, light);
+            vertexBuilder.vertex(x, y, z + 1, 1, 0, ChunkVertexBuilder.Normal.LEFT, this, skylight4, light);
         }
 
 
@@ -107,10 +219,38 @@ public class Block {
             float skylight = chunk.world.getSkylight(worldPosition.x, worldPosition.y, worldPosition.z + 1) / 16F;
             float light = chunk.world.getLight(worldPosition.x, worldPosition.y, worldPosition.z + 1) / 16F;
 
-            vertexBuilder.vertex(x, y, z + 1, 0, 0, ChunkVertexBuilder.Normal.FRONT, this, skylight, light);
-            vertexBuilder.vertex(x + 1, y, z + 1, 1, 0, ChunkVertexBuilder.Normal.FRONT, this, skylight, light);
-            vertexBuilder.vertex(x + 1, y + 1, z + 1, 1, 1, ChunkVertexBuilder.Normal.FRONT, this, skylight, light);
-            vertexBuilder.vertex(x, y + 1, z + 1, 0, 1, ChunkVertexBuilder.Normal.FRONT, this, skylight, light);
+            float skylight1 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y - 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y - 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y, worldPosition.z + 1) / 16F)
+            ) / 4;
+
+            float skylight2 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y - 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y - 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y, worldPosition.z + 1) / 16F)
+            ) / 4;
+
+            float skylight3 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y + 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y + 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y, worldPosition.z + 1) / 16F)
+            ) / 4;
+
+            float skylight4 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y + 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y + 1, worldPosition.z + 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y, worldPosition.z + 1) / 16F)
+            ) / 4;
+
+            vertexBuilder.vertex(x, y, z + 1, 0, 0, ChunkVertexBuilder.Normal.FRONT, this, skylight1, light);
+            vertexBuilder.vertex(x + 1, y, z + 1, 1, 0, ChunkVertexBuilder.Normal.FRONT, this, skylight2, light);
+            vertexBuilder.vertex(x + 1, y + 1, z + 1, 1, 1, ChunkVertexBuilder.Normal.FRONT, this, skylight3, light);
+            vertexBuilder.vertex(x, y + 1, z + 1, 0, 1, ChunkVertexBuilder.Normal.FRONT, this, skylight4, light);
         }
 
         // Back side
@@ -118,10 +258,38 @@ public class Block {
             float skylight = chunk.world.getSkylight(worldPosition.x, worldPosition.y, worldPosition.z - 1) / 16F;
             float light = chunk.world.getLight(worldPosition.x, worldPosition.y, worldPosition.z - 1) / 16F;
 
-            vertexBuilder.vertex(x + 1, y + 1, z, 0, 1, ChunkVertexBuilder.Normal.BACK, this, skylight, light);
-            vertexBuilder.vertex(x + 1, y, z, 0, 0, ChunkVertexBuilder.Normal.BACK, this, skylight, light);
-            vertexBuilder.vertex(x, y, z, 1, 0, ChunkVertexBuilder.Normal.BACK, this, skylight, light);
-            vertexBuilder.vertex(x, y + 1, z, 1, 1, ChunkVertexBuilder.Normal.BACK, this, skylight, light);
+            float skylight1 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y + 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y + 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y, worldPosition.z - 1) / 16F)
+            ) / 4;
+
+            float skylight2 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y - 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y - 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x + 1, worldPosition.y, worldPosition.z - 1) / 16F)
+            ) / 4;
+
+            float skylight3 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y - 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y - 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y, worldPosition.z - 1) / 16F)
+            ) / 4;
+
+            float skylight4 = (
+                    skylight +
+                            (chunk.world.getSkylight(worldPosition.x, worldPosition.y + 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y + 1, worldPosition.z - 1) / 16F) +
+                            (chunk.world.getSkylight(worldPosition.x - 1, worldPosition.y, worldPosition.z - 1) / 16F)
+            ) / 4;
+
+            vertexBuilder.vertex(x + 1, y + 1, z, 0, 1, ChunkVertexBuilder.Normal.BACK, this, skylight1, light);
+            vertexBuilder.vertex(x + 1, y, z, 0, 0, ChunkVertexBuilder.Normal.BACK, this, skylight2, light);
+            vertexBuilder.vertex(x, y, z, 1, 0, ChunkVertexBuilder.Normal.BACK, this, skylight3, light);
+            vertexBuilder.vertex(x, y + 1, z, 1, 1, ChunkVertexBuilder.Normal.BACK, this, skylight4, light);
         }
     }
 
