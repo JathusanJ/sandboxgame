@@ -13,9 +13,9 @@ public class ControlsScreen extends Screen {
 
     public List<String> controls = List.of(
             Language.translate("ui.controls.movement") + " - W, A, S, D",
-            Language.translate("ui.controls.inventory") + " - ESC",
+            Language.translate("ui.controls.inventory") + " - E",
             Language.translate("ui.controls.chat") + " - T",
-            Language.translate("ui.controls.pause") + " - PAUSE",
+            Language.translate("ui.controls.pause") + " - ESC",
             "",
             Language.translate("ui.controls.commands_only"),
             Language.translate("ui.controls.change_mode") + " - M",
