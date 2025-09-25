@@ -1,6 +1,7 @@
 package game.client.rendering.renderer;
 
 import com.google.gson.stream.JsonReader;
+import game.client.Keybinds;
 import game.client.SandboxGame;
 import engine.input.KeyboardAndMouseInput;
 import engine.renderer.Camera;
@@ -276,7 +277,7 @@ public class GameRenderer {
 
                 if (this.player.world != null) {
                     this.player.handleMovement((float) deltaTime, this.camera.getFront(), this.camera.getRight());
-                    if (KeyboardAndMouseInput.pressedKey(GLFW_KEY_M)) {
+                    if (Keybinds.SWITCH_GAMEMODE.pressed()) {
                         if (this.world.commandsEnabled) {
                             if (this.player.gamemode == Player.Gamemode.CREATIVE) {
                                 this.player.setGamemode(Player.Gamemode.SURVIVAL);
@@ -363,31 +364,31 @@ public class GameRenderer {
                     }
                 }
 
-                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_1)) {
+                if(Keybinds.HOTBAR_SLOT_1.pressed()) {
                     this.player.switchToHotbarSlot(0);
                 }
-                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_2)) {
+                if(Keybinds.HOTBAR_SLOT_2.pressed()) {
                     this.player.switchToHotbarSlot(1);
                 }
-                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_3)) {
+                if(Keybinds.HOTBAR_SLOT_3.pressed()) {
                     this.player.switchToHotbarSlot(2);
                 }
-                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_4)) {
+                if(Keybinds.HOTBAR_SLOT_4.pressed()) {
                     this.player.switchToHotbarSlot(3);
                 }
-                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_5)) {
+                if(Keybinds.HOTBAR_SLOT_5.pressed()) {
                     this.player.switchToHotbarSlot(4);
                 }
-                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_6)) {
+                if(Keybinds.HOTBAR_SLOT_6.pressed()) {
                     this.player.switchToHotbarSlot(5);
                 }
-                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_7)) {
+                if(Keybinds.HOTBAR_SLOT_7.pressed()) {
                     this.player.switchToHotbarSlot(6);
                 }
-                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_8)) {
+                if(Keybinds.HOTBAR_SLOT_8.pressed()) {
                     this.player.switchToHotbarSlot(7);
                 }
-                if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_9)) {
+                if(Keybinds.HOTBAR_SLOT_9.pressed()) {
                     this.player.switchToHotbarSlot(8);
                 }
                 if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_ESCAPE)) {
@@ -397,14 +398,14 @@ public class GameRenderer {
                 if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_F3)) {
                     this.showDebugInfo = !this.showDebugInfo;
                 }
-                if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_E)) {
+                if(Keybinds.INVENTORY.pressed()) {
                     if(this.player.gamemode == Player.Gamemode.SURVIVAL) {
                         this.setScreen(new InventoryScreen());
                     } else {
                         this.setScreen(new BlockAndItemSelectorScreen());
                     }
                 }
-                if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_T)) {
+                if(Keybinds.OPEN_CHAT.pressed()) {
                     this.setScreen(new ChatHudScreen());
                 }
                 if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_F2)) {

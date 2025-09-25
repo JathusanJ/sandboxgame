@@ -2,6 +2,7 @@ package game.client.world.creature;
 
 import engine.input.KeyboardAndMouseInput;
 import engine.renderer.Camera;
+import game.client.Keybinds;
 import game.client.SandboxGame;
 import game.client.ui.text.Font;
 import game.client.ui.widget.ChatMessage;
@@ -83,25 +84,25 @@ public class ClientPlayer extends Player {
     }
 
     public void handleMovement(float deltaTime, Vector3f forwards, Vector3f right) {
-        if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_W)) {
+        if(Keybinds.WALK_FORWARDS.pressing()) {
             this.velocity.add(forwards.mul(1, 0, 1, new Vector3f()).normalize().mul(SandboxGame.getInstance().getGameRenderer().cameraSpeed));
         }
-        if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_S)) {
+        if(Keybinds.WALK_BACKWARDS.pressing()) {
             this.velocity.sub(forwards.mul(1, 0, 1, new Vector3f()).normalize().mul(SandboxGame.getInstance().getGameRenderer().cameraSpeed));
         }
-        if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_A)) {
+        if(Keybinds.WALK_LEFT.pressing()) {
             this.velocity.sub(right.mul(1, 0, 1, new Vector3f()).normalize().mul(SandboxGame.getInstance().getGameRenderer().cameraSpeed));
         }
-        if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_D)) {
+        if(Keybinds.WALK_RIGHT.pressing()) {
             this.velocity.add(right.mul(1, 0, 1, new Vector3f()).normalize().mul(SandboxGame.getInstance().getGameRenderer().cameraSpeed));
         }
-        if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_LEFT_SHIFT) && (this.flying || this.isInLiquid())) {
+        if(Keybinds.FLY_DOWN.pressing() && (this.flying || this.isInLiquid())) {
             this.velocity.y = -7F;
         }
-        if(KeyboardAndMouseInput.pressedKey(GLFW_KEY_F) && this.gamemode == Gamemode.CREATIVE) {
+        if(Keybinds.TOGGLE_FLIGHT.pressed() && this.gamemode == Gamemode.CREATIVE) {
             this.flying = !this.flying;
         }
-        if(KeyboardAndMouseInput.pressingKey(GLFW_KEY_SPACE) && (this.isOnGround || this.flying || this.isInLiquid())) {
+        if(Keybinds.JUMP.pressing() && (this.isOnGround || this.flying || this.isInLiquid())) {
             this.velocity.y = 7F;
             if(this.isInLiquid()) {
                 this.velocity.y = 2F;
@@ -133,9 +134,9 @@ public class ClientPlayer extends Player {
     @Override
     public void switchToHotbarSlot(int slot) {
         super.switchToHotbarSlot(slot);
-        if(GameClient.isConnectedToServer) {
+        /*if(GameClient.isConnectedToServer) {
             GameClientHandler.sendPacket(new SetHotbarSlotPacket(slot));
-        }
+        }*/
     }
 
     @Override

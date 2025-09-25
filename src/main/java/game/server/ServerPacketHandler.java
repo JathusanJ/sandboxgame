@@ -1,5 +1,6 @@
 package game.server;
 
+import game.shared.Version;
 import game.shared.multiplayer.ByteBufPacketDecoder;
 import game.shared.multiplayer.packets.*;
 import game.shared.multiplayer.skin.Skins;
@@ -22,7 +23,7 @@ public class ServerPacketHandler extends PacketHandler {
         packetHandlers.put(LoginAttemptPacket.class, (player, buffer) -> {
             ServerPlayer serverPlayer = (ServerPlayer) player;
             if(buffer.readInt() != 0) {
-                DisconnectPacket packet = new DisconnectPacket("Server and client version mismatch! The server only accepts connections from 0.2.0 clients");
+                DisconnectPacket packet = new DisconnectPacket("Server and client version mismatch! Try joining with a " + Version.GAME_VERSION.versionName() + " client!");
                 serverPlayer.sendPacket(packet);
                 serverPlayer.channelHandler.close();
                 server.handler.connections.remove(serverPlayer.channelHandler);
