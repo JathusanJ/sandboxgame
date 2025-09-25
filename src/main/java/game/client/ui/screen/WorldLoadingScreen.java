@@ -35,6 +35,7 @@ public class WorldLoadingScreen extends Screen {
             "public class WorldLoadingScreen extends Screen",
             Skins.idToSkin.size() + " different skins!",
             "Over 9000 lines of code!",
+            "Soupspicious..?",
             "Placeholder text, you shouldn't be able to see this!"
     };
 
