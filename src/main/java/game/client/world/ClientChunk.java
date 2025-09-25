@@ -62,6 +62,9 @@ public class ClientChunk extends Chunk implements Comparable<ClientChunk> {
     }
 
     public void setNeedsRemesh() {
+        if(this.chunkMesh == null) {
+            return;
+        }
         this.needsRemesh = true;
     }
 
