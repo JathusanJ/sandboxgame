@@ -1,6 +1,7 @@
 package game.client.ui.widget;
 
 import engine.input.KeyboardAndMouseInput;
+import engine.renderer.NineSliceTexture;
 import engine.renderer.Texture;
 import org.joml.Vector2f;
 
@@ -9,8 +10,8 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSPACE;
 public class TextFieldWidget extends Widget {
     public String content = "";
 
-    public static Texture TEXT_FIELD_UNSELECTED_BACKGROUND_TEXTURE = new Texture("textures/ui/slider_background.png");
-    public static Texture TEXT_FIELD_SELECTED_BACKGROUND_TEXTURE = new Texture("textures/ui/border_selected.png");
+    public static Texture TEXT_FIELD_UNSELECTED_BACKGROUND_TEXTURE = new NineSliceTexture("textures/ui/slider_background.png", 1 / 25F, 1 / 25F, 0.1F, 0.1F);
+    public static Texture TEXT_FIELD_SELECTED_BACKGROUND_TEXTURE = new NineSliceTexture("textures/ui/border_selected.png", 1 / 25F, 1 / 25F, 0.1F, 0.1F);
 
     @Override
     public void render(double deltaTime, int mouseX, int mouseY) {

@@ -1,6 +1,7 @@
 package game.client.ui.widget;
 
 import engine.input.KeyboardAndMouseInput;
+import engine.renderer.NineSliceTexture;
 import engine.renderer.Texture;
 import game.client.ui.screen.WorldSelectScreen;
 import game.client.ui.text.Language;
@@ -13,7 +14,7 @@ public class WorldWidget extends Widget {
     private SingleplayerWorld world;
     private WorldSelectScreen worldSelectScreen;
 
-    public static Texture BORDER_SELECTED_TEXTURE = new Texture("textures/ui/border_selected.png");
+    public static Texture BORDER_SELECTED_TEXTURE = new NineSliceTexture("textures/ui/border_selected.png", 1 / 25F, 1 / 25F, 0.1F, 0.1F);
 
     public WorldWidget(SingleplayerWorld world, WorldSelectScreen worldSelectScreen) {
         this.world = world;

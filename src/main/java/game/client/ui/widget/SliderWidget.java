@@ -1,6 +1,7 @@
 package game.client.ui.widget;
 
 import engine.input.KeyboardAndMouseInput;
+import engine.renderer.NineSliceTexture;
 import engine.renderer.Texture;
 import engine.sound.Sounds;
 import game.client.ui.text.Text;
@@ -22,9 +23,9 @@ public class SliderWidget extends Widget {
 
     public boolean isDragging = false;
 
-    public static Texture SLIDER_BACKGROUND_TEXTURE = new Texture("textures/ui/slider_background.png");
-    public static Texture SLIDER_BAR_SELECTED_TEXTURE = new Texture("textures/ui/slider_bar_selected.png");
-    public static Texture SLIDER_BAR_UNSELECTED_TEXTURE = new Texture("textures/ui/slider_bar_unselected.png");
+    public static Texture SLIDER_BACKGROUND_TEXTURE = new NineSliceTexture("textures/ui/slider_background.png", 1 / 25F, 1 / 25F, 0.01F, 0.01F);
+    public static Texture SLIDER_BAR_SELECTED_TEXTURE = new NineSliceTexture("textures/ui/slider_bar_selected.png", 1 / 25F, 1 / 25F, 0.1F, 0.1F);
+    public static Texture SLIDER_BAR_UNSELECTED_TEXTURE = new NineSliceTexture("textures/ui/slider_bar_unselected.png", 1 / 25F, 1 / 25F, 0.1F, 0.1F);
 
     public SliderWidget(Text label, BiFunction<Float, Float, String> valueDisplayProcessor, Consumer<Float> onValueChange) {
         this.size = new Vector2f(200F, 50F);

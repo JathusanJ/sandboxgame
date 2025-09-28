@@ -1,5 +1,6 @@
 package game.client.rendering.renderer;
 
+import engine.renderer.NineSliceTexture;
 import game.client.SandboxGame;
 import engine.renderer.Camera2D;
 import engine.renderer.Shader;
@@ -109,7 +110,7 @@ public class UIRenderer {
     }
 
     public void renderTexture(Texture texture, Vector2f position, Vector2f size, float rotation) {
-        this.renderTextureInternal(texture, new Vector2f(), new Vector2f(1.0F, 1.0F), this.createModelMatrix(position, size, rotation));
+        this.renderTextureInternal(texture, position, size, this.createModelMatrix(position, size, rotation));
     }
 
     public void renderTexture(Texture texture, Vector2f position, Vector2f size) {
@@ -126,11 +127,30 @@ public class UIRenderer {
     }
 
     private void renderTextureInternal(Texture texture, Vector2f position, Vector2f size, Vector4f color, Vector2f textureCoordinatesBottomLeft, Vector2f textureCoordinatesTopRight, Matrix4f model) {
-        float[] vertexData = new float[4 * 9];
+        if(texture instanceof NineSliceTexture nineSliceTexture) {
+            float[] vertexData = new float[9 * 4 * 9];
+            // Left
+            this.setVertexDataForQuad(vertexData, 0, position, new Vector2f(nineSliceTexture.left * texture.getWidth(),  nineSliceTexture.bottom * texture.getHeight()), color, new Vector2f(0, 0), new Vector2f(nineSliceTexture.left, nineSliceTexture.bottom));
+            this.setVertexDataForQuad(vertexData, 4 * 9, new Vector2f(position.x, position.y + nineSliceTexture.bottom * texture.getHeight()), new Vector2f(nineSliceTexture.left * texture.getWidth(),  size.y - nineSliceTexture.bottom * texture.getHeight() - nineSliceTexture.top * texture.getHeight()), color, new Vector2f(0, nineSliceTexture.bottom), new Vector2f(nineSliceTexture.left, 1 - nineSliceTexture.top));
+            this.setVertexDataForQuad(vertexData, 2 * 4 * 9, new Vector2f(position.x, position.y + size.y - nineSliceTexture.top * texture.getHeight()), new Vector2f(nineSliceTexture.left * texture.getWidth(),  nineSliceTexture.top * texture.getHeight()), color, new Vector2f(0, 1 - nineSliceTexture.top), new Vector2f(nineSliceTexture.left, 1));
 
-        this.setVertexDataForQuad(vertexData, 0, position, size, color, textureCoordinatesBottomLeft, textureCoordinatesTopRight);
+            // Middle
+            this.setVertexDataForQuad(vertexData, 3 * 4 * 9, new Vector2f(position.x + nineSliceTexture.left * texture.getWidth(), position.y), new Vector2f(size.x - nineSliceTexture.left * texture.getWidth() - nineSliceTexture.right * texture.getWidth(),  nineSliceTexture.bottom * texture.getHeight()), color, new Vector2f(nineSliceTexture.left, 0), new Vector2f(1 - nineSliceTexture.right, nineSliceTexture.bottom));
+            this.setVertexDataForQuad(vertexData, 4 * 4 * 9, new Vector2f(position.x + nineSliceTexture.left * texture.getWidth(), position.y + nineSliceTexture.bottom * texture.getHeight()), new Vector2f(size.x - nineSliceTexture.left * texture.getWidth() - nineSliceTexture.right * texture.getWidth(),  size.y - nineSliceTexture.bottom * texture.getHeight() - nineSliceTexture.top * texture.getHeight()), color, new Vector2f(nineSliceTexture.left, nineSliceTexture.bottom), new Vector2f(1 - nineSliceTexture.right, 1 - nineSliceTexture.top));
+            this.setVertexDataForQuad(vertexData, 5 * 4 * 9, new Vector2f(position.x + nineSliceTexture.left * texture.getWidth(), position.y + size.y - nineSliceTexture.top * texture.getHeight()), new Vector2f(size.x - nineSliceTexture.left * texture.getWidth() - nineSliceTexture.right * texture.getWidth(),  nineSliceTexture.top * texture.getHeight()), color, new Vector2f(nineSliceTexture.left, 1 - nineSliceTexture.top), new Vector2f(1 - nineSliceTexture.right, 1));
 
-        this.draw(vertexData, texture, model);
+            // Right
+            this.setVertexDataForQuad(vertexData, 6 * 4 * 9, new Vector2f(position.x + size.x - nineSliceTexture.right * texture.getWidth(), position.y), new Vector2f(nineSliceTexture.right * texture.getWidth(),  nineSliceTexture.bottom * texture.getHeight()), color, new Vector2f(1 - nineSliceTexture.right, 0), new Vector2f(1, nineSliceTexture.bottom));
+            this.setVertexDataForQuad(vertexData, 7 * 4 * 9, new Vector2f(position.x + size.x - nineSliceTexture.right * texture.getWidth(), position.y + nineSliceTexture.bottom * texture.getHeight()), new Vector2f(nineSliceTexture.right * texture.getWidth(),  size.y - nineSliceTexture.bottom * texture.getHeight() - nineSliceTexture.top * texture.getHeight()), color, new Vector2f(1 - nineSliceTexture.right, nineSliceTexture.bottom), new Vector2f(1, 1 - nineSliceTexture.top));
+            this.setVertexDataForQuad(vertexData, 8 * 4 * 9, new Vector2f(position.x + size.x - nineSliceTexture.right * texture.getWidth(), position.y + size.y - nineSliceTexture.top * texture.getHeight()), new Vector2f(nineSliceTexture.right * texture.getWidth(),  nineSliceTexture.top * texture.getHeight()), color, new Vector2f(1 - nineSliceTexture.right, 1 - nineSliceTexture.top), new Vector2f(1, 1));
+
+            this.draw(vertexData, texture, new Matrix4f(), vertexData.length / 36);
+        } else {
+            float[] vertexData = new float[4 * 9];
+            this.setVertexDataForQuad(vertexData, 0, new Vector2f(), new Vector2f(1F, 1F), color, textureCoordinatesBottomLeft, textureCoordinatesTopRight);
+
+            this.draw(vertexData, texture, model);
+        }
     }
 
     private void setVertexDataForQuad(float[] vertexData, int offset, Vector2f position, Vector2f size, Vector4f color, Vector2f textureCoordinatesBottomLeft, Vector2f textureCoordinatesTopRight) {

@@ -1,6 +1,7 @@
 package game.client.ui.widget;
 
 import engine.input.KeyboardAndMouseInput;
+import engine.renderer.NineSliceTexture;
 import engine.renderer.Texture;
 import engine.sound.Sounds;
 import game.client.ui.text.Text;
@@ -11,9 +12,9 @@ public class ButtonWidget extends Widget {
     private Text text;
     private ButtonClickHandler buttonClickHandler;
 
-    public static Texture BUTTON_UNSELECTED_TEXTURE = new Texture("textures/ui/button_unselected.png");
-    public static Texture BUTTON_SELECTED_TEXTURE = new Texture("textures/ui/button_selected.png");
-    public static Texture BUTTON_DISABLED_TEXTURE = new Texture("textures/ui/button_disabled.png");
+    public static Texture BUTTON_UNSELECTED_TEXTURE = new NineSliceTexture("textures/ui/button_unselected.png", 1 / 25F, 1 / 25F, 0.01F, 0.01F);
+    public static Texture BUTTON_SELECTED_TEXTURE = new NineSliceTexture("textures/ui/button_selected.png", 1 / 25F, 1 / 25F, 0.01F, 0.01F);
+    public static Texture BUTTON_DISABLED_TEXTURE = new NineSliceTexture("textures/ui/button_disabled.png", 1 / 25F, 1 / 25F, 0.01F, 0.01F);
 
     public ButtonWidget(String text, ButtonClickHandler buttonClickHandler) {
         this.text = new Text.Static(text);
