@@ -321,7 +321,7 @@ public abstract class World implements Tickable {
 
         Byte skylight = chunk.skylight[Chunk.positionToBlockArrayId(x - chunkPosition.x * 16, y, z - chunkPosition.y * 16)];
 
-        return skylight == null ? 12 : skylight;
+        return skylight == null ? 0 : skylight;
     }
 
     public int getLight(int x, int y, int z) {
