@@ -8,10 +8,7 @@ import game.client.world.ClientChunk;
 import game.shared.util.json.WrappedJsonList;
 import game.shared.util.json.WrappedJsonObject;
 import game.shared.world.World;
-import game.shared.world.blocks.AirBlock;
-import game.shared.world.blocks.Block;
-import game.shared.world.blocks.Blocks;
-import game.shared.world.blocks.CrossBlock;
+import game.shared.world.blocks.*;
 import game.shared.world.blocks.block_entity.BlockEntity;
 import game.shared.world.blocks.block_entity.BlockEntityGenerator;
 import game.shared.world.creature.Creature;
@@ -311,11 +308,15 @@ public abstract class Chunk implements Tickable {
                 boolean underneathBlock = false;
                 for (int y = 127; y >= 0; y--) {
                     Block block = this.getBlockAtLocalizedPosition(x, y, z);
-                    if(block.isEmpty() || block instanceof CrossBlock) {
+                    // Scuffed but :shrug:
+                    if(block.isEmpty() || block instanceof CrossBlock || block.isLiquid()) {
                         if(underneathBlock) {
                             skylight[Chunk.positionToBlockArrayId(x, y, z)] = 12;
                         } else {
                             skylight[Chunk.positionToBlockArrayId(x, y, z)] = 16;
+                        }
+                        if(block.isLiquid()) {
+                            underneathBlock = true;
                         }
                     } else {
                         underneathBlock = true;
