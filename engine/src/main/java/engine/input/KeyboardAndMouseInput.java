@@ -13,12 +13,15 @@ public class KeyboardAndMouseInput {
     public static boolean[] keysRepeating = new boolean[GLFW_KEY_LAST];
     public static Double lastMouseX = null;
     public static Double lastMouseY = null;
+    public static int lastKeyPressedLastFrame = 0;
+    public static int lastKeyPressedThisFrame = 0;
 
     public static void onKeyCallback(long window, int key, int scanCode, int action, int mods){
         if(key < 0 || key >= GLFW_KEY_LAST) return;
 
         if(action == GLFW_PRESS){
             keysPressing[key] = true;
+            lastKeyPressedThisFrame = key;
         } else if(action == GLFW_RELEASE){
             keysPressing[key] = false;
             keysRepeating[key] = false;
@@ -28,7 +31,12 @@ public class KeyboardAndMouseInput {
     }
 
     public static void onMouseButtonCallback(long glfwWindow, int key, int action, int mods) {
-        pressingMouseButton[key] = action == GLFW_PRESS;
+        if(action == GLFW_PRESS) {
+            pressingMouseButton[key] = true;
+            lastKeyPressedThisFrame = key;
+        } else {
+            pressingMouseButton[key] = false;
+        }
     }
 
     public static boolean pressingKey(int keyCode){
@@ -68,6 +76,8 @@ public class KeyboardAndMouseInput {
     public static void updateLastFramePressed() {
         keyPressedLastFrame = keysPressing.clone();
         pressedMouseButtonLastFrame = pressingMouseButton.clone();
+        lastKeyPressedLastFrame = lastKeyPressedThisFrame;
+        lastKeyPressedThisFrame = 0;
     }
 
     public static Vector2i getMousePosition() {
