@@ -5,6 +5,7 @@ import game.client.rendering.renderer.GameRenderer;
 import engine.renderer.Shader;
 import engine.renderer.Texture;
 import game.client.world.ClientChunk;
+import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ public class ChunkRenderer {
     public int verticesRendered = 0;
 
     public ChunkMeshGenerationManager chunkMeshGenerationManager = new ChunkMeshGenerationManager();
+
+    public FrustumIntersection frustum = new FrustumIntersection();
 
     public ChunkRenderer(GameRenderer gameRenderer) {
         this.gameRenderer = gameRenderer;
@@ -71,6 +74,7 @@ public class ChunkRenderer {
 
         Matrix4f view = this.gameRenderer.camera.getViewMatrix();
         Matrix4f projection = this.gameRenderer.camera.getProjectionMatrix();
+        this.frustum.set(new Matrix4f(projection).mul(view));
 
         this.shader.uploadMatrix4f("view", view);
         this.shader.uploadMatrix4f("projection", projection);
@@ -84,6 +88,11 @@ public class ChunkRenderer {
             if(!chunk.featuresGenerated || !chunk.areNeighboursFullyGenerated()) {
                 continue;
             }
+
+            if(!this.frustum.testAab(chunk.chunkPosition.x * 16,  0, chunk.chunkPosition.y * 16, chunk.chunkPosition.x * 16 + 16, 128, chunk.chunkPosition.y * 16 + 16)) {
+                continue;
+            }
+
             if(chunk.chunkMesh == null) {
                 chunk.chunkMesh = new ChunkMesh(chunk);
                 this.chunkMeshGenerationManager.queue.add(chunk);
