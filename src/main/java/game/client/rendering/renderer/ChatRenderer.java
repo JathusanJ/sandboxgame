@@ -1,6 +1,5 @@
 package game.client.rendering.renderer;
 
-import game.client.SandboxGame;
 import game.client.ui.widget.ChatMessage;
 import org.joml.Vector2f;
 

@@ -1,7 +1,6 @@
 package game.client.ui.screen;
 
 import engine.renderer.Camera;
-import engine.renderer.Texture;
 import game.client.SandboxGame;
 import game.client.ui.text.Language;
 import game.client.ui.widget.ItemSlotWidget;

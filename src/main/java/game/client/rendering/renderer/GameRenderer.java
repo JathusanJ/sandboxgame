@@ -54,7 +54,6 @@ public class GameRenderer {
     public Camera camera;
     public float cameraSpeed = 2.5F;
 
-    public boolean testCulling = false;
     public boolean showDebugInfo = false;
     public boolean hideHUD = false;
 

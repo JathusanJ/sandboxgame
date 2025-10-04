@@ -1,6 +1,5 @@
 package game.client.ui.screen;
 
-import game.client.SandboxGame;
 import game.client.ui.text.Language;
 import org.joml.Vector2f;
 

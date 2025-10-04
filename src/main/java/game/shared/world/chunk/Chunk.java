@@ -4,7 +4,6 @@ import com.google.gson.stream.JsonReader;
 import game.shared.DebugSettings;
 import game.shared.Tickable;
 import game.shared.util.GzipCompressionUtility;
-import game.client.world.ClientChunk;
 import game.shared.util.json.WrappedJsonList;
 import game.shared.util.json.WrappedJsonObject;
 import game.shared.world.World;

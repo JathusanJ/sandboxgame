@@ -3,8 +3,6 @@ package game.shared.world.blocks.block_entity;
 import game.shared.util.json.WrappedJsonObject;
 import game.shared.world.World;
 import game.shared.world.chunk.Chunk;
-import game.shared.world.creature.ItemCreature;
-import game.shared.world.items.ItemStack;
 import org.joml.Vector2i;
 import org.joml.Vector3i;
 

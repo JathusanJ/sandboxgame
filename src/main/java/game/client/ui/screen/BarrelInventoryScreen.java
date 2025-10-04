@@ -6,7 +6,6 @@ import game.shared.world.blocks.block_entity.BarrelBlockEntity;
 import game.shared.world.items.slot.ContainerInventoryItemSlot;
 import game.shared.world.items.slot.InventoryItemSlot;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;

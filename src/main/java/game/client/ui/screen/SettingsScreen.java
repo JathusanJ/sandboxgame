@@ -1,6 +1,5 @@
 package game.client.ui.screen;
 
-import game.client.SandboxGame;
 import game.client.ui.text.Language;
 import game.client.ui.text.Text;
 import game.client.ui.widget.BooleanToggleWidget;

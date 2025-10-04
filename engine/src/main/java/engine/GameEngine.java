@@ -2,7 +2,6 @@ package engine;
 
 import engine.renderer.Window;
 import engine.sound.Sounds;
-import org.apache.logging.log4j.simple.SimpleLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

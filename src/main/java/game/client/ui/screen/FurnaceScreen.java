@@ -6,7 +6,6 @@ import game.client.ui.widget.ItemSlotWidget;
 import game.shared.world.blocks.block_entity.FurnaceBlockEntity;
 import game.shared.world.items.slot.InventoryItemSlot;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;

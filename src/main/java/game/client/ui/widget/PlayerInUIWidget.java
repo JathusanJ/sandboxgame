@@ -6,7 +6,6 @@ import game.client.SandboxGame;
 import game.shared.world.creature.Player;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 
 import static org.lwjgl.opengl.GL11.*;

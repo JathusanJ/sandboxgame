@@ -5,14 +5,9 @@ import game.shared.world.chunk.Chunk;
 import game.shared.world.blocks.Block;
 import game.shared.multiplayer.ByteBufPacketDecoder;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufOutputStream;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.zip.Deflater;
-import java.util.zip.GZIPOutputStream;
 
 public class ChunkDataPacket extends Packet {
     public Chunk chunk;

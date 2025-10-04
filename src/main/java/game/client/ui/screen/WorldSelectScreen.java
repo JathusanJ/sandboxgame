@@ -10,7 +10,6 @@ import game.client.world.SingleplayerWorld;
 import org.joml.Vector2f;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 

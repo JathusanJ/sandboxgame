@@ -15,8 +15,6 @@ import game.shared.world.creature.Player;
 import game.shared.world.items.ItemStack;
 import game.shared.world.items.Items;
 import game.client.multiplayer.GameClient;
-import game.client.multiplayer.GameClientHandler;
-import game.shared.multiplayer.packets.SetHotbarSlotPacket;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;

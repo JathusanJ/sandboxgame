@@ -9,7 +9,6 @@ import game.client.world.creature.ClientPlayer;
 import game.shared.world.creature.Creature;
 import game.shared.world.creature.ItemCreature;
 import game.shared.world.creature.OtherPlayer;
-import game.shared.world.creature.Player;
 import org.joml.Matrix4f;
 
 import java.util.HashMap;

@@ -3,7 +3,6 @@ package game.shared.world.items;
 import game.client.multiplayer.GameClient;
 import game.client.multiplayer.GameClientHandler;
 import game.client.ui.text.Language;
-import game.client.world.SingleplayerWorld;
 import game.shared.world.blocks.Block;
 import game.server.world.ServerWorld;
 import game.shared.world.blocks.Blocks;

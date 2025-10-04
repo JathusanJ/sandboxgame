@@ -16,14 +16,12 @@ import game.shared.world.creature.Player;
 import game.shared.world.items.Item;
 import game.shared.world.items.Items;
 import game.shared.multiplayer.ByteBufPacketDecoder;
-import io.netty.buffer.ByteBufInputStream;
 import org.joml.Vector3f;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 
 public class ClientPacketHandler extends PacketHandler {

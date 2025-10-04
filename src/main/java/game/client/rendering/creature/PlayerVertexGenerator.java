@@ -1,9 +1,6 @@
 package game.client.rendering.creature;
 
-import engine.renderer.Texture;
 import game.client.rendering.chunk.SimpleVertexBuilder;
-import game.shared.multiplayer.skin.Skins;
-import game.shared.world.creature.OtherPlayer;
 import game.shared.world.creature.Player;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
