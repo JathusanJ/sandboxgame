@@ -6,6 +6,7 @@ import game.shared.world.blocks.Blocks;
 // Not the best way, but I want things to work at the moment
 public class ChunkProxy {
     public Chunk chunk;
+    public boolean direct = true;
 
     public ChunkProxy(Chunk chunk) {
         this.chunk = chunk;
@@ -15,7 +16,11 @@ public class ChunkProxy {
         if(y < 0 || y > 127) return;
 
         if(this.isRelativePositionInChunk(x,y,z)) {
-            this.chunk.setBlockAtLocalizedPositionDirect(x, y, z, block);
+            if(direct) {
+                this.chunk.setBlockAtLocalizedPositionDirect(x, y, z, block);
+            } else {
+                this.chunk.setBlockAtLocalizedPosition(x, y, z, block);
+            }
         } else {
             this.chunk.world.setBlockNoRemesh(this.chunk.chunkPosition.x * 16 + x, y, this.chunk.chunkPosition.y * 16 + z, block);
         }
@@ -30,7 +35,11 @@ public class ChunkProxy {
 
     public Block getRelative(int x, int y, int z) {
         if(this.isRelativePositionInChunk(x,y,z)) {
-            return this.chunk.getBlockAtLocalizedPositionDirect(x, y, z);
+            if(this.direct) {
+                return this.chunk.getBlockAtLocalizedPositionDirect(x, y, z);
+            } else {
+                return this.chunk.getBlockAtLocalizedPosition(x, y, z);
+            }
         }
 
         return this.chunk.world.getBlock(x + this.chunk.chunkPosition.x * 16, y, z + this.chunk.chunkPosition.y * 16);

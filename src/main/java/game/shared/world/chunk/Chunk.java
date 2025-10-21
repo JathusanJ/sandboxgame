@@ -368,7 +368,23 @@ public abstract class Chunk implements Tickable {
     }
 
     public void tick() {
+        if(!this.areNeighboursFullyGenerated()) {
+            return;
+        }
 
+        for(int ySection = 0; ySection <= 7; ySection++) {
+            for(int i = 0; i < 3; i++) {
+                int x = this.world.random.nextInt() % 16;
+                int y = ySection * 16 + this.world.random.nextInt() % 16;
+                int z = this.world.random.nextInt() % 16;
+
+                if(this.getBlockAtLocalizedPosition(x,y,z) instanceof RandomTickable randomTickable) {
+                    ChunkProxy chunkProxy = new ChunkProxy(this);
+                    chunkProxy.direct = false;
+                    randomTickable.randomTick(chunkProxy, x, y, z, this.chunkPosition.x * 16 + x, y, this.chunkPosition.y * 16 + z);
+                }
+            }
+        }
     }
 
     public void unload() {

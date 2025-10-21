@@ -1,11 +1,12 @@
 package game.shared.world.blocks;
 
+import game.shared.world.chunk.ChunkProxy;
 import game.shared.world.creature.Player;
 import game.shared.world.items.ItemStack;
 import game.shared.world.items.Items;
 import org.joml.Vector2f;
 
-public class GrassBlock extends Block {
+public class GrassBlock extends Block implements RandomTickable {
     @Override
     public Vector2f[] getTextures() {
         return new Vector2f[]{
@@ -21,5 +22,12 @@ public class GrassBlock extends Block {
     @Override
     public ItemStack getAsDroppedItem(Player player, ItemStack handItemStack) {
         return new ItemStack(Items.DIRT);
+    }
+
+    @Override
+    public void randomTick(ChunkProxy chunkProxy, int localX, int localY, int localZ, int worldX, int worldY, int worldZ) {
+        if(!chunkProxy.getRelative(localX, localY + 1, localZ).isEmpty()) {
+            chunkProxy.setRelative(localX, localY, localZ, Blocks.DIRT);
+        }
     }
 }
