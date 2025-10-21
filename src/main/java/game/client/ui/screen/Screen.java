@@ -59,7 +59,7 @@ public abstract class Screen {
     public void onScroll(double scroll, float mouseX, float mouseY) {
         for(Widget widget : this.renderableWidgets) {
             if(mouseX > widget.position.x && mouseX < widget.position.x + widget.size.x && mouseY > widget.position.y && mouseY < widget.position.y + widget.size.y) {
-                widget.onScroll(scroll, mouseX, mouseY);
+                widget.onScroll(scroll * 10, mouseX, mouseY);
             }
         }
     }
