@@ -60,6 +60,7 @@ public class KeybindWidget extends Widget {
             if(keyName == null) {
                 // Hardcoded because it doesn't seem like GLFW has some all in one solution to get the text representation of every key
                 // Also I hate it
+                // Also I should've used a switch statement instead, but I'm too lazy to change it
                 if(this.keybind.key == GLFW_KEY_SPACE) {
                     return "SPACE";
                 } else if(this.keybind.key == GLFW_KEY_LEFT_SHIFT) {
@@ -88,10 +89,18 @@ public class KeybindWidget extends Widget {
                     return "DELETE";
                 } else if(this.keybind.key == GLFW_KEY_HOME) {
                     return "HOME";
+                } else if(this.keybind.key == GLFW_KEY_END) {
+                    return "END";
                 } else if(this.keybind.key == GLFW_KEY_PAGE_DOWN) {
                     return "PAGE DOWN";
                 } else if(this.keybind.key == GLFW_KEY_PAGE_UP) {
                     return "PAGE UP";
+                } else if(this.keybind.key >= GLFW_KEY_F1 && this.keybind.key <= GLFW_KEY_F25) {
+                    return "F" + (this.keybind.key - GLFW_KEY_F1 + 1);
+                } else if(this.keybind.key == GLFW_KEY_PRINT_SCREEN) {
+                    return "PRINT SCREEN";
+                } else if(this.keybind.key == GLFW_KEY_INSERT) {
+                    return "INSERT";
                 }
 
                 return "Unknown";
