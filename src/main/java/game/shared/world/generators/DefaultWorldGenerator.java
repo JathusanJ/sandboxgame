@@ -214,22 +214,27 @@ public class DefaultWorldGenerator extends WorldGenerator {
                         chunkProxy.setRelative(x, y + 3, z, Blocks.OAK_LOG);
                         chunkProxy.setRelative(x, y + 4, z, Blocks.OAK_LOG);
 
-                        chunkProxy.setRelativeIfAbsent(x, y + 5, z, Blocks.OAK_LEAVES);
-                        chunkProxy.setRelativeIfAbsent(x + 1, y + 5, z, Blocks.OAK_LEAVES);
-                        chunkProxy.setRelativeIfAbsent(x - 1, y + 5, z, Blocks.OAK_LEAVES);
-                        chunkProxy.setRelativeIfAbsent(x, y + 5, z + 1, Blocks.OAK_LEAVES);
-                        chunkProxy.setRelativeIfAbsent(x, y + 5, z - 1, Blocks.OAK_LEAVES);
+                        int yOffset = treeRandom.nextInt(0, 2);
+                        for(int i = 0; i < yOffset; i++) {
+                            chunkProxy.setRelative(x, y + 4 + i, z, Blocks.OAK_LOG);
+                        }
+
+                        chunkProxy.setRelativeIfAbsent(x, y + 5 + yOffset, z, Blocks.OAK_LEAVES);
+                        chunkProxy.setRelativeIfAbsent(x + 1, y + 5 + yOffset, z, Blocks.OAK_LEAVES);
+                        chunkProxy.setRelativeIfAbsent(x - 1, y + 5 + yOffset, z, Blocks.OAK_LEAVES);
+                        chunkProxy.setRelativeIfAbsent(x, y + 5 + yOffset, z + 1, Blocks.OAK_LEAVES);
+                        chunkProxy.setRelativeIfAbsent(x, y + 5 + yOffset, z - 1, Blocks.OAK_LEAVES);
 
                         for(int leafX = x - 1; leafX <= x + 1; leafX++) {
                             for(int leafZ = z - 1; leafZ <= z + 1; leafZ++) {
-                                chunkProxy.setRelativeIfAbsent(leafX, y + 4, leafZ, Blocks.OAK_LEAVES);
+                                chunkProxy.setRelativeIfAbsent(leafX, y + 4 + yOffset, leafZ, Blocks.OAK_LEAVES);
                             }
                         }
 
                         for(int leafX = x - 2; leafX <= x + 2; leafX++) {
                             for(int leafZ = z - 2; leafZ <= z + 2; leafZ++) {
-                                chunkProxy.setRelativeIfAbsent(leafX, y + 3, leafZ, Blocks.OAK_LEAVES);
-                                chunkProxy.setRelativeIfAbsent(leafX, y + 2, leafZ, Blocks.OAK_LEAVES);
+                                chunkProxy.setRelativeIfAbsent(leafX, y + 3 + yOffset, leafZ, Blocks.OAK_LEAVES);
+                                chunkProxy.setRelativeIfAbsent(leafX, y + 2 + yOffset, leafZ, Blocks.OAK_LEAVES);
                             }
                         }
 
