@@ -478,6 +478,9 @@ public class GameRenderer {
                     this.uiRenderer.renderTextWithShadow("world time: " + this.world.worldTime, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 8), 24);
                     this.uiRenderer.renderTextWithShadow("day time: " + this.world.getDayTime(), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 9), 24);
 
+                    if(this.world instanceof SingleplayerWorld) {
+                        this.uiRenderer.renderTextWithShadow(this.tickManager.tps + " tps", new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 10), 24);
+                    }
                     Vector3i playerBlockPosition = new Vector3i((int) Math.floor(this.player.position.x), (int) Math.floor(this.player.position.y), (int) Math.floor(this.player.position.z));
 
                     float skylight = this.world.getSkylight(playerBlockPosition.x, playerBlockPosition.y, playerBlockPosition.z) / 16F;

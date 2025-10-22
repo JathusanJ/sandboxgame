@@ -8,6 +8,9 @@ public class TickManager {
     public Thread thread;
 
     private double counter = 0;
+    private double tpsTimer = 0;
+    private int tpsCounter = 0;
+    public int tps = 0;
     private double lastTimeValue = 0;
     public double lastTickTime = 0;
     public boolean isRunning = false;
@@ -41,19 +44,27 @@ public class TickManager {
 
     public void loop() {
         try {
-            while (isRunning) {
+            while(this.isRunning) {
                 double currentTime = System.nanoTime() / Math.pow(10,9);
                 if (this.tickables.isEmpty()) {
-                    counter = 0;
-                    lastTimeValue = currentTime;
+                    this.counter = 0;
+                    this.lastTimeValue = currentTime;
                     continue;
                 }
-                counter = counter + (currentTime - lastTimeValue);
-                lastTimeValue = currentTime;
-                while (counter >= (1 / 20D)) {
+                this.counter = this.counter + (currentTime - this.lastTimeValue);
+                this.tpsTimer = this.tpsTimer + (currentTime - this.lastTimeValue);
+                this.lastTimeValue = currentTime;
+                while(this.tpsTimer >= 1) {
+                    this.tpsTimer = this.tpsTimer - 1;
+                    this.tps = this.tpsCounter;
+                    this.tpsCounter = 0;
+                }
+
+                while(counter >= (1 / 20D)) {
                     this.tick();
                     this.lastTickTime = this.lastTimeValue;
                     counter = counter - (1 / 20D);
+                    this.tpsCounter++;
                 }
             }
         } catch(Exception e) {
