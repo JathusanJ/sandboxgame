@@ -10,7 +10,7 @@ import game.shared.world.items.ItemStack;
 import org.joml.Vector2f;
 import org.joml.Vector3i;
 
-public class Block {
+public class Block extends AbstractBlock {
     private String blockId;
     public Item asItem;
 
@@ -308,8 +308,14 @@ public class Block {
         this.blockId = blockId;
     }
 
+    @Override
     public String getBlockId() {
         return this.blockId;
+    }
+
+    @Override
+    public BlockState<?> getDefaultBlockState() {
+        return null;
     }
 
     public boolean onRightClick(ClientWorld world, Vector3i blockPosition) {
