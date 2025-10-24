@@ -26,7 +26,8 @@ public class GrassBlock extends Block implements RandomTickable {
 
     @Override
     public void randomTick(ChunkProxy chunkProxy, int localX, int localY, int localZ, int worldX, int worldY, int worldZ) {
-        if(!chunkProxy.getRelative(localX, localY + 1, localZ).isEmpty()) {
+        Block blockAbove = chunkProxy.getRelative(localX, localY + 1, localZ);
+        if(!(blockAbove instanceof AirBlock || blockAbove instanceof CrossBlock || blockAbove instanceof LeafBlock)) {
             chunkProxy.setRelative(localX, localY, localZ, Blocks.DIRT);
         }
     }
