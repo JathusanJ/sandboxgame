@@ -29,6 +29,7 @@ public class Items {
 
     public static BlockItem BIRCH_LOG = registerBlockItem(Blocks.BIRCH_LOG);
     public static BlockItem BIRCH_PLANKS = registerBlockItem(Blocks.BIRCH_PLANKS);
+    public static BlockItem BIRCH_LEAVES = registerBlockItem(Blocks.BIRCH_LEAVES);
 
     public static BlockItem ACACIA_LOG = registerBlockItem(Blocks.ACACIA_LOG);
     public static BlockItem ACACIA_PLANKS = registerBlockItem(Blocks.ACACIA_PLANKS);
@@ -51,6 +52,9 @@ public class Items {
     public static BlockItem YELLOW_TULIP = registerBlockItem(Blocks.YELLOW_TULIP, "yellow_tulip");
     public static BlockItem SHORT_GRASS = registerBlockItem(Blocks.SHORT_GRASS, "short_grass");
 
+    public static BlockItem PUMPKIN = registerBlockItem(Blocks.PUMPKIN);
+    public static BlockItem CARVED_PUMPKIN = registerBlockItem(Blocks.CARVED_PUMPKIN);
+
     public static Item COAL = register(new Item(), "coal");
     public static Item RAW_IRON_CHUNK = register(new Item(), "raw_iron_chunk");
     public static Item IRON_INGOT = register(new Item(), "iron_ingot");
@@ -59,6 +63,8 @@ public class Items {
     public static Item STONE_PICKAXE = register(new PickaxeItem(PickaxeItem.PickaxeTier.STONE), "stone_pickaxe");
     public static Item IRON_PICKAXE = register(new PickaxeItem(PickaxeItem.PickaxeTier.IRON), "iron_pickaxe");
     public static Item DIAMOND_PICKAXE = register(new PickaxeItem(PickaxeItem.PickaxeTier.DIAMOND), "diamond_pickaxe");
+
+    public static Item KNIFE = register(new KnifeItem(), "knife");
 
     public static BlockItem registerBlockItem(Block block, String itemTextureOvveride) {
         BlockItem asItem = (BlockItem) register(new BlockItem(block, itemTextureOvveride), block.getBlockId());
@@ -103,12 +109,19 @@ public class Items {
                 OAK_PLANKS,
                 OAK_LEAVES,
 
+                BIRCH_LOG,
+                BIRCH_PLANKS,
+                BIRCH_LEAVES,
+
                 BARREL,
 
                 RED_TULIP,
                 ORANGE_TULIP,
                 YELLOW_TULIP,
                 SHORT_GRASS,
+
+                PUMPKIN,
+                CARVED_PUMPKIN,
 
                 COAL,
                 RAW_IRON_CHUNK,

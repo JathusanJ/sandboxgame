@@ -25,6 +25,7 @@ public class Blocks {
 
     public static BirchPlanksBlock BIRCH_PLANKS = (BirchPlanksBlock) register(new BirchPlanksBlock(), "birch_planks");
     public static BirchLogBlock BIRCH_LOG = (BirchLogBlock) register(new BirchLogBlock(), "birch_log");
+    public static OakLeavesBlock BIRCH_LEAVES = (OakLeavesBlock) register(new OakLeavesBlock(), "birch_leaves");
 
     public static AcaciaPlanksBlock ACACIA_PLANKS = (AcaciaPlanksBlock) register(new AcaciaPlanksBlock(), "acacia_planks");
     public static AcaciaLogBlock ACACIA_LOG = (AcaciaLogBlock) register(new AcaciaLogBlock(), "acacia_log");
@@ -46,6 +47,9 @@ public class Blocks {
     public static OrangeTulipBlock ORANGE_TULIP = (OrangeTulipBlock) register(new OrangeTulipBlock(), "orange_tulip");
     public static YellowTulipBlock YELLOW_TULIP = (YellowTulipBlock) register(new YellowTulipBlock(), "yellow_tulip");
     public static ShortGrassBlock SHORT_GRASS = (ShortGrassBlock) register(new ShortGrassBlock(), "short_grass");
+
+    public static PumpkinBlock PUMPKIN = (PumpkinBlock) register(new PumpkinBlock(), "pumpkin");
+    public static CarvedPumpkinBlock CARVED_PUMPKIN = (CarvedPumpkinBlock) register(new CarvedPumpkinBlock(), "carved_pumpkin");
 
     public static BarrierBlock BARRIER = (BarrierBlock) register(new BarrierBlock(), "barrier");
 

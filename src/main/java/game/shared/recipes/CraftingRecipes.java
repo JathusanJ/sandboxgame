@@ -275,6 +275,50 @@ public class CraftingRecipes {
                 1,
                 9
         );
+
+        createRecipe(
+                List.of(
+                    Items.IRON_INGOT,
+                    Items.STICK
+                ),
+                Items.KNIFE,
+                1,
+                2,
+                1
+        );
+
+        createRecipe(
+                List.of(
+                        Items.IRON_INGOT, Items.AIR,
+                        Items.AIR, Items.STICK
+                ),
+                Items.KNIFE,
+                2,
+                2,
+                1
+        );
+
+        createRecipe(
+                List.of(
+                        Items.AIR, Items.IRON_INGOT,
+                        Items.STICK, Items.AIR
+                ),
+                Items.KNIFE,
+                2,
+                2,
+                1
+        );
+
+        createRecipe(
+                List.of(
+                        Items.IRON_INGOT, Items.AIR,
+                        Items.AIR, Items.STICK
+                ),
+                Items.KNIFE,
+                2,
+                2,
+                1
+        );
     }
 
     public static void createPickaxeRecipe(Item material, Item output) {
