@@ -1,5 +1,6 @@
 package game.shared.world.generators;
 
+import game.shared.world.biome.Biomes;
 import game.shared.world.blocks.Blocks;
 import game.shared.world.chunk.ChunkProxy;
 
@@ -16,6 +17,8 @@ public class FlatWorldGenerator extends WorldGenerator {
                 }
                 chunkProxy.setRelative(x,60,z, Blocks.GRASS);
                 chunkProxy.setRelative(x,0,z, Blocks.BEDROCK);
+
+                chunkProxy.chunk.biomes[x * 16 + z] = Biomes.NO_BIOME;
             }
         }
     }

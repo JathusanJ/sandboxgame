@@ -46,7 +46,7 @@ public class PlainsBiome extends Biome {
         spreadBlocks(chunkProxy, chunkX, chunkZ, localX, localZ, Blocks.YELLOW_TULIP, 2000, 3, 10, 10);
         spreadBlocks(chunkProxy, chunkX, chunkZ, localX, localZ, Blocks.SHORT_GRASS, 200, 3, 10, 10);
         spreadBlocks(chunkProxy, chunkX, chunkZ, localX, localZ, Blocks.PUMPKIN, 48000, 3, 10, 10);
-        addTrees(chunkProxy, chunkX, chunkZ, localX, localZ, 300, Blocks.OAK_LOG, Blocks.OAK_LEAVES);
-        addTrees(chunkProxy, chunkX, chunkZ, localX, localZ, 250, Blocks.BIRCH_LOG, Blocks.BIRCH_LEAVES);
+        addTrees(chunkProxy, chunkX, chunkZ, localX, localZ, 1000, Blocks.OAK_LOG, Blocks.OAK_LEAVES);
+        addTrees(chunkProxy, chunkX, chunkZ, localX, localZ, 2000, Blocks.BIRCH_LOG, Blocks.BIRCH_LEAVES);
     }
 }

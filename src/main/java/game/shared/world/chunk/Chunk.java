@@ -277,7 +277,7 @@ public abstract class Chunk implements Tickable {
         if(chunkData.getObject("biomeIds") == null || chunkData.getList("biomeData") == null) {
             for(int x = 0; x < 16; x++) {
                 for(int z = 0; z < 16; z++) {
-                    this.biomes[x * 16 + z] = Biomes.PLAINS;
+                    this.biomes[x * 16 + z] = Biomes.NO_BIOME;
                 }
             }
         } else {

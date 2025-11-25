@@ -3,6 +3,8 @@ package game.shared.world;
 import com.google.gson.stream.JsonReader;
 import game.shared.Version;
 import game.shared.util.json.WrappedJsonObject;
+import game.shared.world.biome.Biome;
+import game.shared.world.biome.Biomes;
 import game.shared.world.blocks.Blocks;
 import game.shared.world.blocks.block_entity.BlockEntityGenerator;
 import game.shared.world.chunk.Chunk;
@@ -338,6 +340,17 @@ public abstract class World implements Tickable {
         }
 
         return 0; //chunk.light[Chunk.positionToBlockArrayId(x - chunkPosition.x * 16, y, z - chunkPosition.y * 16)];
+    }
+
+    public Biome getBiome(int x, int z) {
+        Vector2i chunkPosition = this.getChunkPositionOfPosition(x, 0, z);
+        Chunk chunk = this.getChunk(chunkPosition.x, chunkPosition.y);
+
+        if(chunk == null) {
+            return Biomes.NO_BIOME;
+        }
+
+        return chunk.biomes[(x - chunkPosition.x * 16) * 16 + z - chunkPosition.y * 16];
     }
 
     public abstract Chunk createChunk(int x, int y);

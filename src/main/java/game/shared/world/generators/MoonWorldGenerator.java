@@ -1,6 +1,7 @@
 package game.shared.world.generators;
 
 import game.shared.util.FastNoiseLite;
+import game.shared.world.biome.Biomes;
 import game.shared.world.blocks.Blocks;
 import game.shared.world.chunk.ChunkProxy;
 
@@ -27,6 +28,8 @@ public class MoonWorldGenerator extends WorldGenerator {
                     chunkProxy.setRelative(x,y,z, Blocks.MOONDUST);
                 }
                 chunkProxy.setRelative(x, 0, z, Blocks.BEDROCK);
+
+                chunkProxy.chunk.biomes[x * 16 + z] = Biomes.NO_BIOME;
             }
         }
     }

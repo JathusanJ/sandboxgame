@@ -480,13 +480,14 @@ public class GameRenderer {
 
                     if(this.world instanceof SingleplayerWorld) {
                         this.uiRenderer.renderTextWithShadow(this.tickManager.tps + " tps", new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 10), 24);
+                        this.uiRenderer.renderTextWithShadow("biome: " + this.world.getBiome((int) this.player.position.x, (int) this.player.position.z).getId(), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 11), 24);
                     }
                     Vector3i playerBlockPosition = new Vector3i((int) Math.floor(this.player.position.x), (int) Math.floor(this.player.position.y), (int) Math.floor(this.player.position.z));
 
                     float skylight = this.world.getSkylight(playerBlockPosition.x, playerBlockPosition.y, playerBlockPosition.z) / 16F;
                     float light = this.world.getLight(playerBlockPosition.x, playerBlockPosition.y, playerBlockPosition.z) / 16F;
 
-                    this.uiRenderer.renderTextWithShadow("skylight: " + skylight + " light: " + light, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 11), 24);
+                    this.uiRenderer.renderTextWithShadow("skylight: " + skylight + " light: " + light, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 12), 24);
 
                     if(this.player.blockBreakingProgress != null) {
                         this.uiRenderer.renderTextWithShadow("Block breaking progress: " + this.player.blockBreakingProgress.breakingTicks, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 14), 24);

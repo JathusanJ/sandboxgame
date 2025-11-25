@@ -23,6 +23,7 @@ public class DefaultWorldGenerator extends WorldGenerator {
     public FastNoiseLite forestNoise;
     public FastNoiseLite humidity;
     public FastNoiseLite temperature;
+    public FastNoiseLite veryEpicBiomeNoise;
     public FastNoiseLite cavePositionNoise1;
     public FastNoiseLite cavePositionNoise2;
     public FastNoiseLite caveHeightNoise1;
@@ -70,6 +71,11 @@ public class DefaultWorldGenerator extends WorldGenerator {
         this.forestNoise.SetFrequency(0.01F);
 
         this.humidity = new FastNoiseLite(this.seed + 100);
+        this.humidity.SetFrequency(0.0005F);
+        this.temperature = new FastNoiseLite(this.seed + 101);
+        this.temperature.SetFrequency(0.0005F);
+        this.veryEpicBiomeNoise = new FastNoiseLite(this.seed + 102);
+        this.veryEpicBiomeNoise.SetFrequency(0.0005F);
 
         this.cavePositionNoise1 = new FastNoiseLite(this.seed + 4);
         this.cavePositionNoise1.SetFractalType(FastNoiseLite.FractalType.Ridged);
@@ -94,7 +100,23 @@ public class DefaultWorldGenerator extends WorldGenerator {
     public void generate(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
         for(int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                chunkProxy.chunk.biomes[x * 16 + z] = Biomes.PLAINS;
+                float humidity = this.humidity.GetNoise(chunkX * 16 + x, chunkZ * 16 + z);
+                float temperature = this.temperature.GetNoise(chunkX * 16 + x, chunkZ * 16 + z);
+                float epicValue = this.veryEpicBiomeNoise.GetNoise(chunkX * 16 + x, chunkZ * 16 + z);
+
+                Biome pickedBiome = Biomes.PLAINS;
+
+                if(temperature > 0.75F) {
+                    pickedBiome = Biomes.DESERT;
+                } else if(temperature < 0.15F) {
+                    // TODO: snowy biomes
+                } else {
+                    if(epicValue > 0F) {
+                        pickedBiome = Biomes.FOREST;
+                    }
+                }
+
+                chunkProxy.chunk.biomes[x * 16 + z] = pickedBiome;
             }
         }
 

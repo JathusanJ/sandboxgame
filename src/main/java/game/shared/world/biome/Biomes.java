@@ -7,6 +7,8 @@ public class Biomes {
 
     public static Biome PLAINS = register(new PlainsBiome(), "plains");
     public static Biome DESERT = register(new DesertBiome(), "desert");
+    public static Biome FOREST = register(new ForestBiome(), "forest");
+    public static Biome NO_BIOME = register(new NoBiome(), "no_biome");
 
     public static Biome register(Biome biome, String id)  {
         idToBiome.put(id, biome);
