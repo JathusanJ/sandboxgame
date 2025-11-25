@@ -42,13 +42,13 @@ public class ChunkLoaderManager implements Tickable {
     public void start() {
         if(GameClient.isConnectedToServer) return;
         this.tickManager.start((thread, e) -> {
+            this.world.logger.error("Error in ChunkLoaderManager ", e);
             if(this.world instanceof SingleplayerWorld) {
                 SandboxGame.getInstance().getGameRenderer().setScreen(new StaticWorldSavingScreen());
             }
             this.world.shouldTick = false;
             this.world.save();
             this.world.stop();
-            this.world.logger.error("Error in ChunkLoaderManager ", e);
             System.exit(0);
         });
     }

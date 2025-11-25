@@ -2,6 +2,8 @@ package game.shared.world.generators;
 
 import game.shared.util.FastNoiseLite;
 import game.shared.util.Spline;
+import game.shared.world.biome.Biome;
+import game.shared.world.biome.Biomes;
 import game.shared.world.blocks.Block;
 import game.shared.world.blocks.Blocks;
 import game.shared.world.chunk.ChunkProxy;
@@ -19,6 +21,8 @@ public class DefaultWorldGenerator extends WorldGenerator {
     public FastNoiseLite density;
     public FastNoiseLite undergroundDirtNoise;
     public FastNoiseLite forestNoise;
+    public FastNoiseLite humidity;
+    public FastNoiseLite temperature;
     public FastNoiseLite cavePositionNoise1;
     public FastNoiseLite cavePositionNoise2;
     public FastNoiseLite caveHeightNoise1;
@@ -65,6 +69,8 @@ public class DefaultWorldGenerator extends WorldGenerator {
         this.forestNoise.SetFractalOctaves(4);
         this.forestNoise.SetFrequency(0.01F);
 
+        this.humidity = new FastNoiseLite(this.seed + 100);
+
         this.cavePositionNoise1 = new FastNoiseLite(this.seed + 4);
         this.cavePositionNoise1.SetFractalType(FastNoiseLite.FractalType.Ridged);
         this.cavePositionNoise1.SetFrequency(0.005F);
@@ -86,8 +92,14 @@ public class DefaultWorldGenerator extends WorldGenerator {
 
     @Override
     public void generate(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
+        for(int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                chunkProxy.chunk.biomes[x * 16 + z] = Biomes.PLAINS;
+            }
+        }
+
         this.terrainShape(chunkProxy, chunkX, chunkZ);
-        this.addGrassAndDirt(chunkProxy, chunkX, chunkZ);
+        this.addSurfaceBlocks(chunkProxy, chunkX, chunkZ);
         this.addUndergroundDirt(chunkProxy, chunkX, chunkZ);
         this.carveOutCaves(chunkProxy, chunkX, chunkZ, 127, cavePositionNoise1, caveHeightNoise1);
         this.carveOutCaves(chunkProxy, chunkX, chunkZ, 80, cavePositionNoise2, caveHeightNoise2);
@@ -95,13 +107,13 @@ public class DefaultWorldGenerator extends WorldGenerator {
 
     @Override
     public void generateFeatures(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
-        this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.RED_TULIP, 2000, 3, 10, 10);
-        this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.ORANGE_TULIP, 2000, 3, 10, 10);
-        this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.YELLOW_TULIP, 2000, 3, 10, 10);
-        this.addTulips(chunkProxy, chunkX, chunkZ, Blocks.SHORT_GRASS, 200, 3, 10, 10);
-        this.addTrees(chunkProxy, chunkX, chunkZ);
-        this.addOre(chunkProxy, chunkX, chunkZ, Blocks.COAL_ORE, 50, 5, 10, 0, 127);
-        this.addOre(chunkProxy, chunkX, chunkZ, Blocks.IRON_ORE, 30, 1, 3, 0, 127);
+        for(int x = 0; x < 16; x++) {
+            for(int z = 0; z < 16; z++) {
+                chunkProxy.chunk.biomes[x * 16 + z].placeFeatures(chunkProxy, chunkX, chunkZ, x, z);
+            }
+        }
+        addOre(chunkProxy, chunkX, chunkZ, Blocks.COAL_ORE, 50, 5, 10, 0, 127);
+        addOre(chunkProxy, chunkX, chunkZ, Blocks.IRON_ORE, 30, 1, 3, 0, 127);
     }
 
     public void addUndergroundDirt(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
@@ -154,99 +166,64 @@ public class DefaultWorldGenerator extends WorldGenerator {
         }
     }
 
-    public void addGrassAndDirt(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
+    public void addSurfaceBlocks(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-
+                Biome biome = chunkProxy.chunk.biomes[x * 16 + z];
                 for (int y = 127; y > 0; y--) {
-                    Block blockAtPosition = chunkProxy.getRelative(x,y,z);
-                    Block blockAbove = chunkProxy.getRelative(x,y + 1,z);
-                    Block block2Above = chunkProxy.getRelative(x, y + 2, z);
-                    Block block3Above = chunkProxy.getRelative(x, y + 3, z);
-                    Block block4Above = chunkProxy.getRelative(x,y + 4,z);
-
-                    if(block4Above == Blocks.GRASS) {
-                        continue;
-                    } else if(block3Above == Blocks.GRASS) {
-                        chunkProxy.setRelative(x,y,z, Blocks.DIRT);
-                    } else if(block2Above == Blocks.GRASS) {
-                        chunkProxy.setRelative(x,y,z, Blocks.DIRT);
-                    } else if(blockAbove == Blocks.GRASS) {
-                        chunkProxy.setRelative(x,y,z, Blocks.DIRT);
-                    } else if(blockAbove == null && y >= 62 && blockAtPosition == Blocks.STONE) {
-                        chunkProxy.setRelative(x,y,z, Blocks.GRASS);
-                    }
-
-                    if(block3Above == Blocks.SAND) {
-                        continue;
-                    } else if(block2Above == Blocks.SAND) {
-                        chunkProxy.setRelative(x,y,z, Blocks.SAND);
-                    } else if(blockAbove == Blocks.SAND) {
-                        chunkProxy.setRelative(x,y,z, Blocks.SAND);
-                    } else if((blockAbove == Blocks.WATER || blockAbove == null) && y < 62 && blockAtPosition == Blocks.STONE) {
-                        chunkProxy.setRelative(x,y,z, Blocks.SAND);
-                    }
+                    biome.placeSurfaceBlocks(chunkProxy, chunkX, chunkZ, x,y,z);
                 }
             }
         }
     }
 
-    public void addTrees(ChunkProxy chunkProxy, int chunkX, int chunkZ) {
-        long treeSeed = (((long) chunkX) << 32) + ((long) chunkZ << 2);
+    public static void addTrees(ChunkProxy chunkProxy, int chunkX, int chunkZ, int localX, int localZ, int rarity, Block log, Block leaves) {
+        long treeSeed = (((long) chunkX) << 32) + ((long) (chunkZ) << 2) + (long) localX * Short.MAX_VALUE + (long) localZ * Byte.MAX_VALUE;
         Random treeRandom = new Random(treeSeed);
 
-        int rarity = 500;
-        if(this.forestNoise.GetNoise(chunkX, chunkZ) > 0.3F) {
-            rarity = 50;
+        if(treeRandom.nextInt() % rarity != 0) {
+            return;
         }
 
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                if(treeRandom.nextInt() % rarity != 0) {
-                    continue;
+        for (int y = 127; y > 30; y--) {
+            Block blockAtPosition = chunkProxy.getRelative(localX,y,localZ);
+            if(blockAtPosition == Blocks.GRASS) {
+                chunkProxy.setRelative(localX, y + 1, localZ, log);
+                chunkProxy.setRelative(localX, y + 2, localZ, log);
+                chunkProxy.setRelative(localX, y + 3, localZ, log);
+                chunkProxy.setRelative(localX, y + 4, localZ, log);
+
+                int yOffset = treeRandom.nextInt(0, 2);
+                for(int i = 0; i < yOffset; i++) {
+                    chunkProxy.setRelative(localX, y + 4 + i, localZ, log);
                 }
 
-                for (int y = 127; y > 30; y--) {
-                    Block blockAtPosition = chunkProxy.getRelative(x,y,z);
-                    if(blockAtPosition == Blocks.GRASS) {
-                        chunkProxy.setRelative(x, y + 1, z, Blocks.OAK_LOG);
-                        chunkProxy.setRelative(x, y + 2, z, Blocks.OAK_LOG);
-                        chunkProxy.setRelative(x, y + 3, z, Blocks.OAK_LOG);
-                        chunkProxy.setRelative(x, y + 4, z, Blocks.OAK_LOG);
+                chunkProxy.setRelativeIfAbsent(localX, y + 5 + yOffset, localZ, leaves);
+                chunkProxy.setRelativeIfAbsent(localX + 1, y + 5 + yOffset, localZ, leaves);
+                chunkProxy.setRelativeIfAbsent(localX - 1, y + 5 + yOffset, localZ, leaves);
+                chunkProxy.setRelativeIfAbsent(localX, y + 5 + yOffset, localZ + 1, leaves);
+                chunkProxy.setRelativeIfAbsent(localX, y + 5 + yOffset, localZ - 1, leaves);
 
-                        int yOffset = treeRandom.nextInt(0, 2);
-                        for(int i = 0; i < yOffset; i++) {
-                            chunkProxy.setRelative(x, y + 4 + i, z, Blocks.OAK_LOG);
-                        }
-
-                        chunkProxy.setRelativeIfAbsent(x, y + 5 + yOffset, z, Blocks.OAK_LEAVES);
-                        chunkProxy.setRelativeIfAbsent(x + 1, y + 5 + yOffset, z, Blocks.OAK_LEAVES);
-                        chunkProxy.setRelativeIfAbsent(x - 1, y + 5 + yOffset, z, Blocks.OAK_LEAVES);
-                        chunkProxy.setRelativeIfAbsent(x, y + 5 + yOffset, z + 1, Blocks.OAK_LEAVES);
-                        chunkProxy.setRelativeIfAbsent(x, y + 5 + yOffset, z - 1, Blocks.OAK_LEAVES);
-
-                        for(int leafX = x - 1; leafX <= x + 1; leafX++) {
-                            for(int leafZ = z - 1; leafZ <= z + 1; leafZ++) {
-                                chunkProxy.setRelativeIfAbsent(leafX, y + 4 + yOffset, leafZ, Blocks.OAK_LEAVES);
-                            }
-                        }
-
-                        for(int leafX = x - 2; leafX <= x + 2; leafX++) {
-                            for(int leafZ = z - 2; leafZ <= z + 2; leafZ++) {
-                                chunkProxy.setRelativeIfAbsent(leafX, y + 3 + yOffset, leafZ, Blocks.OAK_LEAVES);
-                                chunkProxy.setRelativeIfAbsent(leafX, y + 2 + yOffset, leafZ, Blocks.OAK_LEAVES);
-                            }
-                        }
-
-                    } else if(blockAtPosition != null && blockAtPosition != Blocks.AIR && blockAtPosition != Blocks.OAK_LEAVES && blockAtPosition != Blocks.SHORT_GRASS) {
-                        break;
+                for(int leafX = localX - 1; leafX <= localX + 1; leafX++) {
+                    for(int leafZ = localZ - 1; leafZ <= localZ + 1; leafZ++) {
+                        chunkProxy.setRelativeIfAbsent(leafX, y + 4 + yOffset, leafZ, leaves);
                     }
                 }
+
+                for(int leafX = localX - 2; leafX <= localX + 2; leafX++) {
+                    for(int leafZ = localZ - 2; leafZ <= localZ + 2; leafZ++) {
+                        chunkProxy.setRelativeIfAbsent(leafX, y + 3 + yOffset, leafZ, leaves);
+                        chunkProxy.setRelativeIfAbsent(leafX, y + 2 + yOffset, leafZ, leaves);
+                    }
+                }
+
+            } else if(blockAtPosition != null && blockAtPosition != Blocks.AIR && blockAtPosition != leaves && blockAtPosition != Blocks.SHORT_GRASS) {
+                break;
             }
         }
     }
 
-    public void addOre(ChunkProxy chunkProxy, int chunkX, int chunkZ, Block oreBlock, int rarity, int minClusterSize, int maxClusterSize, int minY, int maxY) {
+    public static void addOre(ChunkProxy chunkProxy, int chunkX, int chunkZ, Block oreBlock, int rarity, int minClusterSize, int maxClusterSize, int minY, int maxY) {
         long oreSeed = oreBlock.getBlockId().hashCode() + (((long) chunkX) << 32) + ((long) chunkZ << 4);
 
         Random oreRandom = new Random(oreSeed);
@@ -277,22 +254,19 @@ public class DefaultWorldGenerator extends WorldGenerator {
 
     }
 
-    public void addTulips(ChunkProxy chunkProxy, int chunkX, int chunkZ, Block tulip, int rarity, int minAmount, int maxAmount, int maxSize) {
-        Random tulipRandom = new Random(tulip.getBlockId().hashCode() + (((long) chunkX) << 32) + ((long) chunkZ << 8) * 2);
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                if(tulipRandom.nextInt() % rarity == 0) {
-                    int amount = (int) (minAmount + Math.floor(tulipRandom.nextFloat() * (maxAmount - minAmount)));
+    public static void spreadBlocks(ChunkProxy chunkProxy, int chunkX, int chunkZ, int localX, int localZ, Block block, int rarity, int minAmount, int maxAmount, int maxSize) {
+        Random spreadRandom = new Random(block.getBlockId().hashCode() + (((long) chunkX) << 32) + ((long) (chunkZ) << 8) * 2 + (long) localX * Integer.MAX_VALUE >> 2 - (long) localZ * Short.MAX_VALUE << 2);
 
-                    for (int i = 0; i < amount; i++) {
-                        int positionX = (int) (x + Math.floor((tulipRandom.nextFloat() * 2 - 1) * maxSize));
-                        int positionZ = (int) (z + Math.floor((tulipRandom.nextFloat() * 2 - 1) * maxSize));
+        if(spreadRandom.nextInt() % rarity == 0) {
+            int amount = (int) (minAmount + Math.floor(spreadRandom.nextFloat() * (maxAmount - minAmount)));
 
-                        for (int y = 127; y > 40; y--) {
-                            if(chunkProxy.getRelative(positionX, y, positionZ) == Blocks.GRASS) {
-                                chunkProxy.setRelative(positionX,y + 1,positionZ, tulip);
-                            }
-                        }
+            for (int i = 0; i < amount; i++) {
+                int positionX = (int) (localX + Math.floor((spreadRandom.nextFloat() * 2 - 1) * maxSize));
+                int positionZ = (int) (localZ + Math.floor((spreadRandom.nextFloat() * 2 - 1) * maxSize));
+
+                for (int y = 127; y > 40; y--) {
+                    if(chunkProxy.getRelative(positionX, y, positionZ) == Blocks.GRASS) {
+                        chunkProxy.setRelative(positionX,y + 1,positionZ, block);
                     }
                 }
             }

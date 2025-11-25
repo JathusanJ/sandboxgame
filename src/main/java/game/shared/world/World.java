@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public abstract class World implements Tickable {
-    public static int CHUNK_VERSION = 1;
+    public static int CHUNK_VERSION = 2;
 
     public Map<Vector2i, Chunk> loadedChunks = new ConcurrentHashMap<>();
     public List<Creature> creatures = Collections.synchronizedList(new ArrayList<>());

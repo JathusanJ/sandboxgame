@@ -7,6 +7,8 @@ import game.shared.util.GzipCompressionUtility;
 import game.shared.util.json.WrappedJsonList;
 import game.shared.util.json.WrappedJsonObject;
 import game.shared.world.World;
+import game.shared.world.biome.Biome;
+import game.shared.world.biome.Biomes;
 import game.shared.world.blocks.*;
 import game.shared.world.blocks.block_entity.BlockEntity;
 import game.shared.world.blocks.block_entity.BlockEntityGenerator;
@@ -19,11 +21,13 @@ import org.joml.Vector3i;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Chunk implements Tickable {
     public Block[] blocks;
     public Byte[] skylight = new Byte[16 * 16 * 128];
     public Byte[] light = new Byte[16 * 16 * 128];
+    public Biome[] biomes;
     public Vector2i chunkPosition;
     private boolean isModified = false;
     public boolean isUnloaded = false;
@@ -55,6 +59,7 @@ public abstract class Chunk implements Tickable {
             this.load();
         } else {
             this.blocks = new Block[16 * 16 * 128];
+            this.biomes = new Biome[16 * 16];
             ChunkProxy chunkProxy = new ChunkProxy(this);
             this.world.worldGenerator.generate(chunkProxy, this.chunkPosition.x, this.chunkPosition.y);
             this.setModified();
@@ -157,6 +162,18 @@ public abstract class Chunk implements Tickable {
             }
         }
 
+        int[] savedBiomeData = new int[biomes.length];
+        WrappedJsonObject biomeToIdMap = new WrappedJsonObject();
+        for(int i = 0; i < this.biomes.length; i++) {
+            Biome biome = this.biomes[i];
+
+            if(!biomeToIdMap.containsKey(biome.getId())) {
+                biomeToIdMap.put(biome.getId(), biomeToIdMap.size());
+            }
+
+            savedBiomeData[i] = biomeToIdMap.getInt(biome.getId());
+        }
+
         WrappedJsonList creatures = new WrappedJsonList();
         for(Creature creature : this.getCreaturesInChunk()) {
             if(creature instanceof Player) {
@@ -173,6 +190,8 @@ public abstract class Chunk implements Tickable {
         chunkData.put("blockIdToSaveId", blockToChunkSavedIds);
         chunkData.put("blockData", savedData);
         chunkData.put("blockEntities", blockEntities);
+        chunkData.put("biomeIds", biomeToIdMap);
+        chunkData.put("biomeData", savedBiomeData);
         chunkData.put("creatures", creatures);
         chunkData.put("featuresGenerated", this.featuresGenerated);
 
@@ -249,6 +268,28 @@ public abstract class Chunk implements Tickable {
                             this.world.setBlockEntity(x + this.chunkPosition.x * 16, y, z + this.chunkPosition.y * 16, blockEntity);
                         }
                     }
+                }
+            }
+        }
+
+        this.biomes = new Biome[16 * 16];
+
+        if(chunkData.getObject("biomeIds") == null || chunkData.getList("biomeData") == null) {
+            for(int x = 0; x < 16; x++) {
+                for(int z = 0; z < 16; z++) {
+                    this.biomes[x * 16 + z] = Biomes.PLAINS;
+                }
+            }
+        } else {
+            HashMap<Integer, Biome> idToBiome = new HashMap<>();
+
+            for (Map.Entry<String, Object> entry : chunkData.getObject("biomeIds").children.entrySet()) {
+                idToBiome.put(((Long) entry.getValue()).intValue(), Biomes.idToBiome.get(entry.getKey()));
+            }
+
+            for(int x = 0; x < 16; x++) {
+                for(int z = 0; z < 16; z++) {
+                    this.biomes[x * 16 + z] = idToBiome.get(((Long) chunkData.getList("biomeData").get(x * 16 + z)).intValue());
                 }
             }
         }

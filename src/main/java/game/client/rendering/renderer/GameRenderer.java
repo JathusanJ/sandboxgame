@@ -191,13 +191,13 @@ public class GameRenderer {
 
         this.tickManager.tickables.add(SandboxGame.getInstance());
         this.tickManager.start((thread, e) -> {
+            SandboxGame.getInstance().logger.error("Error while ticking ", e);
             this.setScreen(new StaticWorldSavingScreen());
             if(this.world != null) {
                 this.world.shouldTick = false;
                 this.world.save();
                 this.world.stop();
             }
-            SandboxGame.getInstance().logger.error("Error while ticking ", e);
             System.exit(0);
         });
     }

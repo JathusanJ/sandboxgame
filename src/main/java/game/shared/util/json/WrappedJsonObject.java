@@ -109,6 +109,10 @@ public class WrappedJsonObject {
         return this.children.containsKey(key);
     }
 
+    public int size() {
+        return this.children.size();
+    }
+
     public static WrappedJsonObject read(JsonReader reader) {
         WrappedJsonObject object = new WrappedJsonObject();
         try {

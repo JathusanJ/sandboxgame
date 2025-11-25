@@ -28,7 +28,7 @@ def getCheckedOutGitCommitHash() {
 }
 
 group = ""
-version = "0.2.2"
+version = "0.3.0 (dev)"
 project.ext.git = getCheckedOutGitCommitHash()
 project.ext.versionName = version
 
