@@ -58,7 +58,7 @@ public class SliderWidget extends Widget {
             this.uiRenderer.renderTexture(SLIDER_BAR_UNSELECTED_TEXTURE, this.position.add((this.value - this.minValue) / (this.maxValue - this.minValue) * (this.size.x - 20F), 0, new Vector2f()), new Vector2f(20, 50));
         }
 
-        this.uiRenderer.renderTextWithShadow(this.label + ": " + this.valueDisplayProcessor.apply(this.value, this.maxValue), this.position.add(this.size.x / 2F, this.size.y / 2F - 12, new Vector2f()), 24, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow(this.label + ": " + this.valueDisplayProcessor.apply(this.value, this.maxValue), this.position.x + this.size.x / 2F, this.position.y + this.size.y / 2F, true, true);
     }
 
     public static String displayValueAsPercentage(float value, float maxValue) {

@@ -36,8 +36,8 @@ public class CraftingTableScreen extends ContainerScreen implements CraftingScre
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.crafting_table"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F + 3.5F * 50), 24);
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.inventory"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F - 0.5F * 50), 24);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.crafting_table"), this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F + 3.5F * 50);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.inventory"), this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F - 0.5F * 50);
         this.uiRenderer.renderTexture(craftingArrow, new Vector2f(this.getScreenWidth() / 2F + 2.5F * 50 - 100, this.getScreenHeight() / 2F + 1.5F * 50 - 10), new Vector2f(64, 64));
 
         // Find recipe

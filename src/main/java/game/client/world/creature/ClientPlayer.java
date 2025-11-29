@@ -4,7 +4,6 @@ import engine.input.KeyboardAndMouseInput;
 import engine.renderer.Camera;
 import game.client.Keybinds;
 import game.client.SandboxGame;
-import game.client.ui.text.Font;
 import game.client.ui.widget.ChatMessage;
 import game.shared.multiplayer.skin.Skin;
 import game.shared.multiplayer.skin.Skins;
@@ -141,13 +140,13 @@ public class ClientPlayer extends Player {
     public void sendChatMessage(String message) {
         SandboxGame.getInstance().logger.info("[CHAT] {}", message);
 
-        float textWidth = Font.getTextWidth(message, 24);
+        float textWidth = SandboxGame.getInstance().getGameRenderer().textRenderer.getWidth(message);
         ArrayList<String> lines = new ArrayList<>();
         while(textWidth > 400) {
             int letters = 0;
             float currentSize = 0;
             for(int i = 0; i < message.length(); i++) {
-                float characterWidth = Font.getCharacterWidth(String.valueOf(message.charAt(i)), 24);
+                float characterWidth = SandboxGame.getInstance().getGameRenderer().textRenderer.getWidth(String.valueOf(message.charAt(i)));
                 if(characterWidth + currentSize > 400) {
                     textWidth = textWidth - currentSize;
                     lines.add(message.substring(0, letters));

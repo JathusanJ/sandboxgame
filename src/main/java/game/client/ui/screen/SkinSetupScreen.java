@@ -12,7 +12,7 @@ public class SkinSetupScreen extends MultiplayerSkinScreen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.setup.skin"), new Vector2f(50, this.getScreenHeight() - 32 - 50), 32);
-        this.uiRenderer.renderTextWithShadow(Language.translate(Skins.idToSkin.get(this.idsInOrder.get(this.currentSkin)).getTranslationId()), new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() - 32 - 50 - 20 - 300F - 70 + 13), 24F, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.setup.skin"), 32, 50, this.getScreenHeight() - 32 - 50);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate(Skins.idToSkin.get(this.idsInOrder.get(this.currentSkin)).getTranslationId()), this.getScreenWidth() / 2F, this.getScreenHeight() - 32 - 50 - 20 - 300F - 70 + 13, true);
     }
 }

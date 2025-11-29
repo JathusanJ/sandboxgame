@@ -29,7 +29,7 @@ public class KeybindWidget extends Widget {
 
     @Override
     public void render(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderText(Language.translate("key." + this.keybind.keybindId), new Vector2f(this.position.x + 25F, this.position.y + this.size.y / 2F - 12F), 24F);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("key." + this.keybind.keybindId), this.position.x + 25F, this.position.y + this.size.y / 2F, false, true);
 
         this.rebindButton.position = new Vector2f(this.position.x + this.size.x - this.rebindButton.size.x - 25F, this.position.y);
         this.rebindButton.render(deltaTime, mouseX, mouseY);

@@ -49,11 +49,11 @@ public class MultiplayerScreen extends Screen {
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
         this.connectButton.disabled = this.serverAddressField.content.isEmpty();
 
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.screen.multiplayer"), new Vector2f(50, this.getScreenHeight() - 32 - 50), 32);
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.multiplayer.experimental"), new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() - 32 - 100), 28, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.multiplayer"), 32, 50, this.getScreenHeight() - 32 - 50);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.multiplayer.experimental"), 28, this.getScreenWidth() / 2F, this.getScreenHeight() - 32 - 100, true);
         float finalFontSize = Math.min(24, 24 / 800F * this.getScreenWidth());
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.multiplayer.experimental.warning"), new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() - 32 - 124), finalFontSize, true);
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.multiplayer.address"), new Vector2f(this.getScreenWidth() / 2F - 200F, this.getScreenHeight() - 275F + 50F), 24F);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.multiplayer.experimental.warning"), finalFontSize, this.getScreenWidth() / 2F, this.getScreenHeight() - 32 - 124, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.multiplayer.address"), this.getScreenWidth() / 2F - 200F, this.getScreenHeight() - 275F + 50F);
     }
 
     @Override

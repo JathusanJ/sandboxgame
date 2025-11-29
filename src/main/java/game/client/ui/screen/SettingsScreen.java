@@ -64,7 +64,7 @@ public class SettingsScreen extends Screen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.screen.settings"), new Vector2f(50, this.getScreenHeight() - 32 - 50), 32);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.settings"), 32, 50, this.getScreenHeight() - 32 - 50);
     }
 
     @Override

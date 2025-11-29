@@ -25,7 +25,7 @@ public class CreditsScreen extends Screen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.credits"), new Vector2f(50, this.getScreenHeight() - 32 - 50), 32);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.credits"), 32, 50, this.getScreenHeight() - 32 - 50);
         int currentY = this.getScreenHeight() - 32 - 50;
 
         for(String line : text.lines().toList()) {
@@ -43,7 +43,7 @@ public class CreditsScreen extends Screen {
                 content = Language.translate(content.substring(1));
             }
 
-            this.uiRenderer.renderTextWithShadow(content, new Vector2f(50, currentY), fontSize);
+            this.gameRenderer.textRenderer.renderTextWithShadow(content, fontSize, 50, currentY);
         }
     }
 

@@ -12,6 +12,6 @@ public class ChatTextInputWidget extends TextFieldWidget {
             content = content.substring(0, this.content.length() - 1);
         }
 
-        this.uiRenderer.renderTextWithShadow(this.content, new Vector2f(this.position.x + 10F, this.position.y + this.size.y / 2F - 12F), 24);
+        this.gameRenderer.textRenderer.renderTextWithShadow(this.content, this.position.x + 10F, this.position.y + this.size.y / 2F, false, true);
     }
 }

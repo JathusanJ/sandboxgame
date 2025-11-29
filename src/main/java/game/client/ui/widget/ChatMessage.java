@@ -20,6 +20,6 @@ public class ChatMessage {
             transparency = 1;
         }
         SandboxGame.getInstance().getGameRenderer().uiRenderer.renderColoredQuad(position, new Vector2f(700, 25), new Vector4f(0,0,0, transparency * 0.75F));
-        SandboxGame.getInstance().getGameRenderer().uiRenderer.renderText(this.message, position, 24, new Vector4f(1,1,1, transparency));
+        SandboxGame.getInstance().getGameRenderer().textRenderer.renderText(this.message, position.x, position.y + 12.5F, new Vector4f(transparency,transparency,transparency, transparency), false, true);
     }
 }

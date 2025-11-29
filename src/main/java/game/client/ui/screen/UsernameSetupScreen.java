@@ -21,8 +21,8 @@ public class UsernameSetupScreen extends Screen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.setup.username"), new Vector2f(50, this.getScreenHeight() - 32 - 50), 32);
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.setup.username.field"), new Vector2f(this.getScreenWidth() / 2F - 150F, this.getScreenHeight() - 300F), 24);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.setup.username"), 32, 50, this.getScreenHeight() - 32 - 50);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.setup.username.field"), this.getScreenWidth() / 2F - 150F, this.getScreenHeight() - 300F);
     }
 
     @Override

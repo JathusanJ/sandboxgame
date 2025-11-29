@@ -34,7 +34,7 @@ public class PauseMenuScreen extends Screen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.screen.pause.game_paused"), new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() / 2F + 175), 32, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.screen.pause.game_paused"), 32, this.getScreenWidth() / 2F, this.getScreenHeight() / 2F + 175, true);
     }
 
     @Override

@@ -41,8 +41,8 @@ public class FurnaceScreen extends ContainerScreen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.furnace"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F + 3.5F * 50), 24);
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.inventory"), new Vector2f(this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F - 0.5F * 50), 24);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.furnace"), this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F + 3.5F * 50);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.inventory"), this.getScreenWidth() / 2F - 4.5F * 50, this.getScreenHeight() / 2F - 0.5F * 50);
 
         this.uiRenderer.renderTexture(CraftingScreen.craftingArrowOutline, new Vector2f(this.getScreenWidth() / 2F - 32, this.getScreenHeight() / 2F + 1.5F * 50 - 16), new Vector2f(64,64));
         glEnable(GL_SCISSOR_TEST);

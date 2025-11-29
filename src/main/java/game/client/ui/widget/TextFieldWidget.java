@@ -3,7 +3,6 @@ package game.client.ui.widget;
 import engine.input.KeyboardAndMouseInput;
 import engine.renderer.NineSliceTexture;
 import engine.renderer.Texture;
-import org.joml.Vector2f;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSPACE;
 
@@ -24,7 +23,7 @@ public class TextFieldWidget extends Widget {
             content = content.substring(0, this.content.length() - 1);
         }
 
-        this.uiRenderer.renderTextWithShadow(this.content, new Vector2f(this.position.x + 10F, this.position.y + this.size.y / 2F - 12F), 24);
+        this.gameRenderer.textRenderer.renderTextWithShadow(this.content, this.position.x + 10F, this.position.y + this.size.y / 2F, false, true);
 
         boolean mouseHoveringOver = mouseX > this.position.x && mouseX < this.position.x + this.size.x && mouseY > this.position.y && mouseY < this.position.y + this.size.y;
         if(mouseHoveringOver && KeyboardAndMouseInput.hasLeftClicked()) {

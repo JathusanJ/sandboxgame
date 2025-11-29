@@ -65,9 +65,9 @@ public class WorldCreationScreen extends Screen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.create_world"), new Vector2f(50, this.getScreenHeight() - 32 - 50), 32);
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.create_world.world_name"), new Vector2f(this.getScreenWidth() / 2F - 200F, this.getScreenHeight() - 125F), 24);
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.create_world.world_seed"), new Vector2f(this.getScreenWidth() / 2F - 200F, this.getScreenHeight() - 225F), 24);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.create_world"), 32, 50, this.getScreenHeight() - 32 - 50);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.create_world.world_name"), this.getScreenWidth() / 2F - 200F, this.getScreenHeight() - 125F);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.create_world.world_seed"), this.getScreenWidth() / 2F - 200F, this.getScreenHeight() - 225F);
     }
 
     @Override

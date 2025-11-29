@@ -11,7 +11,8 @@ import game.client.rendering.chunk.ChunkRenderer;
 import game.client.rendering.chunk.ChunkVertexBuilder;
 import game.client.ui.item.ItemTextures;
 import game.client.ui.screen.*;
-import game.client.ui.text.Font;
+import game.client.ui.text.OldFont;
+import game.client.ui.text.TextRenderer;
 import game.client.ui.widget.TextFieldWidget;
 import game.client.world.SingleplayerWorld;
 import game.shared.multiplayer.skin.Skins;
@@ -66,6 +67,7 @@ public class GameRenderer {
     public BlockSelectorRenderer blockSelectorRenderer = new BlockSelectorRenderer();
     public Vector3i blockCurrentlySelecting;
     public BlockItemTextureRenderer blockItemTextureRenderer = new BlockItemTextureRenderer(this);
+    public TextRenderer textRenderer = new TextRenderer(this);
 
     public ClientWorld world;
     public ClientPlayer player;
@@ -467,30 +469,30 @@ public class GameRenderer {
             this.renderHUD(deltaTime);
 
             if(this.showDebugInfo) {
-                this.uiRenderer.renderTextWithShadow("Sandbox Game " + SandboxGame.getInstance().getVersion().versionName() + " - " + SandboxGame.getInstance().getWindow().getFps() + " FPS", new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24), 24);
+                this.textRenderer.renderTextWithShadow("Sandbox Game " + SandboxGame.getInstance().getVersion().versionName() + " - " + SandboxGame.getInstance().getWindow().getFps() + " FPS", 0, SandboxGame.getInstance().getWindow().getWindowHeight() - this.textRenderer.defaultFontSize);
                 if(this.world != null && this.player != null) {
-                    this.uiRenderer.renderTextWithShadow(this.world.loadedChunks.size() + " chunks loaded", new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 2), 24);
-                    this.uiRenderer.renderTextWithShadow(this.chunkRenderer.chunksRendered + " chunks rendering (" + this.chunkRenderer.verticesRendered + " vertices, "+ (this.chunkRenderer.verticesRendered / 4) +" faces)", new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 3), 24);
-                    this.uiRenderer.renderTextWithShadow("position x: " + Math.floor(this.player.position.x * 100) / 100 + " y: " + Math.floor(this.player.position.y * 100) / 100 + " (camera: " + Math.floor(this.camera.position.y * 100) / 100 + ") z: " + Math.floor(this.player.position.z * 100) / 100, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 4), 24);
-                    this.uiRenderer.renderTextWithShadow("chunk position x: " + Math.floor(this.camera.position.x / 16D) + " z: " + Math.floor(this.camera.position.z / 16D), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 5), 24);
+                    this.textRenderer.renderTextWithShadow(this.world.loadedChunks.size() + " chunks loaded", 0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 2);
+                    this.textRenderer.renderTextWithShadow(this.chunkRenderer.chunksRendered + " chunks rendering (" + this.chunkRenderer.verticesRendered + " vertices, "+ (this.chunkRenderer.verticesRendered / 4) +" faces)", 0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 3);
+                    this.textRenderer.renderTextWithShadow("position x: " + Math.floor(this.player.position.x * 100) / 100 + " y: " + Math.floor(this.player.position.y * 100) / 100 + " (camera: " + Math.floor(this.camera.position.y * 100) / 100 + ") z: " + Math.floor(this.player.position.z * 100) / 100, 0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 4);
+                    this.textRenderer.renderTextWithShadow("chunk position x: " + Math.floor(this.camera.position.x / 16D) + " z: " + Math.floor(this.camera.position.z / 16D), 0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 5);
 
-                    this.uiRenderer.renderTextWithShadow("seed: " + this.world.seed, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 7), 24);
-                    this.uiRenderer.renderTextWithShadow("world time: " + this.world.worldTime, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 8), 24);
-                    this.uiRenderer.renderTextWithShadow("day time: " + this.world.getDayTime(), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 9), 24);
+                    this.textRenderer.renderTextWithShadow("seed: " + this.world.seed, 0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 7);
+                    this.textRenderer.renderTextWithShadow("world time: " + this.world.worldTime,0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 8);
+                    this.textRenderer.renderTextWithShadow("day time: " + this.world.getDayTime(),0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 9);
 
                     if(this.world instanceof SingleplayerWorld) {
-                        this.uiRenderer.renderTextWithShadow(this.tickManager.tps + " tps", new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 10), 24);
-                        this.uiRenderer.renderTextWithShadow("biome: " + this.world.getBiome((int) this.player.position.x, (int) this.player.position.z).getId(), new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 11), 24);
+                        this.textRenderer.renderTextWithShadow(this.tickManager.tps + " tps", 0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 10);
+                        this.textRenderer.renderTextWithShadow("biome: " + this.world.getBiome((int) this.player.position.x, (int) this.player.position.z).getId(), 0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 11);
                     }
                     Vector3i playerBlockPosition = new Vector3i((int) Math.floor(this.player.position.x), (int) Math.floor(this.player.position.y), (int) Math.floor(this.player.position.z));
 
                     float skylight = this.world.getSkylight(playerBlockPosition.x, playerBlockPosition.y, playerBlockPosition.z) / 16F;
                     float light = this.world.getLight(playerBlockPosition.x, playerBlockPosition.y, playerBlockPosition.z) / 16F;
 
-                    this.uiRenderer.renderTextWithShadow("skylight: " + skylight + " light: " + light, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 12), 24);
+                    this.textRenderer.renderTextWithShadow("skylight: " + skylight + " light: " + light, 0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 12);
 
                     if(this.player.blockBreakingProgress != null) {
-                        this.uiRenderer.renderTextWithShadow("Block breaking progress: " + this.player.blockBreakingProgress.breakingTicks, new Vector2f(0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 14), 24);
+                        this.textRenderer.renderTextWithShadow("Block breaking progress: " + this.player.blockBreakingProgress.breakingTicks, 0, SandboxGame.getInstance().getWindow().getWindowHeight() - 24 * 14);
                     }
 
                     this.uiRenderer.renderTextWithShadowRightSided("Java " + Runtime.version().feature() + " (" + Runtime.version().toString() + ")", new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth(), SandboxGame.getInstance().getWindow().getWindowHeight() - 24), 24);
@@ -519,13 +521,13 @@ public class GameRenderer {
                     this.uiRenderer.renderTexture(ItemTextures.getTexture(this.player.inventory[i].getItem().id), new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + i * 75 + 7.5F, 7.5F), new Vector2f(60, 60));
                 }
                 if(this.player.inventory[i].amount != 1) {
-                    this.uiRenderer.renderText(String.valueOf(this.player.inventory[i].amount), new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + i * 75 + 7.5F + 60 - Font.getTextWidth(String.valueOf(this.player.inventory[i].amount), 24), 7.5F), 24);
+                    this.textRenderer.renderTextWithShadow(String.valueOf(this.player.inventory[i].amount), SandboxGame.getInstance().getWindow().getWindowWidth() / 2F - 4.5F * 75 + i * 75 + 7.5F + 60 - SandboxGame.getInstance().getGameRenderer().textRenderer.getWidth(String.valueOf(this.player.inventory[i].amount)), 7.5F);
                 }
             }
         }
 
         if(this.player.inventory[this.player.currentHotbarSlot] != null && this.player.inventory[this.player.currentHotbarSlot].getItem() != Items.AIR) {
-            this.uiRenderer.renderTextWithShadow(this.player.inventory[this.player.currentHotbarSlot].getItem().getName(), new Vector2f(SandboxGame.getInstance().getWindow().getWindowWidth() / 2F, 120), 24, true);
+            this.textRenderer.renderTextWithShadow(this.player.inventory[this.player.currentHotbarSlot].getItem().getName(), SandboxGame.getInstance().getWindow().getWindowWidth() / 2F, 120, true);
         }
 
         if(this.player.gamemode == Player.Gamemode.SURVIVAL) {

@@ -34,8 +34,8 @@ public class TitleScreen extends Screen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow("Sandbox Game", new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() - 124), 48, true);
-        this.uiRenderer.renderTextWithShadow("Sandbox Game " + SandboxGame.getInstance().getVersion().versionName(), new Vector2f(0, this.getScreenHeight() - 24), 24);
+        this.gameRenderer.textRenderer.renderTextWithShadow("Sandbox Game", 48, this.getScreenWidth() / 2F, this.getScreenHeight() - 124, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow("Sandbox Game " + SandboxGame.getInstance().getVersion().versionName(), 0, this.getScreenHeight() - 24);
     }
 
     @Override

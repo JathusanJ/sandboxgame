@@ -26,8 +26,8 @@ public class ConnectingToServerScreen extends Screen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.multiplayer.connecting"), new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() / 2F + 16), 32, true);
-        this.uiRenderer.renderTextWithShadow(WorldLoadingScreen.splashes[chosenSplash], new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() / 2F - 24), 28, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.multiplayer.connecting"), 32, this.getScreenWidth() / 2F, this.getScreenHeight() / 2F + 16, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow(WorldLoadingScreen.splashes[chosenSplash], 28, this.getScreenWidth() / 2F, this.getScreenHeight() / 2F - 24, true);
     }
 
     @Override

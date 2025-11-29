@@ -6,7 +6,7 @@ import org.joml.Vector2f;
 public class StaticWorldSavingScreen extends Screen {
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.world.saving"), new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() / 2F + 16), 32, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.world.saving"), 32, this.getScreenWidth() / 2F, this.getScreenHeight() / 2F + 16, true);
     }
 
     @Override

@@ -36,6 +36,8 @@ public class WorldLoadingScreen extends Screen {
             Skins.idToSkin.size() + " different skins!",
             "Over 9000 lines of code!",
             "Soupspicious..?",
+            "Font corruption?",
+            "Help! My text became sentient :C",
             "Placeholder text, you shouldn't be able to see this!"
     };
 
@@ -59,8 +61,8 @@ public class WorldLoadingScreen extends Screen {
             loadingText = loadingText + " (" + singleplayerWorld.chunkLoadingPercentage + "%)";
         }
 
-        this.uiRenderer.renderTextWithShadow(loadingText, new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() / 2F + 16), 32, true);
-        this.uiRenderer.renderTextWithShadow(splashes[chosenSplash], new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() / 2F - 24), 28, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow(loadingText, 32, this.getScreenWidth() / 2F, this.getScreenHeight() / 2F + 16, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow(splashes[chosenSplash], 28, this.getScreenWidth() / 2F, this.getScreenHeight() / 2F - 24, true);
     }
 
     @Override

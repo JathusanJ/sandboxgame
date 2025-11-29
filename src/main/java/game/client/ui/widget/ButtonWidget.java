@@ -2,10 +2,14 @@ package game.client.ui.widget;
 
 import engine.input.KeyboardAndMouseInput;
 import engine.renderer.NineSliceTexture;
+import game.client.ui.text.TextRenderer;
 import engine.renderer.Texture;
 import engine.sound.Sounds;
 import game.client.ui.text.Text;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
+
+import java.nio.FloatBuffer;
 
 public class ButtonWidget extends Widget {
     public boolean disabled = false;
@@ -42,7 +46,7 @@ public class ButtonWidget extends Widget {
             }
         }
 
-        this.uiRenderer.renderTextWithShadow(this.text.toString(), this.position.add(this.size.x / 2F, this.size.y / 2F - 12, new Vector2f()), 24, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow(this.text.toString(), 24F, this.position.x + this.size.x / 2F, this.position.y + this.size.y / 2F, true, true);
     }
 
     public void setText(String text) {

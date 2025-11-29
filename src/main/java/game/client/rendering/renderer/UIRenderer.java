@@ -5,12 +5,13 @@ import game.client.SandboxGame;
 import engine.renderer.Camera2D;
 import engine.renderer.Shader;
 import engine.renderer.Texture;
-import game.client.ui.text.Font;
+import game.client.ui.text.OldFont;
 import game.client.ui.widget.Tooltip;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL15.*;
@@ -82,8 +83,6 @@ public class UIRenderer {
         this.coloredQuadShader = new Shader("shaders/colored_quad.vertex.glsl", "shaders/colored_quad.fragment.glsl");
 
         this.camera.orthographicProjection(SandboxGame.getInstance().getWindow().getWindowWidth(), SandboxGame.getInstance().getWindow().getWindowHeight());
-
-        Font.initialize();
     }
 
     public void delete() {
@@ -117,9 +116,8 @@ public class UIRenderer {
         this.renderTexture(texture, position, size, 0.0F);
     }
 
-    // This just does not work for whatever stupid made up reason the software or hardware has decided on and I'm very angry at it now as well
     public void renderTexture(Texture texture, Vector2f position, Vector2f size, Vector4f uv) {
-        this.renderTextureInternal(texture, position, size, new Vector4f(1.0F, 1.0F, 1.0F, 1.0F), new Vector2f(), new Vector2f(1, 1), this.createModelMatrix(position, size, 0F));
+        this.renderTextureInternal(texture, position, size, new Vector4f(1.0F, 1.0F, 1.0F, 1.0F), new Vector2f(uv.x, uv.y), new Vector2f(uv.z, uv.w), this.createModelMatrix(position, size, 0F));
     }
 
     private void renderTextureInternal(Texture texture, Vector2f position, Vector2f size, Matrix4f model) {
@@ -231,101 +229,76 @@ public class UIRenderer {
         }
     }
 
+    public void draw(FloatBuffer vertexData, Texture texture, Matrix4f model, int quadsAmount) {
+        glBindBuffer(GL_ARRAY_BUFFER, this.vboId);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, vertexData);
+
+        this.texturedQuadShader.use();
+        this.texturedQuadShader.uploadMatrix4f("projection", this.camera.getProjectionMatrix());
+        this.texturedQuadShader.uploadMatrix4f("model", model);
+        this.texturedQuadShader.uploadMatrix4f("view", this.camera.getViewMatrix());
+        texture.bind();
+        if(SandboxGame.getInstance().getPlayerProfile().getUsername().equals("SliceMyUIInHalf")) {
+            this.drawBuffer(quadsAmount * 3);
+        } else {
+            this.drawBuffer(quadsAmount * 6);
+        }
+    }
+
     private void drawBuffer(int vertexAmount) {
         glBindVertexArray(this.vaoId);
         glDrawElements(GL_TRIANGLES, vertexAmount, GL_UNSIGNED_INT, 0);
     }
 
+    @Deprecated
     public void renderTextWithShadow(String text, Vector2f position, float fontSize, Vector4f color, boolean centeredHorizontally) {
         this.renderText(text, position.add(fontSize / 12F, -fontSize / 12F, new Vector2f()), fontSize, new Vector4f(0, 0, 0, 1), centeredHorizontally);
         this.renderText(text, position, fontSize, color, centeredHorizontally);
     }
 
+    @Deprecated
     public void renderTextWithShadow(String text, Vector2f position, float fontSize, Vector4f color) {
         this.renderTextWithShadow(text, position, fontSize, color, false);
     }
 
+    @Deprecated
     public void renderTextWithShadow(String text, Vector2f position, float fontSize) {
         this.renderTextWithShadow(text, position, fontSize, new Vector4f(1, 1, 1, 1));
     }
 
+    @Deprecated
     public void renderTextWithShadowRightSided(String text, Vector2f position, float fontSize) {
-        this.renderTextWithShadow(text, position.sub(Font.getTextWidth(text, fontSize), 0), fontSize, new Vector4f(1, 1, 1, 1));
+        this.renderTextWithShadow(text, position.sub(SandboxGame.getInstance().getGameRenderer().textRenderer.getWidth(text, fontSize), 0), fontSize, new Vector4f(1, 1, 1, 1));
     }
 
+    @Deprecated
     public void renderTextWithShadow(String text, Vector2f position, float fontSize, boolean centeredHorizontally) {
         this.renderTextWithShadow(text, position, fontSize, new Vector4f(1, 1, 1, 1), centeredHorizontally);
     }
 
+    @Deprecated
     public void renderText(String text, Vector2f position, float fontSize){
         this.renderText(text, position, fontSize, false);
     }
 
+    @Deprecated
     public void renderText(String text, Vector2f position, float fontSize, Vector4f color){
         this.renderText(text, position, fontSize, color, false);
     }
 
+    @Deprecated
     public void renderText(String text, Vector2f position, float fontSize, boolean centeredHorizontally){
         this.renderText(text, position, fontSize, new Vector4f(1,1,1,1), centeredHorizontally, 0);
     }
 
+    @Deprecated
     public void renderText(String text, Vector2f position, float fontSize, Vector4f color, boolean centeredHorizontally){
         this.renderText(text, position, fontSize, color, centeredHorizontally, 0);
     }
 
+    @Deprecated
     public void renderText(String text, Vector2f position, float fontSize, Vector4f color, boolean centeredHorizontally, float rotation){
-        float textWidth = Font.getTextWidth(text, fontSize);
-        if(centeredHorizontally){
-            position = position.add(textWidth * -0.5F, 0);
-        }
-        this.renderText(text, this.createModelMatrix(position, new Vector2f(textWidth, fontSize), rotation), color);
-    }
-
-    public void renderText(String text, Matrix4f model, Vector4f color){
-        float[] vertexData = new float[text.length() * 4 * 9];
-
-        for(int index = 0; index < text.length(); index++){
-            this.setVertexDataForChar(vertexData, index, text, color);
-        }
-
-        this.draw(vertexData, Font.FONT_TEXTURE, model, text.length());
-    }
-
-    private void setVertexDataForChar(float[] vertexData, int index, String text, Vector4f color){
-        int offset = 36 * index;
-
-        float totalTextWidth = Font.getTextWidth(text);
-        float textWidthUpToCurrentCharacter = Font.getTextWidth(text.substring(0, index));
-
-        int fontMapIndex = Font.getFontIndex().length - 1;
-        for(int i = 0; i < Font.getFontIndex().length; i++){
-            if(Font.getFontIndex()[i] == text.charAt(index)){
-                fontMapIndex = i;
-                break;
-            }
-        }
-
-        this.setVertexDataForQuad(
-                vertexData,
-                offset,
-                new Vector2f(
-                        textWidthUpToCurrentCharacter / totalTextWidth, //(float) index / text.length(),
-                        0F
-                ),
-                new Vector2f(
-                        Font.getCharacterWidth(String.valueOf(text.charAt(index))) / totalTextWidth , //(float) 1 / text.length(),
-                        1F
-                ),
-                color,
-                new Vector2f(
-                        (float) fontMapIndex / Font.getFontIndex().length,
-                        0
-                ),
-                new Vector2f(
-                        (fontMapIndex + (Font.getCharacterWidth(String.valueOf(text.charAt(index))) / 16F)) / Font.getFontIndex().length,
-                        1
-                )
-        );
+        SandboxGame.getInstance().getGameRenderer().textRenderer.renderText(text, fontSize, position.x, position.y, color, centeredHorizontally);
     }
 
     public void addTooltipToBeRendered(Tooltip tooltip) {
@@ -337,7 +310,7 @@ public class UIRenderer {
         float sizeX = 0;
 
         for(String line : tooltip.getContent()) {
-            float lineTextWidth = Font.getTextWidth(line, 24);
+            float lineTextWidth = SandboxGame.getInstance().getGameRenderer().textRenderer.getWidth(line);
             if(lineTextWidth > sizeX) sizeX = lineTextWidth;
         }
 
@@ -346,7 +319,7 @@ public class UIRenderer {
         float y = tooltip.position.y;
 
         for(String line : tooltip.getContent()) {
-            this.renderText(line, new Vector2f(tooltip.position.x, y), 24);
+            SandboxGame.getInstance().getGameRenderer().textRenderer.renderTextWithShadow(line, tooltip.position.x, y);
             y = y - 24;
         }
     }

@@ -2,7 +2,6 @@ package game.client.ui.widget;
 
 import engine.input.KeyboardAndMouseInput;
 import game.client.ui.item.ItemTextures;
-import game.client.ui.text.Font;
 import engine.renderer.Texture;
 import game.shared.world.blocks.Blocks;
 import game.shared.world.items.BlockItem;
@@ -52,7 +51,7 @@ public class ItemSlotWidget extends Widget {
                 this.gameRenderer.uiRenderer.renderTexture(ItemTextures.getTexture(this.representingItemSlot.getItem().id), new Vector2f(this.position.x + this.size.x * 0.1F, this.position.y + this.size.y * 0.1F), new Vector2f(this.size.x * 0.8F,  this.size.y * 0.8F));
             }
             if(this.representingItemSlot.getAmount() != 1) {
-                this.uiRenderer.renderText(String.valueOf(this.representingItemSlot.getAmount()), this.position.add(this.size.x - 5 - Font.getTextWidth(String.valueOf(this.representingItemSlot.getAmount()), 24), 0, new Vector2f()), 24);
+                this.gameRenderer.textRenderer.renderTextWithShadow(String.valueOf(this.representingItemSlot.getAmount()),this.position.x + this.size.x - 5 - this.gameRenderer.textRenderer.getWidth(String.valueOf(this.representingItemSlot.getAmount())), this.position.y);
             }
         }
 

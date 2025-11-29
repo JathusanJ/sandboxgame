@@ -12,6 +12,7 @@ public class TextWidget extends Widget {
         this.text = text;
         this.centered = centered;
         this.fontSize = fontSize;
+        this.size.y = fontSize;
     }
 
     public TextWidget(Text text) {
@@ -23,9 +24,9 @@ public class TextWidget extends Widget {
         Vector2f position = this.position;
 
         if(this.centered) {
-            position = new Vector2f(this.position.x + this.size.x / 2F, this.position.y + this.size.y / 2F - this.fontSize);
+            position = new Vector2f(this.position.x + this.size.x / 2F, this.position.y + this.size.y / 2F);
         }
 
-        this.uiRenderer.renderTextWithShadow(this.text.toString(), position, this.fontSize, this.centered);
+        this.gameRenderer.textRenderer.renderTextWithShadow(this.text.toString(), 24F, position.x, position.y, this.centered, this.centered);
     }
 }

@@ -18,7 +18,7 @@ public class LanguageListEntryWidget extends Widget {
 
     @Override
     public void render(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderText(this.name, new Vector2f(this.position.x + 10F, this.position.y + this.size.y / 2F - 12F), 24);
+        this.gameRenderer.textRenderer.renderTextWithShadow(this.name, this.position.x + 10F, this.position.y + this.size.y / 2F, false, true);
 
         boolean mouseHoveringOver = mouseX > this.position.x && mouseX < this.position.x + this.size.x && mouseY > this.position.y && mouseY < this.position.y + this.size.y;
         if(mouseHoveringOver && KeyboardAndMouseInput.hasLeftClicked()) {

@@ -17,8 +17,8 @@ public class DisconnectedScreen extends Screen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow("Disconnected from server", new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() / 2F + 48), 32, true);
-        this.uiRenderer.renderTextWithShadow(reason, new Vector2f(this.getScreenWidth() / 2F, this.getScreenHeight() / 2F - 24), 24, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow("Disconnected from server", 32, this.getScreenWidth() / 2F, this.getScreenHeight() / 2F + 48, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow(reason, this.getScreenWidth() / 2F, this.getScreenHeight() / 2F - 24, true);
     }
 
     @Override

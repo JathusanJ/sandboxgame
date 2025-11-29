@@ -25,8 +25,8 @@ public class WorldWidget extends Widget {
     @Override
     public void render(double deltaTime, int mouseX, int mouseY) {
         if(this.world.worldFolder == null) {
-            this.uiRenderer.renderTextWithShadow(this.world.worldFolderName, new Vector2f(this.position.x + 10F, this.position.y + this.size.y - 37.5F), 24, new Vector4f(1F, 0.1F, 0.1F, 1F));
-            this.uiRenderer.renderTextWithShadow(Language.translate("ui.world_select.invalid"), new Vector2f(this.position.x + 30F, this.position.y + this.size.y - 37.5F - 25F), 24F, new Vector4f(0.33F, 0.33F, 0.33F, 1F));
+            this.gameRenderer.textRenderer.renderTextWithShadow(this.world.worldFolderName, this.position.x + 10F, this.position.y + this.size.y - 37.5F, new Vector4f(1F, 0.1F, 0.1F, 1F));
+            this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.world_select.invalid"), this.position.x + 30F, this.position.y + this.size.y - 37.5F - 25F, new Vector4f(0.33F, 0.33F, 0.33F, 1F));
         } else {
             String lowerText = Language.translate("ui.world_select.last_saved_in").formatted(this.world.lastSavedIn);
 
@@ -36,11 +36,11 @@ public class WorldWidget extends Widget {
 
             if(this.world.chunkVersion > World.CHUNK_VERSION) {
                 lowerText = Language.translate("ui.world_select.format_too_new") + " | " + lowerText;
-                this.uiRenderer.renderTextWithShadow(this.world.name == null ? this.world.worldFolderName : this.world.name, new Vector2f(this.position.x + 10F, this.position.y + this.size.y - 37.5F), 24, new Vector4f(1F, 0.1F, 0.1F, 1F));
-                this.uiRenderer.renderTextWithShadow(lowerText, new Vector2f(this.position.x + 30F, this.position.y + this.size.y - 37.5F - 25F), 24F, new Vector4f(0.33F, 0.33F, 0.33F, 1F));
+                this.gameRenderer.textRenderer.renderTextWithShadow(this.world.name == null ? this.world.worldFolderName : this.world.name, this.position.x + 10F, this.position.y + this.size.y - 37.5F, new Vector4f(1F, 0.1F, 0.1F, 1F));
+                this.gameRenderer.textRenderer.renderTextWithShadow(lowerText, this.position.x + 30F, this.position.y + this.size.y - 37.5F - 25F, new Vector4f(0.33F, 0.33F, 0.33F, 1F));
             } else {
-                this.uiRenderer.renderTextWithShadow(this.world.name == null ? this.world.worldFolderName : this.world.name, new Vector2f(this.position.x + 10F, this.position.y + this.size.y - 37.5F), 24);
-                this.uiRenderer.renderTextWithShadow(lowerText, new Vector2f(this.position.x + 30F, this.position.y + this.size.y - 37.5F - 25F), 24F, new Vector4f(0.8F, 0.8F, 0.8F, 1F));
+                this.gameRenderer.textRenderer.renderTextWithShadow(this.world.name == null ? this.world.worldFolderName : this.world.name, this.position.x + 10F, this.position.y + this.size.y - 37.5F);
+                this.gameRenderer.textRenderer.renderTextWithShadow(lowerText, this.position.x + 30F, this.position.y + this.size.y - 37.5F - 25F, new Vector4f(0.8F, 0.8F, 0.8F, 1F));
 
                 boolean mouseHoveringOver = mouseX > this.position.x && mouseX < this.position.x + this.size.x && mouseY > this.position.y && mouseY < this.position.y + this.size.y;
                 if (mouseHoveringOver && KeyboardAndMouseInput.hasLeftClicked()) {

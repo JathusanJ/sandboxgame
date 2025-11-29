@@ -35,6 +35,6 @@ public class BooleanToggleWidget extends Widget {
             }
         }
 
-        this.uiRenderer.renderTextWithShadow(this.text + ": " + this.valueSupplier.get(), this.position.add(this.size.x / 2F, this.size.y / 2F - 12, new Vector2f()), 24, true);
+        this.gameRenderer.textRenderer.renderTextWithShadow(this.text + ": " + this.valueSupplier.get(), this.position.x + this.size.x / 2F, this.position.y + this.size.y / 2F, true, true);
     }
 }

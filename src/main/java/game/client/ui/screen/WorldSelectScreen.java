@@ -62,7 +62,7 @@ public class WorldSelectScreen extends Screen {
 
     @Override
     public void renderContents(double deltaTime, int mouseX, int mouseY) {
-        this.uiRenderer.renderTextWithShadow(Language.translate("ui.world_select"), new Vector2f(50, this.getScreenHeight() - 32 - 50), 32);
+        this.gameRenderer.textRenderer.renderTextWithShadow(Language.translate("ui.world_select"), 32, 50, this.getScreenHeight() - 32 - 50);
         this.loadWorldButton.disabled = this.selectedWorld == null;
     }
 
