@@ -1,0 +1,12 @@
+{
+  "GNU Unifont": "unifont.txt",
+  "Roboto": "roboto.txt",
+  "LWJGL3": "lwjgl3.txt",
+  "stb_image": "stb.txt",
+  "stb_truetype": "stb.txt",
+  "gson": "apache2_0.txt",
+  "netty": "apache2_0.txt",
+  "SLF4J": "slf4j.txt",
+  "Log4j": "apache2_0.txt",
+  "JOML": "joml.txt"
+}

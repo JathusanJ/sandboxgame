@@ -97,6 +97,11 @@ public class TextRenderer {
         this.renderText(this.currentFont, text, fontSize, x, y, new Vector4f(1,1,1,1), centeredHorizontally, centeredVertically);
     }
 
+    public void renderTextWithShadow(Font font, String text, float fontSize, float x, float y, boolean centeredHorizontally, boolean centeredVertically) {
+        this.renderText(font, text, fontSize, x + 2 * fontSize / 24F, y - 2 * fontSize / 24F, new Vector4f(0,0,0,1), centeredHorizontally, centeredVertically);
+        this.renderText(font, text, fontSize, x, y, new Vector4f(1,1,1,1), centeredHorizontally, centeredVertically);
+    }
+
     public void renderText(Font font, String text, float fontSize, float x, float y, Vector4f color, boolean centeredHorizontally, boolean centeredVertically) {
         FloatBuffer data = font.renderText(text, fontSize, x, y, color, centeredHorizontally, centeredVertically);
         this.gameRenderer.uiRenderer.draw(data, font.getFontTexture(), new Matrix4f(), text.length());

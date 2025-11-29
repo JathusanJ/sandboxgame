@@ -17,10 +17,14 @@ public class CreditsScreen extends Screen {
 
     public Screen prevScreen;
     public ButtonWidget closeButton = new ButtonWidget(new Text.Translated("ui.close"), this::close);
+    public ButtonWidget librariesButton = new ButtonWidget(new Text.Translated("ui.libraries"), () -> {
+        this.gameRenderer.setScreen(new LibrariesScreen(this));
+    });
 
     public CreditsScreen(Screen prevScreen) {
         this.prevScreen = prevScreen;
         this.renderableWidgets.add(this.closeButton);
+        this.renderableWidgets.add(this.librariesButton);
     }
 
     @Override
@@ -56,5 +60,7 @@ public class CreditsScreen extends Screen {
     public void positionContent() {
         this.closeButton.position = new Vector2f(50, 50);
         this.closeButton.size = new Vector2f(400F, 50F);
+        this.librariesButton.position = new Vector2f(475F, 50);
+        this.librariesButton.size = new Vector2f(300F, 50F);
     }
 }
